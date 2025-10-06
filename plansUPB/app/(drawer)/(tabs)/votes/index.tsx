@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { globalStyles } from '../../src/styles/globals';
-import ScreenTemplate from '../../src/components/ScreenTemplate';
+import { globalStyles } from '../../../src/styles/globals';
+import ScreenTemplate from '../../../src/components/ScreenTemplate';
 
 export default function VoteScreen() {
 

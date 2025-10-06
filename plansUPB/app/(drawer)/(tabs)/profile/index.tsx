@@ -1,10 +1,10 @@
 import React from 'react';
 import { Text, View, Switch, StyleSheet } from 'react-native';
-import { globalStyles } from '../../src/styles/globals';
-import { useThemeStore } from '../../src/store/useThemeStore';
-import { useThemeColors } from '../../src/hooks/useThemeColors';
-import { ThemeColors } from '../../src/styles/colors';
-import ScreenTemplate from '../../src/components/ScreenTemplate';
+import { globalStyles } from '../../../src/styles/globals';
+import { useThemeStore } from '../../../src/store/useThemeStore';
+import { useThemeColors } from '../../../src/hooks/useThemeColors';
+import { ThemeColors } from '../../../src/styles/colors';
+import ScreenTemplate from '../../../src/components/ScreenTemplate';
 
 export default function ProfileScreen() {
     const { theme, colors } = useThemeColors();
