@@ -15,6 +15,13 @@ export const globalStyles = () => {
       paddingVertical: 16,
       paddingHorizontal: 12,
     },
+    app_center_container: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      padding: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     app_title: {
       fontSize: 22,
       fontWeight: '700',
@@ -26,6 +33,36 @@ export const globalStyles = () => {
       fontWeight: '600',
       marginBottom: 12,
       color: colors.subtitle,
+    },
+    app_info_text: {
+        fontSize: 12,
+        color: colors.subtitle,
+        textAlign: 'center',
+    },
+
+    app_input: {
+        width: '100%',
+        height: 50,
+        borderColor: colors.border,
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingHorizontal: 16,
+        marginBottom: 16,
+        fontSize: 16,
+    },
+    app_button: {
+        width: '100%',
+        height: 50,
+        backgroundColor: colors.primary,
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    app_buttonText: {
+        color: colors.contrastText,
+        fontSize: 18,
+        fontWeight: 'bold',
     },
   });
 }
