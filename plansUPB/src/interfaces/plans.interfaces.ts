@@ -1,5 +1,6 @@
 export interface Plan {
     id: string,
+    owner: string;
     title: string,
     description: string,
     date: Date,
