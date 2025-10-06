@@ -1,17 +1,17 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { globalStyles } from '../../src/styles/globals';
+import ScreenTemplate from '../../src/components/ScreenTemplate';
 
 export default function HomeScreen() {
 
     return (
-        <View style={globalStyles().app_container}>
-            <Text style={globalStyles().app_title}>
-                Bienvenido a PlansUPB
-            </Text>
-            <Text style={globalStyles().app_subtitle}>
-                Nombre en progreso
-            </Text>
-        </View>
+        <ScreenTemplate title='Bienvenido a PlansUPB' subtitle='Nombre en progreso'>
+            <View style={globalStyles().app_container}>
+                <Text>
+                    Contenido
+                </Text>
+            </View>
+        </ScreenTemplate>
     );
 }

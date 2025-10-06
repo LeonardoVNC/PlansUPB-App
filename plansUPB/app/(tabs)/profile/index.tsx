@@ -4,6 +4,7 @@ import { globalStyles } from '../../src/styles/globals';
 import { useThemeStore } from '../../src/store/useThemeStore';
 import { useThemeColors } from '../../src/hooks/useThemeColors';
 import { ThemeColors } from '../../src/styles/colors';
+import ScreenTemplate from '../../src/components/ScreenTemplate';
 
 export default function ProfileScreen() {
     const { theme, colors } = useThemeColors();
@@ -11,26 +12,24 @@ export default function ProfileScreen() {
     const styles = React.useMemo(() => createStyles(colors), [colors]);
 
     return (
-        <View style={globalStyles().app_container}>
-            <Text style={globalStyles().app_title}>
-                Información de mi perfil
-            </Text>
-
-            <Text style={globalStyles().app_subtitle}>
-                Mis preferencias
-            </Text>
-            <View style={styles.preferenceRow}>
-                <Text style={styles.preferenceLabel}>
-                    Modo oscuro
+        <ScreenTemplate title='Mi Perfil' subtitle='Detalles sobre tu perfil'>
+            <>
+                <Text style={globalStyles().app_subtitle}>
+                    Mis preferencias
                 </Text>
-                <Switch
-                    value={theme === 'dark'}
-                    onValueChange={toggleTheme}
-                    trackColor={{ false: colors.switchTrackOff, true: colors.switchTrackOn }}
-                    thumbColor={theme === 'dark' ? colors.switchThumb : '#f4f4f5'}
-                />
-            </View>
-        </View>
+                <View style={styles.preferenceRow}>
+                    <Text style={styles.preferenceLabel}>
+                        Modo oscuro
+                    </Text>
+                    <Switch
+                        value={theme === 'dark'}
+                        onValueChange={toggleTheme}
+                        trackColor={{ false: colors.switchTrackOff, true: colors.switchTrackOn }}
+                        thumbColor={theme === 'dark' ? colors.switchThumb : '#f4f4f5'}
+                    />
+                </View>
+            </>
+        </ScreenTemplate>
     );
 }
 
