@@ -5,12 +5,15 @@ export const globalStyles = () => {
   const { colors } = useThemeColors();
 
   return StyleSheet.create({
+    safeArea: { 
+      flex: 1, 
+      backgroundColor: colors.background,
+    },
     app_container: {
       flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: 24,
-      backgroundColor: colors.background,
+      backgroundColor: colors.surface,
+      paddingVertical: 16,
+      paddingHorizontal: 12,
     },
     app_title: {
       fontSize: 22,
@@ -19,7 +22,7 @@ export const globalStyles = () => {
       color: colors.text,
     },
     app_subtitle: {
-      fontSize: 18,
+      fontSize: 16,
       fontWeight: '600',
       marginBottom: 12,
       color: colors.subtitle,
