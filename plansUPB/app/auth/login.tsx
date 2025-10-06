@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useUserStore } from '../src/store/useUserStore';
-import { User } from '../src/interfaces/user.interfaces';
-import { globalStyles } from '../src/styles/globals';
+import { useUserStore } from '../../src/store/useUserStore';
+import { User } from '../../src/interfaces/user.interfaces';
+import { globalStyles } from '../../src/styles/globals';
 
 export default function AuthScreen() {
     const router = useRouter();
