@@ -9,6 +9,9 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
+    "@react-native-vector-icons/evil-icons": "^12.3.0",
+    "@react-native-vector-icons/fontawesome6": "^12.2.0",
     "expo": "~54.0.12",
     "expo-constants": "~18.0.9",
     "expo-linking": "~8.0.8",
