@@ -27,7 +27,6 @@ export const usePlanStore = create<PlanState>()(
                 set((state) => ({
                     plans: [...state.plans, { ...plan, id }],
                 }));
-                console.log('Plan agregado con UUID:', id);
             },
 
             updatePlan: (id, update) => set((state) => ({
@@ -61,10 +60,20 @@ export const usePlanStore = create<PlanState>()(
         {
             name: 'plan-storage',
             //Creo que luego lo podemos mover a SQLite o a la DB q usemos
-            storage: createJSONStorage(() => AsyncStorage),
-
-            // Solo debug
-            onRehydrateStorage: (state) => console.log('Planes:', state),
+            storage: createJSONStorage(() => AsyncStorage, {
+                reviver: (key, value) => {
+                    if (key === 'plans' && Array.isArray(value)) {
+                        return value.map((plan: any) => ({
+                            ...plan,
+                            date: new Date(plan.date),
+                        }));
+                    }
+                    if (key === 'confirmations' && Array.isArray(value)) {
+                        return value;
+                    }
+                    return value;
+                }
+            }),
         }
     )
 );
