@@ -3,17 +3,16 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Plan, PlanConfirmation } from '../interfaces/plans.interfaces';
 import { mockPlans, mockConfirmations } from '../data/plans.mock';
-import { useUserStore } from './useUserStore';
-import { generateUUID } from '../utils/idGenerator';
 
 interface PlanState {
     plans: Plan[];
     confirmations: PlanConfirmation[];
-    addPlan: (plan: Omit<Plan, 'id'>) => Promise<void>;
-    updatePlan: (id: string, updates: Partial<Plan>) => void;
+
+    addPlan: (plan: Plan) => void;
     addConfirmation: (confirmation: PlanConfirmation) => void;
-    getConfirmationsByPlanId: (planId: string) => PlanConfirmation[];
-    isOwner: (planId: string) => boolean;
+
+    updatePlan: (id: string, updates: Partial<Plan>) => void;
+    updateConfirmation: (planId: string, userId: string, update: Partial<PlanConfirmation>) => void;
 }
 
 export const usePlanStore = create<PlanState>()(
@@ -22,17 +21,11 @@ export const usePlanStore = create<PlanState>()(
             plans: mockPlans,
             confirmations: mockConfirmations,
 
-            addPlan: async (plan: Omit<Plan, 'id'>) => { 
-                const id = await generateUUID();
+            addPlan: async (plan: Plan) => {
                 set((state) => ({
-                    plans: [...state.plans, { ...plan, id }],
+                    plans: [...state.plans, { ...plan }],
                 }));
             },
-
-            updatePlan: (id, update) => set((state) => ({
-                plans: state.plans.map((p) => (p.id === id ? { ...p, ...update } : p))
-            })),
-
             addConfirmation: (confirmation) => {
                 const current = get().confirmations;
                 const index = current.findIndex((c) =>
@@ -48,14 +41,14 @@ export const usePlanStore = create<PlanState>()(
                 set({ confirmations: current })
             },
 
-            getConfirmationsByPlanId: (planId) => get().confirmations.filter((c) => c.planId === planId),
-
-            isOwner: (planId) => {
-                const user = useUserStore.getState().user;
-                const plan = get().plans.find((p) => p.id === planId);
-                return plan?.owner === user?.code;
-            }
-
+            updatePlan: (id, update) => set((state) => ({
+                plans: state.plans.map((p) => (p.id === id ? { ...p, ...update } : p))
+            })),
+            updateConfirmation: (planId, userId, update) => set((state) => ({
+                confirmations: state.confirmations.map((c) => (
+                    c.planId === planId && c.userId === userId ? { ...c, ...update } : c
+                ))
+            }))
         }),
         {
             name: 'plan-storage',
