@@ -1,16 +1,26 @@
-import React, { ReactNode } from "react";
-import { globalStyles } from "../styles/globals";
-import { SafeAreaView, ScrollView, StatusBar, Text } from "react-native";
-import { useThemeColors } from "../hooks/useThemeColors";
+import React, { ReactNode } from 'react';
+import { SafeAreaView, ScrollView, StatusBar } from 'react-native';
+import { Text } from '@ui-kitten/components';
+import { globalStyles } from '../styles/globals';
+import { useThemeColors } from '../hooks/useThemeColors';
 
-function ScreenTemplate({ title, subtitle, children }: { title: string, subtitle: string, children: ReactNode }) {
+interface TemplateProps {
+    title: string;
+    subtitle: string;
+    children: ReactNode;
+}
+
+function ScreenTemplate({ title, subtitle, children }: TemplateProps) {
     const { theme } = useThemeColors();
+
+    const barStyle = theme === 'dark' ? 'light-content' : 'dark-content';
+
     return (
         <SafeAreaView style={globalStyles().safeArea}>
-            <StatusBar barStyle={theme == 'dark' ? "dark-content" : "light-content"} />
+            <StatusBar barStyle={barStyle} />
             <ScrollView contentContainerStyle={globalStyles().app_container}>
                 <>
-                    <Text style={globalStyles().app_title}>
+                    <Text category="h4">
                         {title}
                     </Text>
                     <Text style={globalStyles().app_subtitle}>
