@@ -1,53 +1,117 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { VoteState } from '../interfaces/vote.interfaces';
+import { PollState } from '../interfaces/vote.interfaces';
+import { mockPolls } from '../data/polls.mock';
 
-const useVoteStore = create<VoteState>()(
+export const useVoteStore = create<PollState>()(
     persist(
         (set, get) => ({
-            votes: [],
+            polls: mockPolls,
 
-            addVote: (vote) => {
+            addPoll: (poll) => {
                 set((state) => ({
-                    votes: [...state.votes, vote],
+                    polls: [...state.polls, poll],
                 }));
-                
-                return vote;
             },
 
-            updateVote: (voteId, updates) => {
+            updatePoll: (pollId, updates) => {
                 set((state) => ({
-                    votes: state.votes.map((vote) =>
-                        vote.id === voteId 
-                            ? { ...vote, ...updates } 
-                            : vote
+                    polls: state.polls.map((poll) =>
+                        poll.id === pollId 
+                            ? { ...poll, ...updates } 
+                            : poll
                     ),
                 }));
             },
 
-            removeVote: (voteId) => {
+            removePoll: (pollId) => {
                 set((state) => ({
-                    votes: state.votes.filter((vote) => vote.id !== voteId),
+                    polls: state.polls.filter((poll) => poll.id !== pollId),
                 }));
             },
 
-            getUserVotes: (userId) => {
-                return get().votes.filter((vote) => vote.userId === userId);
+            addVoteToPoll: (pollId, userId, optionId) => {
+                set((state) => ({
+                    polls: state.polls.map((poll) => {
+                        if (poll.id !== pollId) return poll;
+
+                        // Verificar si el usuario voto por la opcion
+                        const hasVoted = poll.votes.some(
+                            v => v.userId === userId && v.optionId === optionId
+                        );
+                        if (hasVoted) return poll;
+
+                        // Si no se permite votar multiple, remover los votos anteriores del usuario
+                        let updatedVotes = poll.votes;
+                        if (!poll.allowMultiple) {
+                            updatedVotes = poll.votes.filter(v => v.userId !== userId);
+                        }
+
+                        const newVotes = [...updatedVotes, { userId, optionId }];
+
+                        const updatedOptions = poll.options.map(opt => ({
+                            ...opt,
+                            votes: newVotes.filter(v => v.optionId === opt.id).length
+                        }));
+
+                        return {
+                            ...poll,
+                            votes: newVotes,
+                            options: updatedOptions
+                        };
+                    })
+                }));
             },
 
-            getVotesByPlan: (planId) => {
-                return get().votes.filter((vote) => vote.planId === planId);
+            removeVoteFromPoll: (pollId, userId, optionId) => {
+                set((state) => ({
+                    polls: state.polls.map((poll) => {
+                        if (poll.id !== pollId) return poll;
+
+                        const newVotes = poll.votes.filter(
+                            v => !(v.userId === userId && v.optionId === optionId)
+                        );
+
+                        const updatedOptions = poll.options.map(opt => ({
+                            ...opt,
+                            votes: newVotes.filter(v => v.optionId === opt.id).length
+                        }));
+
+                        return {
+                            ...poll,
+                            votes: newVotes,
+                            options: updatedOptions
+                        };
+                    })
+                }));
+            },
+
+            getUserPolls: (userId) => {
+                return get().polls.filter((poll) => poll.createdBy === userId);
+            },
+
+            getPollById: (pollId) => {
+                return get().polls.find((poll) => poll.id === pollId);
             },
         }),
         {
-            name: 'vote-storage',
-            storage: createJSONStorage(() => AsyncStorage),
+            name: 'poll-storage',
+            storage: createJSONStorage(() => AsyncStorage, {
+                reviver: (key, value) => {
+                    if (key === 'polls' && Array.isArray(value)) {
+                        return value.map((poll: any) => ({
+                            ...poll,
+                            createdAt: new Date(poll.createdAt),
+                            closesAt: poll.closesAt ? new Date(poll.closesAt) : undefined,
+                        }));
+                    }
+                    return value;
+                }
+            }),
             partialize: (state) => ({
-                votes: state.votes,
+                polls: state.polls,
             }),
         }
     )
 );
-
-export default useVoteStore;
