@@ -43,6 +43,7 @@ export const usePlans = () => {
         managedPlans,
         filteredPlans,
         createPlan,
+        getPlanById,
     }
 }
 

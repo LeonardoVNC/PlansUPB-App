@@ -9,8 +9,9 @@ export default function PlanCard({ plan }: { plan: Plan }) {
     const router = useRouter();
     const { colors } = useThemeColors();
 
+    //TODO-Quiza haya que sacar este navigate, es raro tener uno estático en componente
     const handlePress = () => {
-        router.push(`[id]`);
+        router.push(`plans/${plan.id}`)
     };
 
     return (
@@ -20,10 +21,10 @@ export default function PlanCard({ plan }: { plan: Plan }) {
             status={plan.done ? 'success' : 'primary'}
         >
             <Text category="h6" style={{ color: colors.text, marginBottom: 8 }}>
-                {plan.title} 
+                {plan.title}
             </Text>
 
-            <Divider style={{ marginBottom: 8, backgroundColor: colors.text}}/>
+            <Divider style={{ marginBottom: 8, backgroundColor: colors.text }} />
 
             <Text category="p2" style={{ color: colors.subtitle, marginBottom: 16 }}>
                 {plan.description}
