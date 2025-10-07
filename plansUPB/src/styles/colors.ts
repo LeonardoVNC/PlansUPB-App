@@ -13,6 +13,8 @@ export const palette = {
     switchTrackOn: '#3b82f6',
     switchTrackOff: '#94a3b8',
     switchThumb: '#f8fafc',
+    danger: '#d31212ff',
+    success: '#1fca44ff'
   },
   dark: {
     background: '#0f172a',
@@ -28,6 +30,8 @@ export const palette = {
     switchTrackOn: '#3b82f6',
     switchTrackOff: '#475569',
     switchThumb: '#1e293b',
+    danger: '#d31212ff',
+    success: '#1fca44ff'
   },
 } as const;
 
