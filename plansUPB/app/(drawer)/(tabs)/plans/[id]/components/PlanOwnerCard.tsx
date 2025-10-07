@@ -7,7 +7,7 @@ function PlanOwnerCard({ owner }: { owner: User }) {
     const { colors } = useThemeColors();
 
     return (
-        <Card style={{ marginBottom: 20, padding: 16 }} status="basic">
+        <Card style={{ marginBottom: 20, padding: 16 }} status="basic" disabled>
             <Layout style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                 <Icon name="person-outline" pack="eva" fill={colors.primary} style={{ width: 32, height: 32 }} />
                 <View style={{ flex: 1 }}>

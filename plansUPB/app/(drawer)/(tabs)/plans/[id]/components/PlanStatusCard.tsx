@@ -7,7 +7,7 @@ function PlanStatusCard({ plan }: { plan: Plan }) {
     const { colors } = useThemeColors();
 
     return (
-        <Card style={{ marginBottom: 24, padding: 16 }} status={plan.done ? 'success' : 'warning'}>
+        <Card style={{ marginBottom: 24, padding: 16 }} status={plan.done ? 'success' : 'warning'} disabled>
             <Layout style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                     <Icon

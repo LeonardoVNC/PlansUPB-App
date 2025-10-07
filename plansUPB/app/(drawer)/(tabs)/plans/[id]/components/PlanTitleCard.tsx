@@ -6,7 +6,7 @@ function PlanTitleCard({ plan }: { plan: Plan }) {
     const { colors } = useThemeColors();
 
     return (
-        <Card style={{ marginBottom: 24, padding: 20 }} status={plan.done ? 'success' : 'info'}>
+        <Card style={{ marginBottom: 24, padding: 20 }} status={plan.done ? 'success' : 'info'} disabled>
             <Icon
                 name={plan.done ? 'checkmark-circle-2' : 'clock-outline'}
                 pack="eva"
