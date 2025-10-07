@@ -18,12 +18,17 @@ function ScreenTemplate({ title, subtitle, children }: TemplateProps) {
     return (
         <SafeAreaView style={globalStyles().safeArea}>
             <StatusBar barStyle={barStyle} />
-            <ScrollView contentContainerStyle={globalStyles().app_container}>
+            <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={globalStyles().app_scroll}
+                bounces={true}
+                keyboardShouldPersistTaps="handled"
+            >
                 <>
-                    <Text category="h4">
+                    <Text category="h4" style={{ marginBottom: 8 }}>
                         {title}
                     </Text>
-                    <Text style={globalStyles().app_subtitle}>
+                    <Text style={[globalStyles().app_subtitle, { marginBottom: 16 }]}>
                         {subtitle}
                     </Text>
                     {children}

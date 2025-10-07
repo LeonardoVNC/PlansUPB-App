@@ -5,8 +5,8 @@ export const globalStyles = () => {
   const { colors } = useThemeColors();
 
   return StyleSheet.create({
-    safeArea: { 
-      flex: 1, 
+    safeArea: {
+      flex: 1,
       backgroundColor: colors.background,
     },
     app_container: {
@@ -22,6 +22,14 @@ export const globalStyles = () => {
       alignItems: 'center',
       justifyContent: 'center',
     },
+    app_scroll: {
+      flexGrow: 1,
+      justifyContent: 'flex-start',
+      alignItems: 'stretch',
+      backgroundColor: colors.surface,
+      paddingVertical: 16,
+      paddingHorizontal: 12
+    },
     app_title: {
       fontSize: 22,
       fontWeight: '700',
@@ -35,34 +43,34 @@ export const globalStyles = () => {
       color: colors.subtitle,
     },
     app_info_text: {
-        fontSize: 12,
-        color: colors.subtitle,
-        textAlign: 'center',
+      fontSize: 12,
+      color: colors.subtitle,
+      textAlign: 'center',
     },
 
     app_input: {
-        width: '100%',
-        height: 50,
-        borderColor: colors.border,
-        borderWidth: 1,
-        borderRadius: 8,
-        paddingHorizontal: 16,
-        marginBottom: 16,
-        fontSize: 16,
+      width: '100%',
+      height: 50,
+      borderColor: colors.border,
+      borderWidth: 1,
+      borderRadius: 8,
+      paddingHorizontal: 16,
+      marginBottom: 16,
+      fontSize: 16,
     },
     app_button: {
-        width: '100%',
-        height: 50,
-        backgroundColor: colors.primary,
-        borderRadius: 8,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 16,
+      width: '100%',
+      height: 50,
+      backgroundColor: colors.primary,
+      borderRadius: 8,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 16,
     },
     app_buttonText: {
-        color: colors.contrastText,
-        fontSize: 18,
-        fontWeight: 'bold',
+      color: colors.contrastText,
+      fontSize: 18,
+      fontWeight: 'bold',
     },
   });
 }
