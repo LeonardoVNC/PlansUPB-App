@@ -1,10 +1,11 @@
 import React from 'react';
-import { Button } from '@ui-kitten/components';
+import { Button, Icon } from '@ui-kitten/components';
 import { usePlanStore } from '../../../../src/store/usePlanStore';
 import { useUserStore } from '../../../../src/store/useUserStore';
 import ScreenTemplate from '../../../../src/components/ScreenTemplate';
 import { useThemeColors } from '../../../../src/hooks/useThemeColors';
 import PlanList from './components/PlanList';
+import FloatingButton from '../../../../src/components/FloatingButton';
 
 export default function PlansScreen() {
   const { plans, addPlan } = usePlanStore();
@@ -26,25 +27,12 @@ export default function PlansScreen() {
 
   return (
     <ScreenTemplate title="Planes" subtitle="Revisa los planes disponibles">
-      <PlanList plans={plans}/>
+      <PlanList plans={plans} />
 
-      <Button
+      <FloatingButton
         onPress={handleCreatePlan}
-        status="primary"
-        style={{
-          position: 'absolute',
-          bottom: 20,
-          right: 20,
-          borderRadius: 50,
-          width: 50,
-          height: 50,
-          elevation: 4,
-          backgroundColor: colors.primary,
-        }}
-        appearance="filled"
-      >
-        +
-      </Button>
+        iconName='plus'
+      />
     </ScreenTemplate>
   );
 }
