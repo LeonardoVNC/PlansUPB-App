@@ -1,17 +1,69 @@
-import React from 'react';
-import { Text, View } from 'react-native';
-import { globalStyles } from '../../../../src/styles/globals';
+import React, { useState } from 'react';
+import { View } from 'react-native';
 import ScreenTemplate from '../../../../src/components/ScreenTemplate';
+import PostList from './components/PostList';
+import PostFilters from './components/PostFilters';
+import CreatePostModal from './components/CreatePostModal';
+import FloatingButton from '../../../../src/components/FloatingButton';
+import { usePosts } from '../../../../src/hooks/usePosts';
+import { usePostFilters } from '../../../../src/hooks/usePostFilters';
+import { useUserStore } from '../../../../src/store/useUserStore';
 
 export default function HomeScreen() {
+    const [modalVisible, setModalVisible] = useState(false);
+    const { posts, createPost } = usePosts();
+    const { user } = useUserStore();
+    
+    const {
+        searchQuery,
+        selectedCategory,
+        filteredPosts,
+        hasActiveFilters,
+        setSearchQuery,
+        setSelectedCategory,
+        clearFilters,
+        totalPosts,
+        filteredCount
+    } = usePostFilters({ posts });
+
+    const handleCreatePost = (post: any) => {
+        createPost(post);
+    };
 
     return (
-        <ScreenTemplate title='Bienvenido a PlansUPB' subtitle='Nombre en progreso'>
-            <View style={globalStyles().app_container}>
-                <Text>
-                    Contenido
-                </Text>
+        <ScreenTemplate title='Publicaciones' subtitle='Comparte con la comunidad UPB'>
+            <View style={{ flex: 1 }}>
+                <PostFilters
+                    searchQuery={searchQuery}
+                    selectedCategory={selectedCategory}
+                    onSearchChange={setSearchQuery}
+                    onCategoryChange={setSelectedCategory}
+                    onClearFilters={clearFilters}
+                    hasActiveFilters={hasActiveFilters}
+                    totalPosts={totalPosts}
+                    filteredCount={filteredCount}
+                />
+                
+                <View style={{ flex: 1 }}>
+                    <PostList 
+                        posts={filteredPosts} 
+                        isFiltered={hasActiveFilters}
+                    />
+                </View>
             </View>
+
+            <FloatingButton 
+                onPress={() => setModalVisible(true)} 
+                iconName="plus" 
+            />
+
+            <CreatePostModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                onCreatePost={handleCreatePost}
+                userCode={user?.code || ''}
+                userName={user?.name || 'Usuario'}
+            />
         </ScreenTemplate>
     );
 }
