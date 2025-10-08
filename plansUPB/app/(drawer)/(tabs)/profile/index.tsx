@@ -5,6 +5,7 @@ import { useThemeStore } from '../../../../src/store/useThemeStore';
 import { useThemeColors } from '../../../../src/hooks/useThemeColors';
 import { ThemeColors } from '../../../../src/styles/colors';
 import ScreenTemplate from '../../../../src/components/ScreenTemplate';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function ProfileScreen() {
     const { theme, colors } = useThemeColors();
@@ -14,6 +15,35 @@ export default function ProfileScreen() {
     return (
         <ScreenTemplate title='Mi Perfil' subtitle='Detalles sobre tu perfil'>
             <>
+                <View style={styles.profileCard}>
+                    <View style={styles.profileHeader}>
+                        <View style={styles.avatarContainer}>
+                            <View>
+                                <Ionicons name="person-circle" size={80} color={colors.text} />
+                                <View style={styles.cameraIconContainer}>
+                                    <Ionicons name="camera" size={20} color={colors.text} />
+                                </View>
+                            </View>
+                        </View>
+                        <Text style={styles.userName}>Lupita Kush</Text>
+                    </View>
+                    <View style={styles.infoContainer}>
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Carrera</Text>
+                            <Ionicons name="pencil" size={20} color={colors.text} />
+                        </View>
+                        <Text style={styles.infoText}>Comunicacion</Text>
+                        
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Mi Descripción:</Text>
+                            <Ionicons name="pencil" size={20} color={colors.text} />
+                        </View>
+                        <Text style={styles.infoText}>
+                            "Chava" Amigable y guapa.
+                        </Text>
+                    </View>
+                </View>
+
                 <Text style={globalStyles().app_subtitle}>
                     Mis preferencias
                 </Text>
@@ -51,6 +81,55 @@ const createStyles = (colors: ThemeColors) =>
             fontSize: 18,
             color: colors.text,
             fontWeight: '500',
+        },
+        profileCard: {
+            backgroundColor: colors.surface,
+            borderRadius: 16,
+            padding: 16,
+            marginBottom: 24,
+            borderWidth: StyleSheet.hairlineWidth,
+            borderColor: colors.border,
+        },
+        profileHeader: {
+            alignItems: 'center',
+            marginBottom: 16,
+        },
+        avatarContainer: {
+            marginBottom: 8,
+            position: 'relative',
+        },
+        cameraIconContainer: {
+            position: 'absolute',
+            bottom: 0,
+            right: -5,
+            backgroundColor: colors.surface,
+            borderRadius: 12,
+            padding: 4,
+            borderWidth: StyleSheet.hairlineWidth,
+            borderColor: colors.border,
+        },
+        userName: {
+            fontSize: 24,
+            fontWeight: 'bold',
+            color: colors.text,
+        },
+        infoContainer: {
+            gap: 8,
+        },
+        infoRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+        },
+        infoLabel: {
+            fontSize: 16,
+            fontWeight: '600',
+            color: colors.text,
+            marginTop: 8,
+        },
+        infoText: {
+            fontSize: 14,
+            color: colors.subtitle,
         }
     });
 
