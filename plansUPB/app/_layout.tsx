@@ -27,8 +27,8 @@ export default function RootLayout() {
         <SafeAreaProvider>
           <StatusBar style={statusBarStyle} />
           <Stack>
-            <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
             <Stack.Screen name="auth" options={{ headerShown: false }} />
+            <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" options={{ headerShown: false }} />
           </Stack>
         </SafeAreaProvider>
