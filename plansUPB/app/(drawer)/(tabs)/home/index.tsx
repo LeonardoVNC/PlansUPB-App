@@ -2,15 +2,29 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import ScreenTemplate from '../../../../src/components/ScreenTemplate';
 import PostList from './components/PostList';
+import PostFilters from './components/PostFilters';
 import CreatePostModal from './components/CreatePostModal';
 import FloatingButton from '../../../../src/components/FloatingButton';
 import { usePosts } from '../../../../src/hooks/usePosts';
+import { usePostFilters } from '../../../../src/hooks/usePostFilters';
 import { useUserStore } from '../../../../src/store/useUserStore';
 
 export default function HomeScreen() {
     const [modalVisible, setModalVisible] = useState(false);
     const { posts, createPost } = usePosts();
     const { user } = useUserStore();
+    
+    const {
+        searchQuery,
+        selectedCategory,
+        filteredPosts,
+        hasActiveFilters,
+        setSearchQuery,
+        setSelectedCategory,
+        clearFilters,
+        totalPosts,
+        filteredCount
+    } = usePostFilters({ posts });
 
     const handleCreatePost = (post: any) => {
         createPost(post);
@@ -18,8 +32,24 @@ export default function HomeScreen() {
 
     return (
         <ScreenTemplate title='Publicaciones' subtitle='Comparte con la comunidad UPB'>
-            <View style={{ flex: 1, marginTop: 8 }}>
-                <PostList posts={posts} />
+            <View style={{ flex: 1 }}>
+                <PostFilters
+                    searchQuery={searchQuery}
+                    selectedCategory={selectedCategory}
+                    onSearchChange={setSearchQuery}
+                    onCategoryChange={setSelectedCategory}
+                    onClearFilters={clearFilters}
+                    hasActiveFilters={hasActiveFilters}
+                    totalPosts={totalPosts}
+                    filteredCount={filteredCount}
+                />
+                
+                <View style={{ flex: 1 }}>
+                    <PostList 
+                        posts={filteredPosts} 
+                        isFiltered={hasActiveFilters}
+                    />
+                </View>
             </View>
 
             <FloatingButton 
