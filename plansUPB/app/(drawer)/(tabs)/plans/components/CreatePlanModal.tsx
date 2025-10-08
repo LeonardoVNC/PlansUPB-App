@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Input,Icon} from '@ui-kitten/components';
+import { Input, Icon } from '@ui-kitten/components';
 import { Plan } from '../../../../../src/interfaces/plans.interfaces';
 import { useUserStore } from '../../../../../src/store/useUserStore';
 import usePlans from '../../../../../src/hooks/usePlans';
 import CreationModal from '../../../../../src/components/CreationModal';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { formatSimpleDateHour } from '../../../../../src/utils/formatDate';
 
 interface CreatePlanModalProps {
     visible: boolean;
@@ -15,12 +17,14 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
     const { createPlan } = usePlans();
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
+    const [date, setDate] = useState(new Date());
+    const [isDatePickerVisible, setIsDatePickerVisible] = useState(false)
     const [isValidInfo, setIsValidInfo] = useState(false)
-    //TODO fecha y hora
 
     useEffect(() => {
-        setIsValidInfo(title.trim().length > 0 && description.trim().length > 0)
-    }, [title, description])
+        const isDateValid = !isNaN(date.getTime());
+        setIsValidInfo(title.trim().length > 0 && description.trim().length > 0 && isDateValid);
+    }, [title, description, date]);
 
     const handleSubmit = () => {
         if (!isValidInfo || !user) {
@@ -29,14 +33,14 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
         const values: Omit<Plan, 'id'> = {
             title: title.trim(),
             description: description.trim(),
-            date: new Date, //TODO fecha y hora x2
+            date,
             owner: user?.code,
             done: false
         }
         createPlan(values);
         resetForm();
         onClose();
-    }
+    };
 
     const handleCancel = () => {
         resetForm();
@@ -44,9 +48,10 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
     };
 
     const resetForm = () => {
-        setTitle("")
-        setDescription("")
-    }
+        setTitle("");
+        setDescription("");
+        setDate(new Date());
+    };
 
     return (
         <CreationModal
@@ -78,6 +83,29 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
                 multiline
                 numberOfLines={4}
                 textStyle={{ minHeight: 80, lineHeight: 20 }}
+            />
+            <Input
+                label="Fecha y Hora"
+                value={formatSimpleDateHour(date)}
+                placeholder="Selecciona fecha y hora"
+                editable={false}
+                onPressIn={() => setIsDatePickerVisible(true)}
+                style={{ marginBottom: 8 }}
+                status={isValidInfo ? 'success' : 'basic'}
+                accessoryLeft={<Icon name="calendar-outline" pack="eva" />}
+            />
+
+            <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="datetime"
+                onConfirm={(selectedDate) => {
+                    setDate(selectedDate);
+                    setIsDatePickerVisible(false);
+                }}
+                onCancel={() => { setIsDatePickerVisible(false) }}
+                minimumDate={new Date()}
+                date={date}
+                display="default"
             />
         </CreationModal>
     );

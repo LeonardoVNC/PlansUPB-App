@@ -9,6 +9,18 @@ export const formatFullDateHour = (date: Date) => {
     });
 }
 
+export const formatSimpleDateHour = (d: Date) => {
+    return d.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    }) + ' - ' +
+        d.toLocaleTimeString('es-ES', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+};
+
 export const formatWeekDay = (date: string | Date) => {
     return new Date(date).toLocaleDateString('es-ES', {
         weekday: 'long'
