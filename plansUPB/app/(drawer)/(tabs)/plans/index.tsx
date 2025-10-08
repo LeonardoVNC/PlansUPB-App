@@ -2,25 +2,15 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { TabView, Tab } from '@ui-kitten/components';
 import PlanList from './components/PlanList';
-import { useUserStore } from '../../../../src/store/useUserStore';
 import ScreenTemplate from '../../../../src/components/ScreenTemplate';
 import FloatingButton from '../../../../src/components/FloatingButton';
 import usePlans from '../../../../src/hooks/usePlans';
+import CreatePlanModal from './components/CreatePlanModal';
 
 export default function PlansScreen() {
-  const { managedPlans, filteredPlans, createPlan } = usePlans();
-  const { user } = useUserStore();
+  const { managedPlans, filteredPlans } = usePlans();
   const [selectedIndex, setSelectedIndex] = useState(0);
-
-  const handleCreatePlan = async () => {
-    if (!user) return;
-    await createPlan({
-      owner: user.code,
-      title: 'Nuevo Plan Automático',
-      description: 'Creado medio a la rápida (como todo plan que se respeta)',
-      date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
-  };
+  const [modalVisible, setModalVisible] = useState(false);
 
   const data = [
     { label: 'Mis Planes', plans: managedPlans, subtitle: `${managedPlans.length} planes administrados` },
@@ -49,7 +39,12 @@ export default function PlansScreen() {
         </Tab>
       </TabView>
 
-      <FloatingButton onPress={handleCreatePlan} iconName="plus" />
+      <FloatingButton onPress={() => setModalVisible(true)} iconName="plus" />
+
+      <CreatePlanModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </ScreenTemplate>
   );
 }
