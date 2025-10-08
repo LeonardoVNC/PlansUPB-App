@@ -207,7 +207,7 @@ export default function PostCard({ post }: { post: Post }) {
                         style={{ width: 20, height: 20, marginRight: 4 }}
                     />
                     <Text category="c1" style={{ color: colors.subtitle }}>
-                        ID: {post.author}
+                        {post.author}
                     </Text>
                 </View>
             </View>
