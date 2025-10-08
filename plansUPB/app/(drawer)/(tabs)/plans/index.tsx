@@ -20,7 +20,11 @@ export default function PlansScreen() {
   const activeTab = data[selectedIndex];
 
   return (
-    <ScreenTemplate title="Planes" subtitle={activeTab.subtitle}>
+    <ScreenTemplate
+      title="Planes"
+      subtitle={activeTab.subtitle}
+      floatingButton={<FloatingButton onPress={() => setModalVisible(true)} iconName="plus" />}
+    >
       <TabView
         style={{ flex: 1, marginTop: 8 }}
         selectedIndex={selectedIndex}
@@ -38,8 +42,6 @@ export default function PlansScreen() {
           </View>
         </Tab>
       </TabView>
-
-      <FloatingButton onPress={() => setModalVisible(true)} iconName="plus" />
 
       <CreatePlanModal
         visible={modalVisible}

@@ -8,9 +8,10 @@ interface TemplateProps {
     title: string;
     subtitle: string;
     children: ReactNode;
+    floatingButton?: ReactNode;
 }
 
-function ScreenTemplate({ title, subtitle, children }: TemplateProps) {
+function ScreenTemplate({ title, subtitle, children, floatingButton }: TemplateProps) {
     const { theme } = useThemeColors();
 
     const barStyle = theme === 'dark' ? 'light-content' : 'dark-content';
@@ -34,6 +35,7 @@ function ScreenTemplate({ title, subtitle, children }: TemplateProps) {
                     {children}
                 </>
             </ScrollView>
+            {floatingButton}
         </SafeAreaView>
     );
 }
