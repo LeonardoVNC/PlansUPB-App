@@ -5,15 +5,12 @@ import PlanList from './components/PlanList';
 import ScreenTemplate from '../../../../src/components/ScreenTemplate';
 import FloatingButton from '../../../../src/components/FloatingButton';
 import usePlans from '../../../../src/hooks/usePlans';
-import { router } from 'expo-router';
+import CreatePlanModal from './components/CreatePlanModal';
 
 export default function PlansScreen() {
   const { managedPlans, filteredPlans } = usePlans();
   const [selectedIndex, setSelectedIndex] = useState(0);
-
-  const goToCreatePlan = async () => {
-    router.push('plans/create')
-  };
+  const [modalVisible, setModalVisible] = useState(false);
 
   const data = [
     { label: 'Mis Planes', plans: managedPlans, subtitle: `${managedPlans.length} planes administrados` },
@@ -42,7 +39,12 @@ export default function PlansScreen() {
         </Tab>
       </TabView>
 
-      <FloatingButton onPress={goToCreatePlan} iconName="plus" />
+      <FloatingButton onPress={() => setModalVisible(true)} iconName="plus" />
+
+      <CreatePlanModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </ScreenTemplate>
   );
 }
