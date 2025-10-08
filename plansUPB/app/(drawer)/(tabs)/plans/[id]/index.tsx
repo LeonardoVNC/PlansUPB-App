@@ -37,8 +37,6 @@ function PlanDetailScreen() {
         );
     }
 
-    const handleBack = () => router.back();
-
     return (
         <ScreenTemplate title={plan.title} subtitle={formatFullDateHour(plan.date)}>
             <View>
@@ -49,15 +47,6 @@ function PlanDetailScreen() {
                 <PlanDateCard plan={plan}/>
 
                 <PlanStatusCard plan={plan}/>
-
-                <Button
-                    onPress={handleBack}
-                    status="basic"
-                    style={{ marginTop: 16 }}
-                    accessoryLeft={(props) => <Icon {...props} name="arrow-back-outline" pack="eva" />}
-                >
-                    Volver a planes
-                </Button>
             </View>
         </ScreenTemplate>
     );

@@ -6,7 +6,7 @@ import { useThemeColors } from "../../../../../../src/hooks/useThemeColors";
 import { Plan } from "../../../../../../src/interfaces/plans.interfaces";
 
 function PlanDateCard({ plan }: { plan: Plan }) {
-    const { colors } = useThemeColors();
+    const { colors, theme } = useThemeColors();
 
     const CardRow = ({ icon, title, text }: { icon: string, title: string, text: string }) => {
         return (
@@ -44,7 +44,7 @@ function PlanDateCard({ plan }: { plan: Plan }) {
                 />
             </>
         )
-    }, [plan])
+    }, [plan, theme])
 
     return (
         <Card style={{ marginBottom: 20, padding: 16 }} status="basic" disabled>
