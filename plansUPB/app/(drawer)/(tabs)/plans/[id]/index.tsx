@@ -1,15 +1,14 @@
 import React, { useMemo } from 'react';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Button, Text, Icon } from '@ui-kitten/components';
 import ScreenTemplate from '@common_components/ScreenTemplate';
-import { useThemeColors } from '../../../../../src/hooks/useThemeColors';
-import { usePlans } from '../../../../../src/hooks/usePlans';
-import { formatFullDateHour } from '../../../../../src/utils/formatDate';
-import PlanTitleCard from './components/PlanTitleCard';
-import PlanOwnerCard from './components/PlanOwnerCard';
-import PlanDateCard from './components/PlanDateCard';
-import PlanStatusCard from './components/PlanStatusCard';
+import { usePlans } from '@hooks/usePlans';
+import { useThemeColors } from '@hooks/useThemeColors';
+import PlanDateCard from '@screen_components/plans/details/PlanDateCard';
+import PlanOwnerCard from '@screen_components/plans/details/PlanOwnerCard';
+import PlanStatusCard from '@screen_components/plans/details/PlanStatusCard';
+import PlanTitleCard from '@screen_components/plans/details/PlanTitleCard';
 
 function PlanDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -40,13 +39,13 @@ function PlanDetailScreen() {
     return (
         <ScreenTemplate>
             <View>
-                <PlanTitleCard plan={plan}/>
-                
+                <PlanTitleCard plan={plan} />
+
                 {/* <PlanOwnerCard owner={}/> */}
 
-                <PlanDateCard plan={plan}/>
+                <PlanDateCard plan={plan} />
 
-                <PlanStatusCard plan={plan}/>
+                <PlanStatusCard plan={plan} />
             </View>
         </ScreenTemplate>
     );

@@ -1,7 +1,7 @@
-import { Card, Icon, Layout, Text } from "@ui-kitten/components";
 import { View } from "react-native";
-import { useThemeColors } from "../../../../../../src/hooks/useThemeColors";
-import { Plan } from "../../../../../../src/interfaces/plans.interfaces";
+import { Card, Icon, Layout, Text } from "@ui-kitten/components";
+import { useThemeColors } from "@hooks/useThemeColors";
+import { Plan } from "@interfaces/plans.interfaces";
 
 function PlanStatusCard({ plan }: { plan: Plan }) {
     const { colors } = useThemeColors();

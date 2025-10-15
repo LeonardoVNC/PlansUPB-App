@@ -1,9 +1,9 @@
 import React from 'react';
 import { useRouter } from 'expo-router';
 import { Card, Divider, Text } from '@ui-kitten/components';
-import { Plan } from '../../../../../src/interfaces/plans.interfaces';
-import { useThemeColors } from '../../../../../src/hooks/useThemeColors';
-import { formatFullDateHour } from '../../../../../src/utils/formatDate';
+import { useThemeColors } from '@hooks/useThemeColors';
+import { Plan } from '@interfaces/plans.interfaces';
+import { formatFullDateHour } from '@utils/formatDate';
 
 export default function PlanCard({ plan }: { plan: Plan }) {
     const router = useRouter();

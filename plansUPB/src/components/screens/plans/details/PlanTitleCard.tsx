@@ -1,6 +1,6 @@
 import { Card, Icon, Text } from "@ui-kitten/components";
-import { Plan } from "../../../../../../src/interfaces/plans.interfaces";
-import { useThemeColors } from "../../../../../../src/hooks/useThemeColors";
+import { useThemeColors } from "@hooks/useThemeColors";
+import { Plan } from "@interfaces/plans.interfaces";
 
 function PlanTitleCard({ plan }: { plan: Plan }) {
     const { colors } = useThemeColors();

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { TabView, Tab } from '@ui-kitten/components';
-import PlanList from './components/PlanList';
-import ScreenTemplate from '@common_components/ScreenTemplate';
 import FloatingButton from '@common_components/FloatingButton';
-import usePlans from '../../../../src/hooks/usePlans';
-import CreatePlanModal from './components/CreatePlanModal';
+import ScreenTemplate from '@common_components/ScreenTemplate';
+import CreatePlanModal from '@screen_components/plans/CreatePlanModal';
+import PlanList from '@screen_components/plans/PlanList';
+import usePlans from '@hooks/usePlans';
 
 export default function PlansScreen() {
   const { managedPlans, filteredPlans } = usePlans();

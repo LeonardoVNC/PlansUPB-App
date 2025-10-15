@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Input, Icon } from '@ui-kitten/components';
-import { Plan } from '../../../../../src/interfaces/plans.interfaces';
-import { useUserStore } from '../../../../../src/store/useUserStore';
-import usePlans from '../../../../../src/hooks/usePlans';
-import CreationModal from '@common_components/CreationModal';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { formatSimpleDateHour } from '../../../../../src/utils/formatDate';
+import { Input, Icon } from '@ui-kitten/components';
+import CreationModal from '@common_components/CreationModal';
+import usePlans from '@hooks/usePlans';
+import { Plan } from '@interfaces/plans.interfaces';
+import { useUserStore } from '@store/useUserStore';
+import { formatSimpleDateHour } from '@utils/formatDate';
 
 interface CreatePlanModalProps {
     visible: boolean;

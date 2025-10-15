@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { FlatList, View } from 'react-native';
 import { Icon, Text } from '@ui-kitten/components';
-import { Plan } from "../../../../../src/interfaces/plans.interfaces";
-import { useThemeColors } from '../../../../../src/hooks/useThemeColors';
+import { useThemeColors } from '@hooks/useThemeColors';
+import { Plan } from "@interfaces/plans.interfaces";
 import PlanCard from './PlanCard';
 
 function PlanList({ plans }: { plans: Plan[] }) {

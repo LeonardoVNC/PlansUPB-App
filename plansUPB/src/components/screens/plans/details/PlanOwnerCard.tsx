@@ -1,7 +1,7 @@
-import { Card, Icon, Layout, Text } from "@ui-kitten/components";
 import { View } from "react-native";
-import { useThemeColors } from "../../../../../../src/hooks/useThemeColors";
-import { User } from "../../../../../../src/interfaces/user.interfaces";
+import { Card, Icon, Layout, Text } from "@ui-kitten/components";
+import { useThemeColors } from "@hooks/useThemeColors";
+import { User } from "@interfaces/user.interfaces";
 
 function PlanOwnerCard({ owner }: { owner: User }) {
     const { colors } = useThemeColors();

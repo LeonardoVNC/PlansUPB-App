@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { View } from "react-native";
 import { Card, Icon, Layout, Text } from "@ui-kitten/components";
-import { formatWeekDay, formatDate, formatHour } from '../../../../../../src/utils/formatDate';
-import { useThemeColors } from "../../../../../../src/hooks/useThemeColors";
-import { Plan } from "../../../../../../src/interfaces/plans.interfaces";
+import { useThemeColors } from "@hooks/useThemeColors";
+import { Plan } from "@interfaces/plans.interfaces";
+import { formatWeekDay, formatDate, formatHour } from '@utils/formatDate';
 
 function PlanDateCard({ plan }: { plan: Plan }) {
     const { colors, theme } = useThemeColors();
