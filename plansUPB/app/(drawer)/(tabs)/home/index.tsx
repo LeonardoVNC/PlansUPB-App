@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import ScreenTemplate from '../../../../src/components/ScreenTemplate';
+import ScreenTemplate from '@common_components/ScreenTemplate';
 import PostList from './components/PostList';
 import PostFilters from './components/PostFilters';
 import CreatePostModal from './components/CreatePostModal';
-import FloatingButton from '../../../../src/components/FloatingButton';
+import FloatingButton from '@common_components/FloatingButton';
 import { usePosts } from '../../../../src/hooks/usePosts';
 import { usePostFilters } from '../../../../src/hooks/usePostFilters';
 import { useUserStore } from '../../../../src/store/useUserStore';

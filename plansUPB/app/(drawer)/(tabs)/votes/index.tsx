@@ -4,8 +4,8 @@ import { TabView, Tab } from '@ui-kitten/components';
 import PollList from './components/PollList';
 import CreatePollModal from './components/CreatePollModal';
 import { useUserStore } from '../../../../src/store/useUserStore';
-import ScreenTemplate from '../../../../src/components/ScreenTemplate';
-import FloatingButton from '../../../../src/components/FloatingButton';
+import ScreenTemplate from '@common_components/ScreenTemplate';
+import FloatingButton from '@common_components/FloatingButton';
 import { usePolls } from '../../../../src/hooks/usePolls';
 
 export default function VoteScreen() {

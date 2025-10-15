@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { Button, Text, Icon } from '@ui-kitten/components';
-import ScreenTemplate from '../../../../../src/components/ScreenTemplate';
+import ScreenTemplate from '@common_components/ScreenTemplate';
 import { useThemeColors } from '../../../../../src/hooks/useThemeColors';
 import { usePlans } from '../../../../../src/hooks/usePlans';
 import { formatFullDateHour } from '../../../../../src/utils/formatDate';

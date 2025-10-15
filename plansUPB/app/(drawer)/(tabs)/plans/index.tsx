@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { TabView, Tab } from '@ui-kitten/components';
 import PlanList from './components/PlanList';
-import ScreenTemplate from '../../../../src/components/ScreenTemplate';
-import FloatingButton from '../../../../src/components/FloatingButton';
+import ScreenTemplate from '@common_components/ScreenTemplate';
+import FloatingButton from '@common_components/FloatingButton';
 import usePlans from '../../../../src/hooks/usePlans';
 import CreatePlanModal from './components/CreatePlanModal';
 

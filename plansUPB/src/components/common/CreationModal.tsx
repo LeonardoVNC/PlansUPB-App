@@ -1,7 +1,7 @@
+import { ReactNode } from 'react';
 import { Modal, ScrollView, View, TouchableOpacity } from 'react-native';
 import { Card, Button, Text, Icon, Divider } from '@ui-kitten/components';
-import { useThemeColors } from '../hooks/useThemeColors';
-import { ReactNode } from 'react';
+import { useThemeColors } from '@hooks/useThemeColors';
 
 interface CreationModalProps {
     visible: boolean;

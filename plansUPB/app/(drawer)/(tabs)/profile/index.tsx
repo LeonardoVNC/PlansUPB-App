@@ -4,7 +4,7 @@ import { globalStyles } from '../../../../src/styles/globals';
 import { useThemeStore } from '../../../../src/store/useThemeStore';
 import { useThemeColors } from '../../../../src/hooks/useThemeColors';
 import { ThemeColors } from '../../../../src/styles/colors';
-import ScreenTemplate from '../../../../src/components/ScreenTemplate';
+import ScreenTemplate from '@common_components/ScreenTemplate';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function ProfileScreen() {

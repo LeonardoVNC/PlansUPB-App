@@ -1,5 +1,5 @@
 import { Button, Icon } from "@ui-kitten/components";
-import { useThemeColors } from "../hooks/useThemeColors";
+import { useThemeColors } from "@hooks/useThemeColors";
 
 interface FloatingButtonProps {
     onPress: () => void;

@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { SafeAreaView, ScrollView, StatusBar } from 'react-native';
-import { globalStyles } from '../styles/globals';
-import { useThemeColors } from '../hooks/useThemeColors';
+import { globalStyles } from '@styles/globals';
+import { useThemeColors } from '@hooks/useThemeColors';
 
 interface TemplateProps {
     children: ReactNode;
