@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import ScreenTemplate from '@common_components/ScreenTemplate';
-import PostList from './components/PostList';
-import PostFilters from './components/PostFilters';
-import CreatePostModal from './components/CreatePostModal';
 import FloatingButton from '@common_components/FloatingButton';
-import { usePosts } from '../../../../src/hooks/usePosts';
-import { usePostFilters } from '../../../../src/hooks/usePostFilters';
-import { useUserStore } from '../../../../src/store/useUserStore';
+import { usePosts } from '@hooks/usePosts';
+import { usePostFilters } from '@hooks/usePostFilters';
+import PostList from '@screen_components/home/PostList';
+import PostFilters from '@screen_components/home/PostFilters';
+import CreatePostModal from '@screen_components/home/CreatePostModal';
+import { useUserStore } from '@store/useUserStore';
 
 export default function HomeScreen() {
     const [modalVisible, setModalVisible] = useState(false);

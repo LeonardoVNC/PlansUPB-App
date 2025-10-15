@@ -1,9 +1,9 @@
 import React from 'react';
 import { FlatList, View } from 'react-native';
 import { Text, Icon } from '@ui-kitten/components';
-import PostCard from './PostCard';
-import { Post } from '../../../../../src/interfaces/post.interfaces';
-import { useThemeColors } from '../../../../../src/hooks/useThemeColors';
+import { Post } from '@interfaces/post.interfaces';
+import { useThemeColors } from '@hooks/useThemeColors';
+import PostCard from '@screen_components/home/PostCard';
 
 interface PostListProps {
     posts: Post[];

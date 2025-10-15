@@ -1,8 +1,8 @@
 import React from 'react';
 import { Modal, ScrollView, View, TouchableOpacity } from 'react-native';
 import { Card, Input, Button, Text, Icon, Divider } from '@ui-kitten/components';
-import { useThemeColors } from '../../../../../src/hooks/useThemeColors';
-import { useCreatePost } from '../../../../../src/hooks/useCreatePost';
+import { useCreatePost } from '@hooks/useCreatePost';
+import { useThemeColors } from '@hooks/useThemeColors';
 
 interface CreatePostModalProps {
     visible: boolean;

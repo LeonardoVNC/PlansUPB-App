@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Text, Icon } from '@ui-kitten/components';
 import { View, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
-import { Post } from '../../../../../src/interfaces/post.interfaces';
-import { useThemeColors } from '../../../../../src/hooks/useThemeColors';
-import { formatFullDateHour } from '../../../../../src/utils/formatDate';
-import { usePosts } from '../../../../../src/hooks/usePosts';
+import { Card, Text, Icon } from '@ui-kitten/components';
+import { Post } from '@interfaces/post.interfaces';
+import { usePosts } from '@hooks/usePosts';
+import { useThemeColors } from '@hooks/useThemeColors';
+import { formatFullDateHour } from '@utils/formatDate';
 
 export default function PostCard({ post }: { post: Post }) {
     const { colors } = useThemeColors();
