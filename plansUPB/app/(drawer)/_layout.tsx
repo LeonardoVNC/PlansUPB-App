@@ -1,10 +1,10 @@
 import React from 'react';
-import { Drawer } from 'expo-router/drawer';
-import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { useRouter } from 'expo-router';
-import { useUserStore } from '../../src/store/useUserStore';
-import { useThemeColors } from '../../src/hooks/useThemeColors';
+import { Drawer } from 'expo-router/drawer';
+import { useUserStore } from '@store/useUserStore';
+import { useThemeColors } from '@hooks/useThemeColors';
 
 const CustomDrawerContent = (props: any) => {
     const router = useRouter();

@@ -5,8 +5,8 @@ import { StatusBar } from 'expo-status-bar';
 import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import * as eva from '@eva-design/eva';
-import { useThemeStore } from '../src/store/useThemeStore';
-import { mappingLight, mappingDark } from '../src/styles/mappings';
+import { useThemeStore } from '@store/useThemeStore'
+import { mappingLight, mappingDark } from '@styles/mappings';
 
 const getEvaTheme = (theme: 'light' | 'dark') => {
   const base = theme === 'dark' ? eva.dark : eva.light;
