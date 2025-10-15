@@ -23,7 +23,7 @@ function PlanDetailScreen() {
 
     if (!plan) {
         return (
-            <ScreenTemplate title="Plan no encontrado" subtitle="El plan solicitado no existe">
+            <ScreenTemplate>
                 <View style={{ justifyContent: 'center', alignItems: 'center', padding: 20 }}>
                     <Icon name="alert-triangle-outline" pack="eva" fill={colors.danger} style={{ width: 64, height: 64, marginBottom: 16 }} />
                     <Text category="h6" style={{ color: colors.text, textAlign: 'center', marginBottom: 8 }}>
@@ -38,7 +38,7 @@ function PlanDetailScreen() {
     }
 
     return (
-        <ScreenTemplate title={plan.title} subtitle={formatFullDateHour(plan.date)}>
+        <ScreenTemplate>
             <View>
                 <PlanTitleCard plan={plan}/>
                 

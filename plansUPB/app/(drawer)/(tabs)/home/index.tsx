@@ -31,7 +31,7 @@ export default function HomeScreen() {
     };
 
     return (
-        <ScreenTemplate title='Publicaciones' subtitle='Comparte con la comunidad UPB'>
+        <ScreenTemplate omitScroll>
             <View style={{ flex: 1 }}>
                 <PostFilters
                     searchQuery={searchQuery}

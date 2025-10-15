@@ -19,15 +19,8 @@ export default function VoteScreen() {
         await createPoll(pollData);
     };
 
-    const data = [
-        { label: 'Mis Encuestas', polls: myPolls, subtitle: `${myPolls.length} encuestas creadas` },
-        { label: 'Todas', polls: allPolls, subtitle: `${allPolls.length} encuestas disponibles` },
-    ];
-
-    const activeTab = data[selectedIndex];
-
     return (
-        <ScreenTemplate title="Encuestas" subtitle={activeTab.subtitle}>
+        <ScreenTemplate omitScroll>
             <TabView
                 style={{ flex: 1, marginTop: 8 }}
                 selectedIndex={selectedIndex}

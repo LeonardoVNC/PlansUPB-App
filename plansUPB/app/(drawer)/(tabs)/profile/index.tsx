@@ -13,7 +13,7 @@ export default function ProfileScreen() {
     const styles = React.useMemo(() => createStyles(colors), [colors]);
 
     return (
-        <ScreenTemplate title='Mi Perfil' subtitle='Detalles sobre tu perfil'>
+        <ScreenTemplate>
             <>
                 <View style={styles.profileCard}>
                     <View style={styles.profileHeader}>

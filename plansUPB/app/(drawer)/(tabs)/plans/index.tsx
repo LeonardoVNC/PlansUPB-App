@@ -12,17 +12,9 @@ export default function PlansScreen() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const data = [
-    { label: 'Mis Planes', plans: managedPlans, subtitle: `${managedPlans.length} planes administrados` },
-    { label: 'Invitaciones', plans: filteredPlans, subtitle: `${filteredPlans.length} invitaciones pendientes` },
-  ];
-
-  const activeTab = data[selectedIndex];
-
   return (
     <ScreenTemplate
-      title="Planes"
-      subtitle={activeTab.subtitle}
+      omitScroll
       floatingButton={<FloatingButton onPress={() => setModalVisible(true)} iconName="plus" />}
     >
       <TabView
