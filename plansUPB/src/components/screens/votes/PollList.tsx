@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { FlatList, View } from 'react-native';
 import { Icon, Text } from '@ui-kitten/components';
-import { Poll } from "../../../../../src/interfaces/vote.interfaces";
-import { useThemeColors } from '../../../../../src/hooks/useThemeColors';
+import { Poll } from "@interfaces/vote.interfaces";
+import { useThemeColors } from '@hooks/useThemeColors';
 import PollCard from './PollCard';
 
 function PollList({ polls }: { polls: Poll[] }) {

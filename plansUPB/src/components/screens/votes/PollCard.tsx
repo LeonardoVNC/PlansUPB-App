@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Card, Divider, Text, ProgressBar, CheckBox, Icon } from '@ui-kitten/components';
 import { View, TouchableOpacity } from 'react-native';
-import { Poll } from '../../../../../src/interfaces/vote.interfaces';
-import { useThemeColors } from '../../../../../src/hooks/useThemeColors';
-import { formatFullDateHour } from '../../../../../src/utils/formatDate';
-import { usePolls } from '../../../../../src/hooks/usePolls';
+import { Card, Divider, Text, ProgressBar, CheckBox, Icon } from '@ui-kitten/components';
+import { usePolls } from '@hooks/usePolls';
+import { useThemeColors } from '@hooks/useThemeColors';
+import { Poll } from '@interfaces/vote.interfaces';
+import { formatFullDateHour } from '@utils/formatDate';
 
 export default function PollCard({ poll }: { poll: Poll }) {
     const { colors } = useThemeColors();

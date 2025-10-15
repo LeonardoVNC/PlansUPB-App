@@ -1,9 +1,8 @@
 import React from 'react';
-import { Modal, ScrollView, View, TouchableOpacity } from 'react-native';
+import { Modal, ScrollView, View, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
 import { Card, Input, Button, Text, CheckBox, Icon, Divider } from '@ui-kitten/components';
-import { useThemeColors } from '../../../../../src/hooks/useThemeColors';
-import { useCreatePoll } from '../../../../../src/hooks/useCreatePoll';
-import { StyleProp, ViewStyle } from 'react-native';
+import { useCreatePoll } from '@hooks/useCreatePoll';
+import { useThemeColors } from '@hooks/useThemeColors';
 
 interface CreatePollModalProps {
     visible: boolean;
@@ -14,7 +13,7 @@ interface CreatePollModalProps {
 
 export default function CreatePollModal({ visible, onClose, onCreatePoll, userCode }: CreatePollModalProps) {
     const { colors } = useThemeColors();
-    
+
     const {
         formData,
         updateField,
@@ -28,7 +27,7 @@ export default function CreatePollModal({ visible, onClose, onCreatePoll, userCo
     const handleCreate = async () => {
         const pollData = await preparePollData(userCode);
         if (!pollData) return;
-        
+
         onCreatePoll(pollData);
         resetForm();
         onClose();
@@ -46,11 +45,11 @@ export default function CreatePollModal({ visible, onClose, onCreatePoll, userCo
             transparent={true}
             onRequestClose={onClose}
         >
-            <View style={{ 
-                flex: 1, 
-                backgroundColor: 'rgba(0,0,0,0.5)', 
-                justifyContent: 'center', 
-                padding: 16 
+            <View style={{
+                flex: 1,
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                justifyContent: 'center',
+                padding: 16
             }}>
                 <Card style={{ maxHeight: '90%', borderRadius: 16 }}>
                     <ScrollView showsVerticalScrollIndicator={false}>
