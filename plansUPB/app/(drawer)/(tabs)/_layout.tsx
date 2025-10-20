@@ -57,19 +57,6 @@ const TabsLayout = () => {
           ),
         }}
       />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Mi perfil',
-          tabBarIcon: ({ color, focused, size }) => (
-            <Ionicons
-              name={focused ? 'person' : 'person-outline'}
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
     </Tabs>
   );
 };

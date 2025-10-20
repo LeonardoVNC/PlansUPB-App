@@ -1,11 +1,11 @@
 import React from 'react';
 import { Text, View, Switch, StyleSheet } from 'react-native';
-import { globalStyles } from '../../../../src/styles/globals';
-import { useThemeStore } from '../../../../src/store/useThemeStore';
-import { useThemeColors } from '../../../../src/hooks/useThemeColors';
-import { ThemeColors } from '../../../../src/styles/colors';
-import ScreenTemplate from '@common_components/ScreenTemplate';
 import { Ionicons } from '@expo/vector-icons';
+import ScreenTemplate from '@common_components/ScreenTemplate';
+import { useThemeColors } from '@hooks/useThemeColors';
+import { useThemeStore } from '@store/useThemeStore';
+import { globalStyles } from '@styles/globals';
+import { ThemeColors } from '@styles/colors';
 
 export default function ProfileScreen() {
     const { theme, colors } = useThemeColors();
@@ -33,7 +33,7 @@ export default function ProfileScreen() {
                             <Ionicons name="pencil" size={20} color={colors.text} />
                         </View>
                         <Text style={styles.infoText}>Comunicacion</Text>
-                        
+
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>Mi Descripción:</Text>
                             <Ionicons name="pencil" size={20} color={colors.text} />

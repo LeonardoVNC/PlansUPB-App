@@ -72,6 +72,13 @@ const DrawerLayout = () => {
                     drawerLabel: 'Página Principal',
                 }}
             />
+            <Drawer.Screen
+                name="profile"
+                options={{
+                    title: 'Mi perfil',
+                    drawerLabel: 'Mi perfil',
+                }}
+            />
         </Drawer>
     );
 };
