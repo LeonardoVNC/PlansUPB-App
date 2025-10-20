@@ -7,7 +7,7 @@ import CreatePlanModal from '@screen_components/plans/CreatePlanModal';
 import PlanList from '@screen_components/plans/PlanList';
 import usePlans from '@hooks/usePlans';
 
-export default function PlansScreen() {
+export default function GeneralPlansScreen() {
   const { managedPlans, filteredPlans } = usePlans();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);

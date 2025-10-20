@@ -32,9 +32,9 @@ const TabsLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="plans"
+        name="plans_general"
         options={{
-          title: 'Planes',
+          title: 'Planes Generales',
           tabBarIcon: ({ color, focused, size }) => (
             <Ionicons
               name={focused ? 'calendar' : 'calendar-outline'}
@@ -44,6 +44,33 @@ const TabsLayout = () => {
           ),
         }}
       />
+      <Tabs.Screen
+        name="plans_fav"
+        options={{
+          title: 'Planes Guardados',
+          tabBarIcon: ({ color, focused, size }) => (
+            <Ionicons
+              name={focused ? 'calendar' : 'calendar-outline'}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="plans_self"
+        options={{
+          title: 'Planes Mios',
+          tabBarIcon: ({ color, focused, size }) => (
+            <Ionicons
+              name={focused ? 'calendar' : 'calendar-outline'}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      {/* Quiza haya que quitarlo */}
       <Tabs.Screen
         name="votes"
         options={{
