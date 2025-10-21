@@ -21,10 +21,10 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="home"
         options={{
-          title: 'Inicio',
+          title: 'Discusiones',
           tabBarIcon: ({ color, focused, size }) => (
             <Ionicons
-              name={focused ? 'home' : 'home-outline'}
+              name={focused ? 'chatbubbles' : 'chatbubbles-outline'}
               size={size}
               color={color}
             />
@@ -34,20 +34,7 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="plans_general"
         options={{
-          title: 'Planes Generales',
-          tabBarIcon: ({ color, focused, size }) => (
-            <Ionicons
-              name={focused ? 'calendar' : 'calendar-outline'}
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="plans_fav"
-        options={{
-          title: 'Planes Guardados',
+          title: 'Todos los Planes',
           tabBarIcon: ({ color, focused, size }) => (
             <Ionicons
               name={focused ? 'calendar' : 'calendar-outline'}
@@ -60,7 +47,33 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="plans_self"
         options={{
-          title: 'Planes Mios',
+          title: 'Mis Planes',
+          tabBarIcon: ({ color, focused, size }) => (
+            <Ionicons
+              name={focused ? 'file-tray' : 'file-tray-outline'}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="plans_fav"
+        options={{
+          title: 'Planes Guardados',
+          tabBarIcon: ({ color, focused, size }) => (
+            <Ionicons
+              name={focused ? 'bookmarks' : 'bookmarks-outline'}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="plans"
+        options={{
+          title: 'Detalles',
           tabBarIcon: ({ color, focused, size }) => (
             <Ionicons
               name={focused ? 'calendar' : 'calendar-outline'}
