@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { Input, Icon } from '@ui-kitten/components';
+import { Input, Icon, Select, SelectItem, IndexPath } from '@ui-kitten/components';
 import CreationModal from '@common_components/CreationModal';
 import usePlans from '@hooks/usePlans';
 import { Plan } from '@interfaces/plans.interfaces';
@@ -18,14 +18,23 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
     const [title, setTitle] = useState("")
     const [category, setCategory] = useState("")
     const [description, setDescription] = useState("")
+    const [selectedIndex, setSelectedIndex] = useState<IndexPath | null>(null);
     const [date, setDate] = useState(new Date());
     const [isDatePickerVisible, setIsDatePickerVisible] = useState(false)
     const [isValidInfo, setIsValidInfo] = useState(false)
 
+    const categories = ["Comida", "Cine", "Juegos", "Estudio", "Otro"]
+
     useEffect(() => {
         const isDateValid = !isNaN(date.getTime());
-        setIsValidInfo(title.trim().length > 0 && description.trim().length > 0 && isDateValid);
-    }, [title, description, date]);
+        setIsValidInfo(
+            !!user &&
+            title.trim().length > 0 &&
+            category.trim().length > 0 &&
+            description.trim().length > 0 &&
+            isDateValid
+        );
+    }, [user, title, category, description, date]);
 
     const handleSubmit = () => {
         if (!isValidInfo || !user) {
@@ -53,6 +62,8 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
         setTitle("");
         setDescription("");
         setDate(new Date());
+        setCategory("");
+        setSelectedIndex(null);
     };
 
     return (
@@ -86,15 +97,26 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
                 numberOfLines={4}
                 textStyle={{ minHeight: 80, lineHeight: 20 }}
             />
-            <Input
+
+            <Select
                 label="Categoría"
-                placeholder="Ej: Cine"
-                value={category}
-                onChangeText={setCategory}
+                placeholder="Selecciona una categoria"
+                selectedIndex={selectedIndex ?? undefined}
+                onSelect={(index) => {
+                    const i = index as IndexPath;
+                    setSelectedIndex(i);
+                    setCategory(categories[i.row]);
+                }}
                 style={{ marginBottom: 8 }}
+                value={category.trim()}
                 status={category.trim() ? 'success' : 'basic'}
-                accessoryLeft={<Icon name="edit-2-outline" pack="eva" />}
-            />
+                accessoryLeft={<Icon name="bookmark-outline" pack="eva" />}
+            >
+                {categories.map((c) => (
+                    <SelectItem title={c} key={c} />
+                ))}
+            </Select>
+
             <Input
                 label="Fecha y Hora"
                 value={formatSimpleDateHour(date)}
