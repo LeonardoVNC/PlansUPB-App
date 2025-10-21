@@ -3,7 +3,7 @@ export interface Plan {
     ownerCode: string,
     title: string,
     categoryId: string,
-    placeId?: string, 
+    placeId?: string,
     date: Date,
     description: string,
     cover?: number,
@@ -21,4 +21,9 @@ export interface PlanConfirmation {
 export interface PlanStatus {
     id: string,
     description: string,
+}
+
+export interface PlanSave {
+    planId: string,
+    userCode: string,
 }

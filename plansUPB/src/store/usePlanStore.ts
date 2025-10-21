@@ -1,15 +1,17 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Plan, PlanConfirmation } from '../interfaces/plans.interfaces';
+import { Plan, PlanConfirmation, PlanSave } from '../interfaces/plans.interfaces';
 import { mockPlans, mockConfirmations } from '../data/plans.mock';
 
 interface PlanState {
     plans: Plan[];
     confirmations: PlanConfirmation[];
+    saves: PlanSave[];
 
     addPlan: (plan: Plan) => void;
     addConfirmation: (confirmation: PlanConfirmation) => void;
+    addSave: (planSave: PlanSave) => void;
 
     updatePlan: (id: string, updates: Partial<Plan>) => void;
     updateConfirmation: (planId: string, userId: string, update: Partial<PlanConfirmation>) => void;
@@ -20,6 +22,7 @@ export const usePlanStore = create<PlanState>()(
         (set, get) => ({
             plans: mockPlans,
             confirmations: mockConfirmations,
+            saves: [],
 
             addPlan: async (plan: Plan) => {
                 set((state) => ({
@@ -39,6 +42,11 @@ export const usePlanStore = create<PlanState>()(
                     current.push(confirmation);
                 }
                 set({ confirmations: current })
+            },
+            addSave: (planSave) => {
+                set((state) => ({
+                    saves: [...state.saves, {...planSave}]
+                }))
             },
 
             updatePlan: (id, update) => set((state) => ({

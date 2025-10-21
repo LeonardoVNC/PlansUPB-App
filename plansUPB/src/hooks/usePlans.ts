@@ -1,33 +1,58 @@
-import { useEffect, useState } from 'react';
-import { Plan } from '../interfaces/plans.interfaces';
-import { generateUUID } from '../utils/idGenerator';
-import { usePlanStore } from '../store/usePlanStore';
-import { useUserStore } from '../store/useUserStore';
+import { useCallback, useEffect, useState } from 'react';
+import { Plan, PlanConfirmation, PlanSave } from '@interfaces/plans.interfaces';
+import { generateUUID } from '@utils/idGenerator';
+import { usePlanStore } from '@store/usePlanStore';
+import { useUserStore } from '@store/useUserStore';
 
 export const usePlans = () => {
+    const [allPlansList, setAllPlansList] = useState<Plan[]>([])
     const [managedPlans, setManagedPlans] = useState<Plan[]>([])
-    const [filteredPlans, setFilteredPlans] = useState<Plan[]>([])
-    const { plans, confirmations, addPlan, addConfirmation, updatePlan, updateConfirmation } = usePlanStore();
+    const [invPlansList, setInvPlansList] = useState<Plan[]>([])
+    const [savedPlansList, setSavedPlansList] = useState<Plan[]>([])
+    const { plans, confirmations, saves, addPlan, addConfirmation, addSave, 
+        updatePlan, updateConfirmation } = usePlanStore();
     const { user } = useUserStore();
 
     //Denme una DB por favor ;-;
     useEffect(() => {
-        const filtered = plans.filter((plan) => { return plan.owner === user?.code })
-        setManagedPlans(filtered)
-    }, [plans])
+        if (!user) return;
 
-    useEffect(() => {
+        setAllPlansList(plans)
+        setManagedPlans(filteredManagedPlans(plans))
+        setInvPlansList(filteredInvPlans(confirmations))
+        setSavedPlansList(filteredSavedPlans(saves))
+    }, [plans, confirmations, saves, user])
+
+    const filteredManagedPlans = useCallback((allPlans: Plan[]) => {
+        const filtered = allPlans.filter((plan) => { return plan.ownerCode === user?.code })
+        return filtered
+    }, [plans, user])
+
+    const filteredInvPlans = useCallback((confirmations: PlanConfirmation[]) => {
         const filtered: Plan[] = [];
         confirmations.forEach((confirmation) => {
-            if (confirmation.userId === user?.code) {
+            if (confirmation.userCode === user?.code) {
                 const plan = getPlanById(confirmation.planId)
                 if (plan) {
                     filtered.push(plan)
                 }
             }
         })
-        setFilteredPlans(filtered)
-    }, [confirmations])
+        return filtered
+    }, [confirmations, user])
+
+    const filteredSavedPlans = useCallback((saves: PlanSave[]) => {
+        const filtered: Plan[] = [];
+        saves.forEach((save) => {
+            if (save.userCode === user?.code) {
+                const plan = getPlanById(save.planId)
+                if (plan) {
+                    filtered.push(plan)
+                }
+            }
+        })
+        return filtered
+    }, [saves, user])
 
     const createPlan = async (plan: Omit<Plan, "id">) => {
         const id = await generateUUID();
@@ -40,8 +65,10 @@ export const usePlans = () => {
     }
 
     return {
+        allPlansList,
         managedPlans,
-        filteredPlans,
+        invPlansList,
+        savedPlansList,
         createPlan,
         getPlanById,
     }
