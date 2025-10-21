@@ -16,6 +16,7 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
     const { user } = useUserStore();
     const { createPlan } = usePlans();
     const [title, setTitle] = useState("")
+    const [category, setCategory] = useState("")
     const [description, setDescription] = useState("")
     const [date, setDate] = useState(new Date());
     const [isDatePickerVisible, setIsDatePickerVisible] = useState(false)
@@ -31,11 +32,12 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
             return
         }
         const values: Omit<Plan, 'id'> = {
+            ownerCode: user?.code,
             title: title.trim(),
-            description: description.trim(),
+            category: category.trim(),
             date,
-            owner: user?.code,
-            done: false
+            description: description.trim(),
+            status: 'open'
         }
         createPlan(values);
         resetForm();
@@ -85,6 +87,15 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
                 textStyle={{ minHeight: 80, lineHeight: 20 }}
             />
             <Input
+                label="Categoría"
+                placeholder="Ej: Cine"
+                value={category}
+                onChangeText={setCategory}
+                style={{ marginBottom: 8 }}
+                status={category.trim() ? 'success' : 'basic'}
+                accessoryLeft={<Icon name="edit-2-outline" pack="eva" />}
+            />
+            <Input
                 label="Fecha y Hora"
                 value={formatSimpleDateHour(date)}
                 placeholder="Selecciona fecha y hora"
@@ -94,6 +105,7 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
                 status={isValidInfo ? 'success' : 'basic'}
                 accessoryLeft={<Icon name="calendar-outline" pack="eva" />}
             />
+            {/* Falta place, cover y poll  aun */}
 
             <DateTimePickerModal
                 isVisible={isDatePickerVisible}
