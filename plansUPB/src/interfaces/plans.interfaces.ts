@@ -3,7 +3,7 @@ export interface Plan {
     ownerCode: string,
     title: string,
     categoryId: string,
-    placeId: string, 
+    placeId?: string, 
     date: Date,
     description: string,
     cover?: number,

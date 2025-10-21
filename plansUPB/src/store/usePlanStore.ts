@@ -30,7 +30,7 @@ export const usePlanStore = create<PlanState>()(
                 const current = get().confirmations;
                 const index = current.findIndex((c) =>
                     c.planId === confirmation.planId &&
-                    c.userId === confirmation.userId
+                    c.userCode === confirmation.userCode
                 );
 
                 if (index !== -1) {
@@ -46,7 +46,7 @@ export const usePlanStore = create<PlanState>()(
             })),
             updateConfirmation: (planId, userId, update) => set((state) => ({
                 confirmations: state.confirmations.map((c) => (
-                    c.planId === planId && c.userId === userId ? { ...c, ...update } : c
+                    c.planId === planId && c.userCode === userId ? { ...c, ...update } : c
                 ))
             }))
         }),
