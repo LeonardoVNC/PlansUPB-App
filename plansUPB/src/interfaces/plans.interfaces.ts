@@ -1,15 +1,24 @@
 export interface Plan {
     id: string,
-    owner: string;
+    ownerCode: string,
     title: string,
-    description: string,
+    categoryId: string,
+    placeId: string, 
     date: Date,
-    done?: boolean
+    description: string,
+    cover: number,
+    statusId: string,
+    pollId: string,
 }
 
 export interface PlanConfirmation {
     planId: string,
-    userId: string,
+    userCode: string,
     confirmed?: boolean,
     comment?: string,
+}
+
+export interface PlanStatus {
+    id: string,
+    description: string,
 }
