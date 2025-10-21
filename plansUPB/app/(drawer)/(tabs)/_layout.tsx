@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { BottomTabBar } from '@react-navigation/bottom-tabs';
 import { useThemeColors } from '@hooks/useThemeColors';
 
 const TabsLayout = () => {
@@ -16,6 +17,26 @@ const TabsLayout = () => {
           backgroundColor: colors.tabBarBackground,
           borderTopColor: colors.border,
         },
+      }}
+      tabBar={(props) => {
+        const visibleRoutes = props.state.routes.filter(
+          (route) => !['plans', 'votes'].includes(route.name)
+        );
+        const visibleIndices = visibleRoutes.map(route =>
+          props.state.routes.findIndex(r => r.key === route.key)
+        );
+        const visibleDescriptors = Object.fromEntries(
+          Object.entries(props.descriptors).filter(([key, descriptor]) =>
+            visibleIndices.includes(descriptor.route.key ? props.state.routes.findIndex(r => r.key === descriptor.route.key) : -1)
+          )
+        );
+        return (
+          <BottomTabBar
+            {...props}
+            state={{ ...props.state, routes: visibleRoutes, index: 0 }}
+            descriptors={visibleDescriptors}
+          />
+        );
       }}
     >
       <Tabs.Screen
@@ -70,31 +91,17 @@ const TabsLayout = () => {
           ),
         }}
       />
+
       <Tabs.Screen
         name="plans"
         options={{
-          title: 'Detalles',
-          tabBarIcon: ({ color, focused, size }) => (
-            <Ionicons
-              name={focused ? 'calendar' : 'calendar-outline'}
-              size={size}
-              color={color}
-            />
-          ),
+          tabBarButton: () => null,
         }}
       />
-      {/* Quiza haya que quitarlo */}
       <Tabs.Screen
         name="votes"
         options={{
-          title: 'Mis Votos',
-          tabBarIcon: ({ color, focused, size }) => (
-            <Ionicons
-              name={focused ? 'file-tray-full' : 'file-tray-full-outline'}
-              size={size}
-              color={color}
-            />
-          ),
+          tabBarButton: () => null,
         }}
       />
     </Tabs>
