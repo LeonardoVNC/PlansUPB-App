@@ -2,12 +2,14 @@ export interface Plan {
     id: string,
     ownerCode: string,
     title: string,
-    categoryId: string,
-    placeId?: string,
+    category: string,
+    placeName: string,
+    placeLat: number,
+    placeLng: number,
     date: Date,
     description: string,
     cover?: number,
-    statusId: string,
+    status: string,
     pollId?: string,
 }
 
@@ -16,11 +18,6 @@ export interface PlanConfirmation {
     userCode: string,
     confirmed?: boolean,
     comment?: string,
-}
-
-export interface PlanStatus {
-    id: string,
-    description: string,
 }
 
 export interface PlanSave {

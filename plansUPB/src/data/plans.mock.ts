@@ -1,33 +1,30 @@
-import { Plan, PlanConfirmation, PlanStatus } from '@interfaces/plans.interfaces';
-
-export const mockPlanStatus: PlanStatus[] = [
-    {id: '1', description: 'draft'},
-    {id: '2', description: 'open'},
-    {id: '3', description: 'closed'},
-    {id: '4', description: 'canceled'}
-]
+import { Plan, PlanConfirmation } from '@interfaces/plans.interfaces';
 
 export const mockPlans: Plan[] = [
     {
         id: '1',
         ownerCode: '8080',
         title: 'Plan test',
-        categoryId: '4',
-        placeId: '1',
+        category: 'Estudio',
+        placeName: 'Multicine',
+        placeLat: -16.51069892816923,
+        placeLng: -68.12209527707684,
         date: new Date('2024-11-20T20:00:00'),
         description: 'Pequeño plan de prueba para comprobar que todo funcione más o menos como se espera',
         cover: 10.0,
-        statusId: '2'
+        status: 'open'
     },
     {
         id: '2',
         ownerCode: '7070',
         title: 'Plan test 2',
-        categoryId: '1',
-        placeId: '2',
+        category: 'Comida',
+        placeName: 'Multicine',
+        placeLat: -16.511000182385946,
+        placeLng: -68.12455582784277,
         date: new Date('2024-11-25T20:00:00'),
         description: 'Pequeño plan de prueba para comprobar que todo funcione más o menos como se espera, ahora es personal',
-        statusId: '2'
+        status: 'open'
     },
 ]
 
