@@ -62,7 +62,7 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="plans_general"
         options={{
-          title: 'Todos los Planes',
+          title: 'Planes',
           tabBarIcon: ({ color, focused, size }) => (
             <Ionicons
               name={focused ? 'calendar' : 'calendar-outline'}
@@ -86,9 +86,22 @@ const TabsLayout = () => {
         }}
       />
       <Tabs.Screen
+        name="plans_invs"
+        options={{
+          title: 'Invitaciones',
+          tabBarIcon: ({ color, focused, size }) => (
+            <Ionicons
+              name={focused ? 'mail' : 'mail-outline'}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="plans_fav"
         options={{
-          title: 'Planes Guardados',
+          title: 'Guardados',
           tabBarIcon: ({ color, focused, size }) => (
             <Ionicons
               name={focused ? 'bookmarks' : 'bookmarks-outline'}
