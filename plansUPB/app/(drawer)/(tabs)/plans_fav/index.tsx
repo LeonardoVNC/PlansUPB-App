@@ -1,22 +1,17 @@
-import React, { useState } from 'react';
-import FloatingButton from '@common_components/FloatingButton';
+import React from 'react';
+import { View } from 'react-native';
 import ScreenTemplate from '@common_components/ScreenTemplate';
-import CreatePlanModal from '@screen_components/plans/CreatePlanModal';
-import { Text } from 'react-native';
+import usePlans from '@hooks/usePlans';
+import PlanList from '@screen_components/plans/PlanList';
 
 export default function FavoritePlansScreen() {
-  const [modalVisible, setModalVisible] = useState(false);
+  const { savedPlansList } = usePlans();
 
   return (
-    <ScreenTemplate
-      omitScroll
-      floatingButton={<FloatingButton onPress={() => setModalVisible(true)} iconName="plus" />}
-    >
-      <Text>Aqui van los planes favoritos</Text>
-      <CreatePlanModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-      />
+    <ScreenTemplate omitScroll >
+      <View style={{ flex: 1, padding: 12 }}>
+        <PlanList plans={savedPlansList} />
+      </View>
     </ScreenTemplate>
   );
 }

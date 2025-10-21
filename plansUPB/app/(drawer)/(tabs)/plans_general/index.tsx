@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { TabView, Tab } from '@ui-kitten/components';
 import FloatingButton from '@common_components/FloatingButton';
 import ScreenTemplate from '@common_components/ScreenTemplate';
+import usePlans from '@hooks/usePlans';
 import CreatePlanModal from '@screen_components/plans/CreatePlanModal';
 import PlanList from '@screen_components/plans/PlanList';
-import usePlans from '@hooks/usePlans';
 
 export default function GeneralPlansScreen() {
-  const { managedPlans, filteredPlans } = usePlans();
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const { allPlansList } = usePlans();
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
@@ -17,23 +15,9 @@ export default function GeneralPlansScreen() {
       omitScroll
       floatingButton={<FloatingButton onPress={() => setModalVisible(true)} iconName="plus" />}
     >
-      <TabView
-        style={{ flex: 1, marginTop: 8 }}
-        selectedIndex={selectedIndex}
-        onSelect={setSelectedIndex}
-      >
-        <Tab title="Mis Planes">
-          <View style={{ flex: 1, marginTop: 8 }}>
-            <PlanList plans={managedPlans} />
-          </View>
-        </Tab>
-
-        <Tab title="Invitaciones">
-          <View style={{ flex: 1 }}>
-            <PlanList plans={filteredPlans} />
-          </View>
-        </Tab>
-      </TabView>
+      <View style={{ flex: 1, padding: 12 }}>
+        <PlanList plans={allPlansList} />
+      </View>
 
       <CreatePlanModal
         visible={modalVisible}
