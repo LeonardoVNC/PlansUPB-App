@@ -22,18 +22,25 @@ const TabsLayout = () => {
         const visibleRoutes = props.state.routes.filter(
           (route) => !['plans', 'votes'].includes(route.name)
         );
+        
         const visibleIndices = visibleRoutes.map(route =>
           props.state.routes.findIndex(r => r.key === route.key)
         );
+        
         const visibleDescriptors = Object.fromEntries(
           Object.entries(props.descriptors).filter(([key, descriptor]) =>
             visibleIndices.includes(descriptor.route.key ? props.state.routes.findIndex(r => r.key === descriptor.route.key) : -1)
           )
         );
+
+        const activeRouteKey = props.state.routes[props.state.index]?.key;
+        const newIndex = visibleRoutes.findIndex(route => route.key === activeRouteKey);
+        const finalIndex = Math.max(0, newIndex);
+
         return (
           <BottomTabBar
             {...props}
-            state={{ ...props.state, routes: visibleRoutes, index: 0 }}
+            state={{ ...props.state, routes: visibleRoutes, index: finalIndex }}
             descriptors={visibleDescriptors}
           />
         );
