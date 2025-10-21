@@ -6,9 +6,9 @@ export interface Plan {
     placeId: string, 
     date: Date,
     description: string,
-    cover: number,
+    cover?: number,
     statusId: string,
-    pollId: string,
+    pollId?: string,
 }
 
 export interface PlanConfirmation {

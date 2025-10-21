@@ -1,45 +1,36 @@
-import { Plan, PlanConfirmation } from '../interfaces/plans.interfaces';
+import { Plan, PlanConfirmation, PlanStatus } from '@interfaces/plans.interfaces';
+
+export const mockPlanStatus: PlanStatus[] = [
+    {id: '1', description: 'draft'},
+    {id: '2', description: 'open'},
+    {id: '3', description: 'closed'},
+    {id: '4', description: 'canceled'}
+]
 
 export const mockPlans: Plan[] = [
     {
         id: '1',
-        owner: '8080',
-        title: 'Momento semana hamburguesa o algo asi',
-        description: 'Reunión para comer hamburguesas y rompernos el bolsillo',
-        date: new Date('2024-10-18T20:00:00'),
-        done: false,
+        ownerCode: '8080',
+        title: 'Plan test',
+        categoryId: '4',
+        placeId: '1',
+        date: new Date('2024-11-20T20:00:00'),
+        description: 'Pequeño plan de prueba para comprobar que todo funcione más o menos como se espera',
+        cover: 10.0,
+        statusId: '2'
     },
     {
         id: '2',
-        owner: '8080',
-        title: 'Peli al multi',
-        description: 'Vamo a ver una peli',
-        date: new Date('2024-10-20T20:00:00'),
-        done: false,
+        ownerCode: '7070',
+        title: 'Plan test 2',
+        categoryId: '1',
+        placeId: '2',
+        date: new Date('2024-11-25T20:00:00'),
+        description: 'Pequeño plan de prueba para comprobar que todo funcione más o menos como se espera, ahora es personal',
+        statusId: '2'
     },
-    {
-        id: '3',
-        owner: '1234', 
-        title: 'Estudiar para App Redes',
-        description: 'Nos vamos a poner a estudiar para el examen pq si no nos va a comer el tiempo pipipi',
-        date: new Date('2024-10-15T15:00:00'),
-        done: true,
-    },
-    {
-        id: '4',
-        owner: '5678',
-        title: 'Invadir el bloque A',
-        description: 'Vamos a invadir las aulas de FACED a ver si dejan de mandarnos a Obrajes todo el semestre :c',
-        date: new Date('2024-10-25T16:00:00'),
-        done: false,
-    },
-];
+]
 
 export const mockConfirmations: PlanConfirmation[] = [
-    { planId: '1', userId: '8080', confirmed: true },
-    { planId: '1', userId: '1234', confirmed: false, comment: 'Comentario general de prueba en plan hola' },
-    { planId: '2', userId: '8080', confirmed: true },
-    { planId: '3', userId: '8080', confirmed: true, comment: 'Procede a comentar*' },
-    { planId: '4', userId: '1234', confirmed: true },
+    { planId: '2', userCode: '8080', confirmed: true, comment: 'Ahi nos vidrios bleh' }
 ];
-
