@@ -1,13 +1,20 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { Card, Icon, Layout, Text } from "@ui-kitten/components";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { Plan } from "@interfaces/plans.interfaces";
 import { globalStyles } from "@styles/globals";
-import { formatWeekDay, formatDate, formatHour } from '@utils/formatDate';
+import { formatWeekDay, formatDate, formatHour, getRelativeDate } from '@utils/formatDate';
 
 function PlanDateCard({ plan }: { plan: Plan }) {
+    const [isCloseDate, setIsCloseDate] = useState(false)
     const { colors, theme } = useThemeColors();
+
+    useEffect(() => {
+        const diffTime = plan.date.getTime() - new Date().getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+        setIsCloseDate(diffDays >= 0 && diffDays <= 7)
+    }, [plan.date])
 
     const CardRow = ({ icon, title, text }: { icon: string, title: string, text: string }) => {
         return (
@@ -28,15 +35,20 @@ function PlanDateCard({ plan }: { plan: Plan }) {
     const rows = useMemo(() => {
         return (
             <>
-                <CardRow
-                    icon="calendar-outline"
-                    title="Día de la semana"
-                    text={formatWeekDay(plan.date).charAt(0).toUpperCase() + formatWeekDay(plan.date).slice(1)}
-                />
+                {!isCloseDate && (
+                    <>
+                        <CardRow
+                            icon="calendar-outline"
+                            title="Día de la semana"
+                            text={formatWeekDay(plan.date).charAt(0).toUpperCase() + formatWeekDay(plan.date).slice(1)}
+                        />
+
+                    </>
+                )}
                 <CardRow
                     icon="calendar-outline"
                     title="Fecha"
-                    text={formatDate(plan.date)}
+                    text={isCloseDate ? getRelativeDate(plan.date) : formatDate(plan.date)}
                 />
                 <CardRow
                     icon="clock-outline"
@@ -45,7 +57,7 @@ function PlanDateCard({ plan }: { plan: Plan }) {
                 />
             </>
         )
-    }, [plan, theme])
+    }, [plan.date, theme, isCloseDate])
 
     return (
         <Card
