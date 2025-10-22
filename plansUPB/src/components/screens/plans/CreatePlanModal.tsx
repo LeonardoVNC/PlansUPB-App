@@ -10,11 +10,12 @@ import { formatSimpleDateHour } from '@utils/formatDate';
 interface CreatePlanModalProps {
     visible: boolean;
     onClose: () => void;
+    plan?: Plan;
 }
 
-export default function CreatePlanModal({ visible, onClose }: CreatePlanModalProps) {
+export default function CreatePlanModal({ visible, onClose, plan }: CreatePlanModalProps) {
     const { user } = useUserStore();
-    const { createPlan } = usePlans();
+    const { createPlan, updatePlan } = usePlans()
     const [title, setTitle] = useState("")
     const [category, setCategory] = useState("")
     const [description, setDescription] = useState("")
@@ -25,6 +26,18 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
     const [isValidInfo, setIsValidInfo] = useState(false)
 
     const categories = ["Comida", "Cine", "Juegos", "Estudio", "Otro"]
+
+    useEffect(() => {
+        if (plan) {
+            setTitle(plan.title || "");
+            setCategory(plan.category || "");
+            setDescription(plan.description || "");
+            setDate(plan.date ? new Date(plan.date) : new Date());
+            setCover(plan.cover ? String(plan.cover) : "")
+            const index = categories.indexOf(plan.category);
+            setSelectedIndex(new IndexPath(index));
+        }
+    }, [plan]);
 
     useEffect(() => {
         const isDateValid = !isNaN(date.getTime());
@@ -38,30 +51,56 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
     }, [user, title, category, description, date]);
 
     const handleSubmit = () => {
-        if (!isValidInfo || !user) {
-            return
+        if (!isValidInfo || !user) return;
+
+        if (plan) {
+            handleUpdate();
+        } else {
+            handleCreation();
         }
+        resetForm();
+        onClose();
+    };
+
+    const handleCreation = () => {
+        if (!user) return
 
         let values: Omit<Plan, 'id'> = {
-            ownerCode: user?.code,
+            ownerCode: user.code,
             title: title.trim(),
             category: category.trim(),
             date,
             description: description.trim(),
             status: 'open'
-        }
+        };
         if (cover) {
             const coverNumber = parseFloat(cover);
             if (isNaN(coverNumber)) {
-                console.error("Cover con valor inválido")
-                return
+                console.error("Cover con valor inválido");
+                return;
             }
-            values = {...values, cover: coverNumber}
+            values = { ...values, cover: coverNumber };
         }
         createPlan(values);
-        resetForm();
-        onClose();
-    };
+    }
+
+    const handleUpdate = () => {
+        if (!plan || !user) return
+
+        const coverNumber = cover ? parseFloat(cover) : undefined;
+        if (cover && isNaN(coverNumber as number)) {
+            console.error("Cover con valor inválido");
+            return;
+        }
+        const updated: Partial<Plan> = {
+            title: title.trim(),
+            category: category.trim(),
+            date,
+            description: description.trim(),
+            ...(cover && { cover: coverNumber }),
+        };
+        updatePlan(plan.id, updated);
+    }
 
     const handleCancel = () => {
         resetForm();
@@ -83,8 +122,8 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
             onSubmit={handleSubmit}
             onClose={onClose}
             onCancel={handleCancel}
-            title='Proponer un plan'
-            confirmText='Crear Plan'
+            title={!!plan ? 'Editar plan' : 'Proponer un plan'}
+            confirmText={!!plan ? 'Guardar cambios' : 'Crear Plan'}
             confirmDisabled={!isValidInfo}
         >
             <Input

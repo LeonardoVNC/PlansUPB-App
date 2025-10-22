@@ -71,6 +71,7 @@ export const usePlans = () => {
         savedPlansList,
         createPlan,
         getPlanById,
+        updatePlan,
     }
 }
 
