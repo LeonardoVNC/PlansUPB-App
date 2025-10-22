@@ -71,7 +71,7 @@ export default function CreatePlanModal({ visible, onClose, plan }: CreatePlanMo
             category: category.trim(),
             date,
             description: description.trim(),
-            status: 'open'
+            status: 'draft'
         };
         if (cover) {
             const coverNumber = parseFloat(cover);

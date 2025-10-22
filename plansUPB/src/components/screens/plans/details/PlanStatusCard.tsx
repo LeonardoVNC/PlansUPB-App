@@ -5,8 +5,9 @@ import { useThemeColors } from "@hooks/useThemeColors";
 import { Plan } from "@interfaces/plans.interfaces";
 import { cardStatusMap, iconStatusMap, labelStatusMap } from "@styles/planStatusMap";
 import { globalStyles } from "@styles/globals";
+import PlanStatusActions from "./PlanStatusActions";
 
-function PlanStatusCard({ plan }: { plan: Plan }) {
+function PlanStatusCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolean }) {
     const { colors } = useThemeColors();
     const [statusColor, setStatusColor] = useState<string>()
     const [status, setStatus] = useState<string>()
@@ -31,7 +32,7 @@ function PlanStatusCard({ plan }: { plan: Plan }) {
 
     const changeStatusColor = () => {
         if (plan.status === 'draft') {
-            setStatusColor(colors.muted)
+            setStatusColor(colors.warning)
         } else if (plan.status === 'open') {
             setStatusColor(colors.primary)
         } else if (plan.status === 'closed') {
@@ -75,6 +76,8 @@ function PlanStatusCard({ plan }: { plan: Plan }) {
                     {statusLabel}
                 </Text>
             </View>
+
+            {isOwner && (<PlanStatusActions plan={plan} />)}
         </Card>
     );
 }
