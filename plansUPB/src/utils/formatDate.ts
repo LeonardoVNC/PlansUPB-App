@@ -41,3 +41,14 @@ export const formatHour = (date: string | Date) => {
         minute: '2-digit'
     });
 };
+
+export const getRelativeDate = (date: Date): string => {
+    const now = new Date();
+    const diffTime = date.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return 'Pasado';
+    if (diffDays === 0) return 'Hoy';
+    if (diffDays === 1) return 'Mañana';
+    if (diffDays <= 7) return `En ${diffDays} días`;
+    return formatFullDateHour(date);
+};
