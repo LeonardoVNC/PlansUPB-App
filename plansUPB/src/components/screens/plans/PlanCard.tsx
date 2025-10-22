@@ -4,18 +4,12 @@ import { Card, Divider, Text } from '@ui-kitten/components';
 import Chip from '@common_components/Chip';
 import { useThemeColors } from '@hooks/useThemeColors';
 import { Plan } from '@interfaces/plans.interfaces';
+import { cardStatusMap } from '@styles/planStatusMap';
 import { getRelativeDate } from '@utils/formatDate';
 
 export default function PlanCard({ plan }: { plan: Plan }) {
     const router = useRouter();
     const { colors } = useThemeColors();
-
-    const statusMap: Map<string, string> = new Map([
-        ['draft', 'warning'],
-        ['open', 'primary'],
-        ['closed', 'success'],
-        ['cancelled', 'danger']
-    ])
 
     //TODO-Quiza haya que sacar este navigate, es raro tener uno estático en componente
     const handlePress = () => {
@@ -26,7 +20,7 @@ export default function PlanCard({ plan }: { plan: Plan }) {
         <Card
             style={{ marginBottom: 16, borderRadius: 12, elevation: 2 }}
             onPress={handlePress}
-            status={statusMap.get(plan.status)}
+            status={cardStatusMap.get(plan.status)}
         >
             <Text category="h6" style={{ color: colors.text, marginBottom: 8 }}>
                 {plan.title}
