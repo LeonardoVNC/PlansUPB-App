@@ -14,7 +14,7 @@ export default function PlanCard({ plan }: { plan: Plan }) {
         ['draft', 'warning'],
         ['open', 'primary'],
         ['closed', 'success'],
-        ['canceled', 'danger']
+        ['cancelled', 'danger']
     ])
 
     //TODO-Quiza haya que sacar este navigate, es raro tener uno estático en componente
@@ -24,7 +24,7 @@ export default function PlanCard({ plan }: { plan: Plan }) {
 
     return (
         <Card
-            style={{ marginBottom: 16, borderRadius: 12 }}
+            style={{ marginBottom: 16, borderRadius: 12, elevation: 2 }}
             onPress={handlePress}
             status={statusMap.get(plan.status)}
         >

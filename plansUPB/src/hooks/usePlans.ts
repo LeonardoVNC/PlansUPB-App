@@ -9,9 +9,13 @@ export const usePlans = () => {
     const [managedPlans, setManagedPlans] = useState<Plan[]>([])
     const [invPlansList, setInvPlansList] = useState<Plan[]>([])
     const [savedPlansList, setSavedPlansList] = useState<Plan[]>([])
-    const { plans, confirmations, saves, addPlan, addConfirmation, addSave, 
+    const { plans, confirmations, saves, addPlan, addConfirmation, addSave,
         updatePlan, updateConfirmation } = usePlanStore();
     const { user } = useUserStore();
+
+    useEffect(() => {
+        plans.forEach((plan) => checkExpiredPlan(plan))
+    }, [])
 
     //Denme una DB por favor ;-;
     useEffect(() => {
@@ -54,6 +58,12 @@ export const usePlans = () => {
         return filtered
     }, [saves, user])
 
+    const checkExpiredPlan = (plan: Plan) => {
+        if (plan.status === 'open' && new Date(plan.date) < new Date()) {
+            changePlanStatus(plan.id, 'cancelled')
+        }
+    };
+
     const createPlan = async (plan: Omit<Plan, "id">) => {
         const id = await generateUUID();
         const newPlan: Plan = { id, ...plan }
@@ -64,6 +74,10 @@ export const usePlans = () => {
         return plans.find((p) => p.id === id);
     }
 
+    const changePlanStatus = (planId: string, status: string) => {
+        updatePlan(planId, { status })
+    }
+
     return {
         allPlansList,
         managedPlans,
@@ -72,6 +86,8 @@ export const usePlans = () => {
         createPlan,
         getPlanById,
         updatePlan,
+        checkExpiredPlan,
+        changePlanStatus,
     }
 }
 
