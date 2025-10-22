@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { Input, Icon, Select, SelectItem, IndexPath } from '@ui-kitten/components';
+import { Input, Icon, Select, SelectItem, IndexPath, Divider, Text } from '@ui-kitten/components';
 import CreationModal from '@common_components/CreationModal';
 import usePlans from '@hooks/usePlans';
 import { Plan } from '@interfaces/plans.interfaces';
@@ -20,6 +20,7 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
     const [description, setDescription] = useState("")
     const [selectedIndex, setSelectedIndex] = useState<IndexPath | null>(null);
     const [date, setDate] = useState(new Date());
+    const [cover, setCover] = useState("");
     const [isDatePickerVisible, setIsDatePickerVisible] = useState(false)
     const [isValidInfo, setIsValidInfo] = useState(false)
 
@@ -40,13 +41,22 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
         if (!isValidInfo || !user) {
             return
         }
-        const values: Omit<Plan, 'id'> = {
+
+        let values: Omit<Plan, 'id'> = {
             ownerCode: user?.code,
             title: title.trim(),
             category: category.trim(),
             date,
             description: description.trim(),
             status: 'open'
+        }
+        if (cover) {
+            const coverNumber = parseFloat(cover);
+            if (isNaN(coverNumber)) {
+                console.error("Cover con valor inválido")
+                return
+            }
+            values = {...values, cover: coverNumber}
         }
         createPlan(values);
         resetForm();
@@ -63,6 +73,7 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
         setDescription("");
         setDate(new Date());
         setCategory("");
+        setCover("");
         setSelectedIndex(null);
     };
 
@@ -127,7 +138,24 @@ export default function CreatePlanModal({ visible, onClose }: CreatePlanModalPro
                 status={isValidInfo ? 'success' : 'basic'}
                 accessoryLeft={<Icon name="calendar-outline" pack="eva" />}
             />
-            {/* Falta place, cover y poll  aun */}
+
+            <Divider style={{ marginVertical: 6 }} />
+
+            <Input
+                label="Cover"
+                value={cover}
+                placeholder='0'
+                onChangeText={(text) => {
+                    const numericText = text.replace(/[^0-9.]/g, '');
+                    setCover(numericText);
+                }}
+                keyboardType="numeric"
+                style={{ marginBottom: 8 }}
+                accessoryLeft={<Icon name="credit-card-outline" pack="eva" />}
+                accessoryRight={<Text style={{ fontSize: 16 }}>Bs.</Text>}
+            />
+
+            {/* Falta place, y poll  aun */}
 
             <DateTimePickerModal
                 isVisible={isDatePickerVisible}
