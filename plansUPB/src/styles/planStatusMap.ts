@@ -11,3 +11,10 @@ export const iconStatusMap: Map<string, string> = new Map ([
     ['closed', 'checkmark-circle-2-outline'],
     ['cancelled', 'close-outline']
 ])
+
+export const labelStatusMap: Map<string, string> = new Map ([
+    ['draft', 'Borrador'],
+    ['open', 'Abierto'],
+    ['closed', 'Realizado'],
+    ['cancelled', 'Cancelado']
+])
