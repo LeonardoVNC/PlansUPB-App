@@ -4,6 +4,7 @@ import { Card, Icon, Text } from "@ui-kitten/components";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { Plan } from "@interfaces/plans.interfaces";
 import { cardStatusMap, iconStatusMap, labelStatusMap } from "@styles/planStatusMap";
+import { globalStyles } from "@styles/globals";
 
 function PlanStatusCard({ plan }: { plan: Plan }) {
     const { colors } = useThemeColors();
@@ -17,16 +18,16 @@ function PlanStatusCard({ plan }: { plan: Plan }) {
                 name={iconStatusMap.get(plan.status)}
                 pack="eva"
                 fill={statusColor}
-                style={{ width: 32, height: 32 }}
+                style={{ width: 20, height: 20 }}
             />
-        )
-    }, [plan, statusColor])
+        );
+    }, [plan.status, statusColor])
 
     useEffect(() => {
         changeStatusColor();
         setStatus(cardStatusMap.get(plan.status))
         setStatusLabel(labelStatusMap.get(plan.status))
-    }, [plan])
+    }, [plan.status])
 
     const changeStatusColor = () => {
         if (plan.status === 'draft') {
@@ -42,7 +43,7 @@ function PlanStatusCard({ plan }: { plan: Plan }) {
 
     return (
         <Card
-            style={{ marginBottom: 24, padding: 16, borderRadius: 12 }}
+            style={globalStyles().app_card}
             status={status}
             disabled
         >
@@ -53,14 +54,16 @@ function PlanStatusCard({ plan }: { plan: Plan }) {
             <View
                 style={{
                     flexDirection: 'row',
-                    gap: 8,
                     justifyContent: 'center',
-                    marginBottom: 8,
+                    backgroundColor: statusColor + '20',
                     alignItems: 'center',
-                    borderRadius: 12,
+                    marginBottom: 8,
                     paddingVertical: 4,
-                    backgroundColor: statusColor + '20'
-                }}>
+                    gap: 8,
+                    borderRadius: 12,
+                    overflow: 'hidden',
+                }}
+            >
                 {mainIcon}
                 <Text
                     category="h6"

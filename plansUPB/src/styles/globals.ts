@@ -72,5 +72,10 @@ export const globalStyles = () => {
       fontSize: 18,
       fontWeight: 'bold',
     },
+    app_card: {
+      marginBottom: 24, 
+      padding: 16, 
+      borderRadius: 12
+    }
   });
 }

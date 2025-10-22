@@ -2,12 +2,17 @@ import { View } from "react-native";
 import { Card, Icon, Layout, Text } from "@ui-kitten/components";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { User } from "@interfaces/user.interfaces";
+import { globalStyles } from "@styles/globals";
 
 function PlanOwnerCard({ owner }: { owner: User }) {
     const { colors } = useThemeColors();
 
     return (
-        <Card style={{ marginBottom: 20, padding: 16 }} status="basic" disabled>
+        <Card 
+            style={globalStyles().app_card}
+            status="basic" 
+            disabled
+        >
             <Layout style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                 <Icon name="person-outline" pack="eva" fill={colors.primary} style={{ width: 32, height: 32 }} />
                 <View style={{ flex: 1 }}>

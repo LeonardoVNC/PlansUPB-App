@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { Card, Icon, Layout, Text } from "@ui-kitten/components";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { Plan } from "@interfaces/plans.interfaces";
+import { globalStyles } from "@styles/globals";
 import { formatWeekDay, formatDate, formatHour } from '@utils/formatDate';
 
 function PlanDateCard({ plan }: { plan: Plan }) {
@@ -27,19 +28,19 @@ function PlanDateCard({ plan }: { plan: Plan }) {
     const rows = useMemo(() => {
         return (
             <>
-                <CardRow 
-                    icon="calendar-outline" 
-                    title="Día de la semana" 
+                <CardRow
+                    icon="calendar-outline"
+                    title="Día de la semana"
                     text={formatWeekDay(plan.date).charAt(0).toUpperCase() + formatWeekDay(plan.date).slice(1)}
                 />
-                <CardRow 
-                    icon="calendar-outline" 
-                    title="Fecha" 
+                <CardRow
+                    icon="calendar-outline"
+                    title="Fecha"
                     text={formatDate(plan.date)}
                 />
-                <CardRow 
-                    icon="clock-outline" 
-                    title="Hora" 
+                <CardRow
+                    icon="clock-outline"
+                    title="Hora"
                     text={formatHour(plan.date)}
                 />
             </>
@@ -47,7 +48,11 @@ function PlanDateCard({ plan }: { plan: Plan }) {
     }, [plan, theme])
 
     return (
-        <Card style={{ marginBottom: 20, padding: 16 }} status="basic" disabled>
+        <Card
+            style={globalStyles().app_card}
+            status="basic"
+            disabled
+        >
             <Layout style={{ flexDirection: 'column', gap: 12 }}>
                 {rows}
             </Layout>
