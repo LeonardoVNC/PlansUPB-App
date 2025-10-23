@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { View } from "react-native";
 import { Card, Icon, Text } from "@ui-kitten/components";
+import BigChip from "@common_components/BigChip";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { Plan } from "@interfaces/plans.interfaces";
-import { cardStatusMap, iconStatusMap, labelStatusMap } from "@styles/planStatusMap";
 import { globalStyles } from "@styles/globals";
+import { cardStatusMap, iconStatusMap, labelStatusMap } from "@styles/planStatusMap";
 import PlanStatusActions from "./PlanStatusActions";
 
 function PlanStatusCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolean }) {
@@ -52,31 +52,8 @@ function PlanStatusCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boole
                 Estado del plan
             </Text>
 
-            <View
-                style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    backgroundColor: statusColor + '20',
-                    alignItems: 'center',
-                    marginBottom: 8,
-                    paddingVertical: 4,
-                    gap: 8,
-                    borderRadius: 12,
-                    overflow: 'hidden',
-                }}
-            >
-                {mainIcon}
-                <Text
-                    category="h6"
-                    style={{
-                        color: statusColor,
-                        fontSize: 18,
-                    }}
-                >
-                    {statusLabel}
-                </Text>
-            </View>
-
+            <BigChip icon={mainIcon} color={statusColor || ""} text={statusLabel || ""} />
+            
             {isOwner && (<PlanStatusActions plan={plan} />)}
         </Card>
     );

@@ -1,11 +1,11 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Card, Text } from "@ui-kitten/components";
+import BigChip from "@common_components/BigChip";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { Plan } from "@interfaces/plans.interfaces";
-import { cardStatusMap } from '@styles/planStatusMap';
 import { globalStyles } from "@styles/globals";
+import { cardStatusMap } from '@styles/planStatusMap';
 import PlanCategory from "./PlanCategory";
-import { View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
 function PlanTitleCard({ plan }: { plan: Plan }) {
     const { colors } = useThemeColors();
@@ -22,24 +22,20 @@ function PlanTitleCard({ plan }: { plan: Plan }) {
 
             <PlanCategory category={plan.category} />
 
-            <Text category="p1" style={{ color: colors.muted, lineHeight: 24, textAlign: 'justify' }}>
+            <Text category="p1" style={{ color: colors.muted, lineHeight: 24, textAlign: 'justify', marginBottom: 8 }}>
                 {plan.description}
             </Text>
 
             {plan.cover && (
-                <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, justifyContent: 'center', margin: 6}}>
-                    <Ionicons
+                <BigChip
+                    icon={<Ionicons
                         name='cash-outline'
                         size={24}
-                        color={colors.subtitle}
-                    />
-                    <Text
-                        category="s4"
-                        style={{ color: colors.subtitle, textAlign: 'center' }}
-                    >
-                        {typeof plan.cover === 'number' ? plan.cover.toFixed(2) : parseFloat(plan.cover).toFixed(2)} Bs.
-                    </Text>
-                </View>
+                        color={colors.success}
+                    />}
+                    color={colors.success}
+                    text={`${typeof plan.cover === 'number' ? plan.cover.toFixed(2) : parseFloat(plan.cover).toFixed(2)} Bs.`}
+                />
             )}
         </Card>
     );
