@@ -6,7 +6,7 @@ import { Card, Layout, Text, Button } from "@ui-kitten/components";
 import { useEffect, useState } from "react";
 import { View, Linking, Alert } from "react-native";
 
-function PlanPlaceCard({ plan }: { plan: Plan }) {
+function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolean }) {
     const [hasPlace, setHasPlace] = useState(false)
     const { colors } = useThemeColors()
 
@@ -55,9 +55,9 @@ function PlanPlaceCard({ plan }: { plan: Plan }) {
                 </View>
 
                 <Layout style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Text 
-                        category="p1" 
-                        style={{ color: colors.subtitle, fontSize: 16, fontWeight: '500', flex: 1 }}
+                    <Text
+                        category="p1"
+                        style={{ color: colors.subtitle, fontSize: 16, fontWeight: '500', ...(isOwner || hasPlace ? {} : { textAlign: 'center' }) }}
                     >
                         {hasPlace && plan.place ? plan.place.name : 'Sin lugar definido'}
                     </Text>
@@ -71,7 +71,7 @@ function PlanPlaceCard({ plan }: { plan: Plan }) {
                         >
                             Abrir ubicación
                         </Button>
-                    ) : (
+                    ) : isOwner && (
                         <Button
                             onPress={handleFormPlace}
                             status="info"
