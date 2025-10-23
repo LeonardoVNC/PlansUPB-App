@@ -9,6 +9,7 @@ import PlanDateCard from '@screen_components/plans/details/PlanDateCard';
 import PlanOwnerCard from '@screen_components/plans/details/PlanOwnerCard';
 import PlanStatusCard from '@screen_components/plans/details/PlanStatusCard';
 import PlanTitleCard from '@screen_components/plans/details/PlanTitleCard';
+import PlanPlaceCard from '@screen_components/plans/details/PlanPlaceCard';
 
 function PlanDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -45,7 +46,11 @@ function PlanDetailScreen() {
 
                 <PlanDateCard plan={plan} />
 
+                {/* Agregar el prop isOwner, necesitamos los datos del user actual */}
                 <PlanStatusCard plan={plan} />
+                
+                {/* prop isOwner x2 */}
+                <PlanPlaceCard plan={plan}/>
             </View>
         </ScreenTemplate>
     );
