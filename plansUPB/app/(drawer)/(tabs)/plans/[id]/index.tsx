@@ -21,6 +21,7 @@ function PlanDetailScreen() {
     const { getPlanById } = usePlans();
     const { user } = useUserStore();
     const [isOwner, setIsOwner] = useState(false)
+    const [isAdmin, setIsAdmin] = useState(false)
     const [showModal, setShowModal] = useState(false)
 
     const plan = useMemo(() => {
@@ -32,6 +33,10 @@ function PlanDetailScreen() {
         const planOwnerCode = plan?.ownerCode
         setIsOwner(userCode === planOwnerCode)
     }, [user, plan])
+
+    useEffect(() => {
+        setIsAdmin(user?.role === 'Admin')
+    }, [user])
 
     if (!plan) {
         return (
@@ -52,7 +57,7 @@ function PlanDetailScreen() {
     return (
         <ScreenTemplate
             floatingButton={
-                isOwner && plan.status === 'draft' ?
+                isOwner && plan.status === 'draft' || isAdmin ?
                     <FloatingButton onPress={() => { setShowModal(true) }} iconName='edit' /> : <></>
             }
         >
@@ -63,13 +68,13 @@ function PlanDetailScreen() {
 
                 <PlanDateCard plan={plan} />
 
-                <PlanStatusCard plan={plan} isOwner={isOwner} />
+                <PlanStatusCard plan={plan} isOwner={isOwner || isAdmin} />
 
                 <PlanPlaceCard plan={plan} isOwner={isOwner} />
             </View>
 
             <CreatePlanModal
-                visible={showModal && isOwner}
+                visible={showModal && (isOwner || isAdmin)}
                 onClose={() => setShowModal(false)}
                 plan={plan}
             />
