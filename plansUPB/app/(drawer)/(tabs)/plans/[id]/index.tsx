@@ -77,7 +77,10 @@ function PlanDetailScreen() {
             <View>
                 <PlanTitleCard plan={plan} />
 
-                {/* <PlanOwnerCard owner={}/> */}
+                {/* Mock temporal, nos falta obtener el user por su id dxdx, igual hay q cambiar a !isOwner */}
+                {isOwner && user && (
+                    <PlanOwnerCard owner={user} />
+                )}
 
                 <PlanDateCard plan={plan} />
 
