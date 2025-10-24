@@ -10,7 +10,7 @@ export const usePlans = () => {
     const [invPlansList, setInvPlansList] = useState<Plan[]>([])
     const [savedPlansList, setSavedPlansList] = useState<Plan[]>([])
     const { plans, confirmations, saves, addPlan, addConfirmation, addSave,
-        updatePlan, updateConfirmation } = usePlanStore();
+        updatePlan, updateConfirmation, removeSave } = usePlanStore();
     const { user } = useUserStore();
 
     useEffect(() => {
@@ -78,6 +78,27 @@ export const usePlans = () => {
         updatePlan(planId, { status })
     }
 
+    const savePlan = (planId: string) => {
+        if (!user) return
+
+        const save: PlanSave = {
+            planId,
+            userCode: user.code
+        }
+        addSave(save)
+    }
+
+    const unsavePlan = (planId: string) => {
+        if (!user) return
+
+        removeSave(planId, user.code)
+    }
+
+    const isPlanSaved = (planId: string) => {
+        if (!user) return false;
+        return saves.some(s => s.planId === planId && s.userCode === user.code);
+    }
+
     return {
         allPlansList,
         managedPlans,
@@ -88,6 +109,9 @@ export const usePlans = () => {
         updatePlan,
         checkExpiredPlan,
         changePlanStatus,
+        savePlan,
+        unsavePlan,
+        isPlanSaved,
     }
 }
 

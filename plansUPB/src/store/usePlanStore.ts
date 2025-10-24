@@ -15,6 +15,8 @@ interface PlanState {
 
     updatePlan: (id: string, updates: Partial<Plan>) => void;
     updateConfirmation: (planId: string, userId: string, update: Partial<PlanConfirmation>) => void;
+
+    removeSave: (planId: string, userCode: string) => void;
 }
 
 export const usePlanStore = create<PlanState>()(
@@ -47,6 +49,12 @@ export const usePlanStore = create<PlanState>()(
                 set((state) => ({
                     saves: [...state.saves, {...planSave}]
                 }))
+            },
+
+            removeSave: (planId, userCode) => {
+                set((state) => ({
+                    saves: state.saves.filter(s => !(s.planId === planId && s.userCode === userCode))
+                }));
             },
 
             updatePlan: (id, update) => set((state) => ({
