@@ -47,3 +47,9 @@ export const getUserByUid = async (uid: string) => {
     }
     return snapshot.data() as UserProfile;
 };
+
+export const getAllUsers = async () => {
+    const { getDocs } = await import('firebase/firestore');
+    const snapshot = await getDocs(collection(db, USER_DOCUMENT));
+    return snapshot.docs.map(doc => doc.data() as UserProfile);
+};

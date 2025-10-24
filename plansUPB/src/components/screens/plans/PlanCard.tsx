@@ -8,14 +8,18 @@ import { cardStatusMap } from '@styles/planStatusMap';
 import { getRelativeDate } from '@utils/formatDate';
 import usePlans from '@hooks/usePlans';
 import { Ionicons } from '@expo/vector-icons';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
+import SharePlanModal from './SharePlanModal';
+import { useUserStore } from '@store/useUserStore';
 
 export default function PlanCard({ plan }: { plan: Plan }) {
     const router = useRouter();
     const { colors } = useThemeColors();
-    const { savePlan, unsavePlan, isPlanSaved } = usePlans();
+    const { savePlan, unsavePlan, isPlanSaved, addConfirmation } = usePlans();
+    const { user } = useUserStore();
     const [saved, setSaved] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [shareModalVisible, setShareModalVisible] = useState(false)
 
     useEffect(() => {
         setSaved(isPlanSaved(plan.id))
@@ -26,7 +30,8 @@ export default function PlanCard({ plan }: { plan: Plan }) {
         router.replace(`plans/${plan.id}`)
     };
 
-    const handleSavePress = () => {
+    const handleSavePress = (e: any) => {
+        e.stopPropagation();
         if (loading) return
 
         setLoading(true)
@@ -40,12 +45,37 @@ export default function PlanCard({ plan }: { plan: Plan }) {
         setLoading(false)
     }
 
+    const handleSharePress = (e: any) => {
+        e.stopPropagation();
+        setShareModalVisible(true);
+    };
+
+    const handleShare = (userCodes: string[]) => {
+        if (!user) return;
+
+        userCodes.forEach((userCode: string) => {
+            addConfirmation({
+                planId: plan.id,
+                userCode: userCode,
+                confirmed: false,
+            });
+        });
+    };
+
     return (
-        <Card
-            style={{ marginBottom: 16, borderRadius: 12, elevation: 2 }}
-            onPress={handlePress}
-            status={cardStatusMap.get(plan.status)}
-        >
+        <>
+            <SharePlanModal
+                visible={shareModalVisible}
+                onClose={() => setShareModalVisible(false)}
+                onShare={handleShare}
+                planId={plan.id}
+                planTitle={plan.title}
+            />
+            <Card
+                style={{ marginBottom: 16, borderRadius: 12, elevation: 2 }}
+                onPress={handlePress}
+                status={cardStatusMap.get(plan.status)}
+            >
             <Text category="h6" style={{ color: colors.text, marginBottom: 8 }}>
                 {plan.title}
             </Text>
@@ -68,13 +98,25 @@ export default function PlanCard({ plan }: { plan: Plan }) {
                     Fecha: {getRelativeDate(plan.date)}
                 </Text>
 
-                <Ionicons
-                    name={saved ? 'bookmark' : 'bookmark-outline'}
-                    color={saved ? colors.subtitle : colors.muted}
-                    size={22}
-                    onPress={handleSavePress}
-                />
+                <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+                    <TouchableOpacity onPress={handleSharePress}>
+                        <Ionicons
+                            name="share-outline"
+                            color={colors.primary}
+                            size={22}
+                        />
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity onPress={handleSavePress}>
+                        <Ionicons
+                            name={saved ? 'bookmark' : 'bookmark-outline'}
+                            color={saved ? colors.subtitle : colors.muted}
+                            size={22}
+                        />
+                    </TouchableOpacity>
+                </View>
             </View>
         </Card>
+        </>
     );
 }
