@@ -24,6 +24,18 @@
       ],
       "@utils/*": [
         "utils/*"
+      ],
+      "@context/*": [
+        "context/*"
+      ],
+      "@services/*": [
+        "services/*"
+      ],
+      "@config/*": [
+        "config/*"
+      ],
+      "@types/*": [
+        "types/*"
       ]
     }
   }
