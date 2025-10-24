@@ -4,14 +4,21 @@ import { Icon, Text } from '@ui-kitten/components';
 import { useThemeColors } from '@hooks/useThemeColors';
 import { Plan } from "@interfaces/plans.interfaces";
 import PlanCard from './PlanCard';
+import PollCard from '../votes/PollCard';
+import { usePlanStore } from '@store/usePlanStore';
 
 function PlanList({ plans }: { plans: Plan[] }) {
     const { colors } = useThemeColors();
+    const { getPollByPlanId } = usePlanStore();
 
-    const renderPlanCard = ({ item }: { item: any }) => {
+    const renderPlanCard = ({ item }: { item: Plan }) => {
+        const poll = item.pollId ? getPollByPlanId(item.id) : null;
+
         return (
-            <PlanCard plan={item} />
-        )
+            <PlanCard plan={item}>
+                {poll && <PollCard poll={poll} />}
+            </PlanCard>
+        );
     }
 
     const listEmpty = useMemo(() => {
