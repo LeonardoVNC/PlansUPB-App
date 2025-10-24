@@ -1,12 +1,17 @@
 import { useState } from 'react';
 import { generateUUID } from '../utils/idGenerator';
 
+export type CloseCriteria = 'deadline' | 'quorum' | 'none';
+export type TiebreakMethod = 'oldest_first' | 'creator_decides';
+
 export interface CreatePollData {
   question: string;
   description: string;
   allowMultiple: boolean;
-  hasCloseDate: boolean;
-  closeDays: string;
+  closeCriteria: CloseCriteria; // 'deadline' | 'quorum'
+  closeDate?: Date;
+  quorumCount: string;
+  tiebreakMethod: TiebreakMethod; // 'oldest_first' | 'creator_decides'
   options: string[];
 }
 
@@ -15,8 +20,10 @@ export const useCreatePoll = (initialState?: Partial<CreatePollData>) => {
     question: '',
     description: '',
     allowMultiple: false,
-    hasCloseDate: false,
-    closeDays: '7',
+    closeCriteria: 'none',
+    closeDate: undefined,
+    quorumCount: '8',
+    tiebreakMethod: 'oldest_first',
     options: ['', ''],
     ...initialState
   });
@@ -29,7 +36,7 @@ export const useCreatePoll = (initialState?: Partial<CreatePollData>) => {
     (value: string) => updateField(field, value);
 
   const addOption = () => {
-    if (formData.options.length < 10) {
+    if (formData.options.length < 5) {
       setFormData(prev => ({
         ...prev,
         options: [...prev.options, '']
@@ -67,7 +74,7 @@ export const useCreatePoll = (initialState?: Partial<CreatePollData>) => {
     return true;
   };
 
-  const preparePollData = async (userCode: string) => {
+  const preparePollData = async (planId?: string) => {
     if (!validateForm()) return null;
 
     const validOptions = formData.options.filter(opt => opt.trim() !== '');
@@ -80,16 +87,23 @@ export const useCreatePoll = (initialState?: Partial<CreatePollData>) => {
     );
 
     return {
+      id: await generateUUID(),
+      planId,
       question: formData.question.trim(),
       description: formData.description.trim() || undefined,
       allowMultiple: formData.allowMultiple,
       createdAt: new Date(),
-      closesAt: formData.hasCloseDate 
-        ? new Date(Date.now() + parseInt(formData.closeDays) * 24 * 60 * 60 * 1000)
+      closesAt: formData.closeCriteria === 'deadline' && formData.closeDate 
+        ? formData.closeDate
         : undefined,
       options: pollOptions,
       votes: [],
-      createdBy: userCode,
+      closeCriteria: formData.closeCriteria,
+      quorumCount: formData.closeCriteria === 'quorum' 
+        ? parseInt(formData.quorumCount) 
+        : undefined,
+      tiebreakMethod: formData.tiebreakMethod,
+      isOpen: true,
     };
   };
 
@@ -98,8 +112,10 @@ export const useCreatePoll = (initialState?: Partial<CreatePollData>) => {
       question: '',
       description: '',
       allowMultiple: false,
-      hasCloseDate: false,
-      closeDays: '7',
+      closeCriteria: 'none',
+      closeDate: undefined,
+      quorumCount: '8',
+      tiebreakMethod: 'oldest_first',
       options: ['', '']
     });
   };

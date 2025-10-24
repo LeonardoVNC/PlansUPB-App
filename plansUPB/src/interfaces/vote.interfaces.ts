@@ -1,4 +1,3 @@
-// Poll-related types (independent from plans)
 export interface PollOption {
     id: string;
     text: string;
@@ -10,8 +9,12 @@ export interface Vote {
     optionId: string;
 }
 
+export type CloseCriteria = 'deadline' | 'quorum' | 'none';
+export type TiebreakMethod = 'oldest_first' | 'creator_decides';
+
 export interface Poll {
     id: string;
+    planId?: string;
     question: string;
     description?: string;
     options: PollOption[];
@@ -19,7 +22,10 @@ export interface Poll {
     createdAt: Date;
     closesAt?: Date;
     votes: Vote[];
-    createdBy: string;
+    closeCriteria: CloseCriteria; // 'deadline' | 'quorum'
+    quorumCount?: number;
+    tiebreakMethod: TiebreakMethod; // 'oldest_first' | 'creator_decides'
+    isOpen: boolean;
 }
 
 export interface PollState {
