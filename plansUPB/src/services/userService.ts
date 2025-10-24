@@ -1,5 +1,5 @@
 import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
-import { UserProfile } from "../types/user.types";
+import { UserProfile } from "@interfaces/user.interfaces";
 import { db } from "../config/firebase";
 
 const USER_DOCUMENT = 'users';
