@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { View, TouchableOpacity } from 'react-native';
-import { Card, Divider, Text, ProgressBar, CheckBox, Icon } from '@ui-kitten/components';
+import { Card, Divider, Text, ProgressBar, CheckBox, Icon, Button } from '@ui-kitten/components';
 import { usePolls } from '@hooks/usePolls';
 import { useThemeColors } from '@hooks/useThemeColors';
 import { Poll } from '@interfaces/vote.interfaces';
 import { formatFullDateHour } from '@utils/formatDate';
 
-export default function PollCard({ poll }: { poll: Poll }) {
+interface PollCardProps {
+    poll: Poll;
+    canEdit?: boolean;
+    onEditPress?: () => void;
+}
+
+export default function PollCard({ poll, canEdit = false, onEditPress }: PollCardProps) {
     const { colors } = useThemeColors();
     const { votePoll, unvotePoll, hasUserVoted, updatePoll } = usePolls();
     const [expanded, setExpanded] = useState(false);
@@ -93,6 +99,21 @@ export default function PollCard({ poll }: { poll: Poll }) {
                     <Text category="p2" style={{ color: colors.subtitle, marginBottom: 8 }}>
                         {poll.description}
                     </Text>
+                </>
+            )}
+
+            {canEdit && onEditPress && !isClosed && (
+                <>
+                    <Divider style={{ marginVertical: 12, backgroundColor: colors.border }} />
+                    <Button
+                        size="small"
+                        status="warning"
+                        appearance="outline"
+                        onPress={onEditPress}
+                        accessoryLeft={(props) => <Icon {...props} name="edit-outline" pack="eva" />}
+                    >
+                        Editar Encuesta
+                    </Button>
                 </>
             )}
 
