@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Button, Text, Icon } from '@ui-kitten/components';
@@ -10,16 +10,25 @@ import PlanOwnerCard from '@screen_components/plans/details/PlanOwnerCard';
 import PlanStatusCard from '@screen_components/plans/details/PlanStatusCard';
 import PlanTitleCard from '@screen_components/plans/details/PlanTitleCard';
 import PlanPlaceCard from '@screen_components/plans/details/PlanPlaceCard';
+import { useUserStore } from '@store/useUserStore';
 
 function PlanDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
     const { colors } = useThemeColors();
     const { getPlanById } = usePlans();
+    const { user } = useUserStore();
+    const [isOwner, setIsOwner] = useState(false)
 
     const plan = useMemo(() => {
         return getPlanById(id)
     }, [getPlanById, id]);
+
+    useEffect(() => {
+        const userCode = user?.code
+        const planOwnerCode = plan?.ownerCode
+        setIsOwner(userCode === planOwnerCode)
+    }, [user, plan])
 
     if (!plan) {
         return (
@@ -46,11 +55,9 @@ function PlanDetailScreen() {
 
                 <PlanDateCard plan={plan} />
 
-                {/* Agregar el prop isOwner, necesitamos los datos del user actual */}
-                <PlanStatusCard plan={plan} />
-                
-                {/* prop isOwner x2 */}
-                <PlanPlaceCard plan={plan}/>
+                <PlanStatusCard plan={plan} isOwner={isOwner}/>
+
+                <PlanPlaceCard plan={plan} isOwner={isOwner}/>
             </View>
         </ScreenTemplate>
     );
