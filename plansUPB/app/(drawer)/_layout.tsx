@@ -4,11 +4,13 @@ import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawe
 import { useRouter } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import { useUserStore } from '@store/useUserStore';
+import { useAuthContext } from '@context/AuthContext';
 import { useThemeColors } from '@hooks/useThemeColors';
 
 const CustomDrawerContent = (props: any) => {
     const router = useRouter();
-    const { logout } = useUserStore();
+    const { logout: logoutStore } = useUserStore();
+    const { logout: logoutAuth } = useAuthContext();
     const { colors } = useThemeColors();
 
     const handleLogout = () => {
@@ -20,9 +22,15 @@ const CustomDrawerContent = (props: any) => {
                 {
                     text: 'Confirmar',
                     style: 'destructive',
-                    onPress: () => {
-                        logout();
-                        router.replace('/');
+                    onPress: async () => {
+                        try {
+                            await logoutAuth();
+                            logoutStore();
+                            router.replace('/auth/login');
+                        } catch (error) {
+                            console.error('Error al cerrar sesión:', error);
+                            Alert.alert('Error', 'No se pudo cerrar sesión');
+                        }
                     },
                 },
             ],
