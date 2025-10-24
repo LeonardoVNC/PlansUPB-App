@@ -13,6 +13,7 @@ import PlanPlaceCard from '@screen_components/plans/details/PlanPlaceCard';
 import PollCard from '@screen_components/votes/PollCard';
 import CreatePollModal from '@screen_components/votes/CreatePollModal';
 import { useUserStore } from '@store/useUserStore';
+import { usePlanStore } from '@store/usePlanStore';
 import FloatingButton from '@common_components/FloatingButton';
 import CreatePlanModal from '@screen_components/plans/CreatePlanModal';
 
@@ -21,11 +22,13 @@ function PlanDetailScreen() {
     const router = useRouter();
     const { colors } = useThemeColors();
     const { getPlanById, getPollForPlan, addPollToPlan } = usePlans();
+    const { updatePoll } = usePlanStore();
     const { user } = useUserStore();
     const [isOwner, setIsOwner] = useState(false)
     const [isAdmin, setIsAdmin] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const [pollModalVisible, setPollModalVisible] = useState(false)
+    const [isEditingPoll, setIsEditingPoll] = useState(false)
 
     const plan = useMemo(() => {
         return getPlanById(id)
@@ -47,8 +50,29 @@ function PlanDetailScreen() {
     }, [user])
 
     const handleCreatePoll = (pollData: any) => {
-        addPollToPlan(pollData);
+        if (isEditingPoll && poll) {
+            updatePoll(poll.id, {
+                question: pollData.question,
+                description: pollData.description,
+                allowMultiple: pollData.allowMultiple,
+                closeCriteria: pollData.closeCriteria,
+                closesAt: pollData.closesAt,
+                quorumCount: pollData.quorumCount,
+                tiebreakMethod: pollData.tiebreakMethod,
+                options: pollData.options,
+            });
+        } else {
+            addPollToPlan(pollData);
+        }
         setPollModalVisible(false);
+        setIsEditingPoll(false);
+    };
+
+    const handleEditPoll = () => {
+        if (poll?.isOpen) {
+            setIsEditingPoll(true);
+            setPollModalVisible(true);
+        }
     };
 
     if (!plan) {
@@ -85,9 +109,15 @@ function PlanDetailScreen() {
 
                 <PlanPlaceCard plan={plan} isOwner={isOwner} />
 
-                {poll && <PollCard poll={poll} />}
+                {poll && (
+                    <PollCard 
+                        poll={poll} 
+                        canEdit={isOwner || isAdmin} 
+                        onEditPress={handleEditPoll} 
+                    />
+                )}
 
-                {isOwner && !poll && (
+                {(isOwner || isAdmin) && !poll && plan.status === 'open' && (
                     <Button
                         onPress={() => setPollModalVisible(true)}
                         status="info"
@@ -107,9 +137,13 @@ function PlanDetailScreen() {
 
             <CreatePollModal
                 visible={pollModalVisible}
-                onClose={() => setPollModalVisible(false)}
+                onClose={() => {
+                    setPollModalVisible(false);
+                    setIsEditingPoll(false);
+                }}
                 onCreatePoll={handleCreatePoll}
                 planId={id}
+                existingPoll={isEditingPoll ? poll || undefined : undefined}
             />
         </ScreenTemplate>
     );
