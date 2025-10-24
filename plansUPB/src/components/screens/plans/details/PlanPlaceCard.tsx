@@ -11,20 +11,31 @@ function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolea
     const { colors } = useThemeColors()
 
     useEffect(() => {
-        setHasPlace(!!plan.place);
+        setHasPlace(!!(plan.place && plan.place.name));
     }, [plan.place]);
 
-    const goToMapsApp = () => {
-        if (plan.place) {
-            const { lat, lng } = plan.place;
-            const url = `geo:${lat},${lng}?q=${lat},${lng}`;
-            Linking.canOpenURL(url).then(supported => {
-                if (supported) {
-                    Linking.openURL(url);
-                } else {
-                    Alert.alert('Error', 'No se puede abrir Maps');
-                }
-            });
+    const showOpenButton = hasPlace
+    const showAddButton = !hasPlace && isOwner && plan.status === 'draft'
+
+    const goToMapsApp = async () => {
+        if (!plan.place) return
+        const { lat, lng, name } = plan.place
+        const geoUrl = `geo:${lat},${lng}?q=${encodeURIComponent(`${lat},${lng} (${name || ''})`)}`
+        const webUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+
+        try {
+            const canOpenGeo = await Linking.canOpenURL(geoUrl);
+            if (canOpenGeo) {
+                await Linking.openURL(geoUrl);
+                return
+            }
+            const canOpenWeb = await Linking.canOpenURL(webUrl);
+            if (canOpenWeb) {
+                await Linking.openURL(webUrl);
+                return
+            }
+        } catch (err) {
+            Alert.alert('Error', 'No se puede abrir Maps');
         }
     };
 
@@ -35,7 +46,7 @@ function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolea
     return (
         <Card
             style={globalStyles().app_card}
-            status={hasPlace && hasPlace ? 'success' : 'info'}
+            status={hasPlace ? 'success' : 'info'}
             disabled
         >
             <Layout style={{ flexDirection: 'column', gap: 16 }}>
@@ -54,29 +65,39 @@ function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolea
                     </Text>
                 </View>
 
-                <Layout style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Layout style={{ flexDirection: 'row', alignItems: 'center'}}>
                     <Text
                         category="p1"
-                        style={{ color: colors.subtitle, fontSize: 16, fontWeight: '500', ...(isOwner || hasPlace ? {} : { textAlign: 'center' }) }}
+                        style={{
+                            color: colors.subtitle,
+                            fontSize: 16,
+                            fontWeight: '500',
+                            textAlign: (showOpenButton || showAddButton) ? 'left' : 'center',
+                            flex: 1,
+                        }}
                     >
                         {hasPlace && plan.place ? plan.place.name : 'Sin lugar definido'}
                     </Text>
-                    {hasPlace && plan.place ? (
-                        // Quizá haya q cambiar los botones, se ven muy... nativos dx
+
+                    {showOpenButton && plan.place && (
                         <Button
                             onPress={goToMapsApp}
                             status="primary"
                             size="small"
                             accessoryLeft={<Ionicons name="map-outline" size={16} color="white" />}
+                            style={{ marginLeft: 12 }}
                         >
                             Abrir ubicación
                         </Button>
-                    ) : isOwner && (
+                    )}
+
+                    {showAddButton && (
                         <Button
                             onPress={handleFormPlace}
                             status="info"
                             size="small"
                             accessoryLeft={<Ionicons name="add-outline" size={16} color="white" />}
+                            style={{ marginLeft: 12 }}
                         >
                             Agregar lugar
                         </Button>
