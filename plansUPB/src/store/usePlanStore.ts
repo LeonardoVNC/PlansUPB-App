@@ -23,6 +23,8 @@ interface PlanState {
     getPollByPlanId: (planId: string) => Poll | undefined;
 
     removeSave: (planId: string, userCode: string) => void;
+    removePlan: (planId: string) => void;
+    removeConfirmation: (planId: string, userCode: string) => void;
 }
 
 export const usePlanStore = create<PlanState>()(
@@ -73,6 +75,23 @@ export const usePlanStore = create<PlanState>()(
             removeSave: (planId, userCode) => {
                 set((state) => ({
                     saves: state.saves.filter(s => !(s.planId === planId && s.userCode === userCode))
+                }));
+            },
+
+            removePlan: (planId) => {
+                set((state) => ({
+                    plans: state.plans.filter(p => p.id !== planId),
+                    confirmations: state.confirmations.filter(c => c.planId !== planId),
+                    saves: state.saves.filter(s => s.planId !== planId),
+                    polls: state.polls.filter(p => p.planId !== planId),
+                }));
+            },
+
+            removeConfirmation: (planId, userCode) => {
+                set((state) => ({
+                    confirmations: state.confirmations.filter(
+                        c => !(c.planId === planId && c.userCode === userCode)
+                    )
                 }));
             },
 

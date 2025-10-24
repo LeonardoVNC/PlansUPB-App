@@ -19,7 +19,9 @@ export interface PlanConfirmation {
     planId: string,
     userCode: string,
     confirmed?: boolean,
+    status?: 'pending' | 'accepted' | 'declined', 
     comment?: string,
+    respondedAt?: Date,
 }
 
 export interface PlanSave {

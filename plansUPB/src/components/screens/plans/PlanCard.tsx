@@ -57,7 +57,8 @@ export default function PlanCard({ plan }: { plan: Plan }) {
             addConfirmation({
                 planId: plan.id,
                 userCode: userCode,
-                confirmed: false,
+                status: 'pending',
+                confirmed: undefined,
             });
         });
     };
