@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { View, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Button, Text, Icon } from '@ui-kitten/components';
 import ScreenTemplate from '@common_components/ScreenTemplate';
@@ -10,6 +10,7 @@ import PlanOwnerCard from '@screen_components/plans/details/PlanOwnerCard';
 import PlanStatusCard from '@screen_components/plans/details/PlanStatusCard';
 import PlanTitleCard from '@screen_components/plans/details/PlanTitleCard';
 import PlanPlaceCard from '@screen_components/plans/details/PlanPlaceCard';
+import RSVPCard from '@screen_components/plans/details/RSVPCard';
 import PollCard from '@screen_components/votes/PollCard';
 import CreatePollModal from '@screen_components/votes/CreatePollModal';
 import { useUserStore } from '@store/useUserStore';
@@ -21,7 +22,7 @@ function PlanDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
     const { colors } = useThemeColors();
-    const { getPlanById, getPollForPlan, addPollToPlan } = usePlans();
+    const { getPlanById, getPollForPlan, addPollToPlan, deletePlan } = usePlans();
     const { updatePoll } = usePlanStore();
     const { user } = useUserStore();
     const [isOwner, setIsOwner] = useState(false)
@@ -75,6 +76,27 @@ function PlanDetailScreen() {
         }
     };
 
+    const handleDeletePlan = () => {
+        Alert.alert(
+            'Eliminar Plan',
+            '¿Estás seguro de que quieres eliminar este plan? Esta acción no se puede deshacer.',
+            [
+                {
+                    text: 'Cancelar',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Eliminar',
+                    style: 'destructive',
+                    onPress: () => {
+                        deletePlan(id);
+                        router.back();
+                    }
+                }
+            ]
+        );
+    };
+
     if (!plan) {
         return (
             <ScreenTemplate>
@@ -109,6 +131,10 @@ function PlanDetailScreen() {
 
                 <PlanPlaceCard plan={plan} isOwner={isOwner} />
 
+                {plan.status === 'open' && (
+                    <RSVPCard planId={plan.id} ownerCode={plan.ownerCode} />
+                )}
+
                 {poll && (
                     <PollCard 
                         poll={poll} 
@@ -125,6 +151,18 @@ function PlanDetailScreen() {
                         style={{ marginTop: 16, marginBottom: 8 }}
                     >
                         Agregar Encuesta
+                    </Button>
+                )}
+
+                {(isOwner || isAdmin) && (
+                    <Button
+                        onPress={handleDeletePlan}
+                        status="danger"
+                        appearance="outline"
+                        accessoryLeft={(props) => <Icon {...props} name="trash-2-outline" pack="eva" />}
+                        style={{ marginTop: 8, marginBottom: 16 }}
+                    >
+                        Eliminar Plan
                     </Button>
                 )}
             </View>
