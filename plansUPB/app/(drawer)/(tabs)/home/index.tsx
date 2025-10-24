@@ -61,8 +61,6 @@ export default function HomeScreen() {
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
                 onCreatePost={handleCreatePost}
-                userCode={user?.code || ''}
-                userName={user?.name || 'Usuario'}
             />
         </ScreenTemplate>
     );

@@ -3,16 +3,17 @@ import { Modal, ScrollView, View, TouchableOpacity, StyleProp, ViewStyle } from 
 import { Card, Input, Button, Text, CheckBox, Icon, Divider } from '@ui-kitten/components';
 import { useCreatePoll } from '@hooks/useCreatePoll';
 import { useThemeColors } from '@hooks/useThemeColors';
+import { useUserStore } from '@store/useUserStore';
 
 interface CreatePollModalProps {
     visible: boolean;
     onClose: () => void;
     onCreatePoll: (poll: any) => void;
-    userCode: string;
 }
 
-export default function CreatePollModal({ visible, onClose, onCreatePoll, userCode }: CreatePollModalProps) {
+export default function CreatePollModal({ visible, onClose, onCreatePoll }: CreatePollModalProps) {
     const { colors } = useThemeColors();
+    const { user } = useUserStore();
 
     const {
         formData,
@@ -25,7 +26,12 @@ export default function CreatePollModal({ visible, onClose, onCreatePoll, userCo
     } = useCreatePoll();
 
     const handleCreate = async () => {
-        const pollData = await preparePollData(userCode);
+        if (!user) {
+            alert('Debes iniciar sesión para crear una encuesta');
+            return;
+        }
+        
+        const pollData = await preparePollData(user.code);
         if (!pollData) return;
 
         onCreatePoll(pollData);
