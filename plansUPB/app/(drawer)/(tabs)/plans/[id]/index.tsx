@@ -11,6 +11,8 @@ import PlanStatusCard from '@screen_components/plans/details/PlanStatusCard';
 import PlanTitleCard from '@screen_components/plans/details/PlanTitleCard';
 import PlanPlaceCard from '@screen_components/plans/details/PlanPlaceCard';
 import { useUserStore } from '@store/useUserStore';
+import FloatingButton from '@common_components/FloatingButton';
+import CreatePlanModal from '@screen_components/plans/CreatePlanModal';
 
 function PlanDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -19,6 +21,7 @@ function PlanDetailScreen() {
     const { getPlanById } = usePlans();
     const { user } = useUserStore();
     const [isOwner, setIsOwner] = useState(false)
+    const [showModal, setShowModal] = useState(false)
 
     const plan = useMemo(() => {
         return getPlanById(id)
@@ -47,7 +50,12 @@ function PlanDetailScreen() {
     }
 
     return (
-        <ScreenTemplate>
+        <ScreenTemplate
+            floatingButton={
+                isOwner && plan.status === 'draft' ?
+                    <FloatingButton onPress={() => { setShowModal(true) }} iconName='edit' /> : <></>
+            }
+        >
             <View>
                 <PlanTitleCard plan={plan} />
 
@@ -55,10 +63,16 @@ function PlanDetailScreen() {
 
                 <PlanDateCard plan={plan} />
 
-                <PlanStatusCard plan={plan} isOwner={isOwner}/>
+                <PlanStatusCard plan={plan} isOwner={isOwner} />
 
-                <PlanPlaceCard plan={plan} isOwner={isOwner}/>
+                <PlanPlaceCard plan={plan} isOwner={isOwner} />
             </View>
+
+            <CreatePlanModal
+                visible={showModal && isOwner}
+                onClose={() => setShowModal(false)}
+                plan={plan}
+            />
         </ScreenTemplate>
     );
 }
