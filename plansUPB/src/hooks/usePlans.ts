@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Plan, PlanConfirmation, PlanSave } from '@interfaces/plans.interfaces';
+import { Poll } from '@interfaces/vote.interfaces';
 import { generateUUID } from '@utils/idGenerator';
 import { usePlanStore } from '@store/usePlanStore';
 import { useUserStore } from '@store/useUserStore';
@@ -10,7 +11,7 @@ export const usePlans = () => {
     const [invPlansList, setInvPlansList] = useState<Plan[]>([])
     const [savedPlansList, setSavedPlansList] = useState<Plan[]>([])
     const { plans, confirmations, saves, addPlan, addConfirmation, addSave,
-        updatePlan, updateConfirmation, removeSave } = usePlanStore();
+        updatePlan, updateConfirmation, addPoll, getPollByPlanId, removeSave } = usePlanStore();
     const { user } = useUserStore();
 
     useEffect(() => {
@@ -78,6 +79,14 @@ export const usePlans = () => {
         updatePlan(planId, { status })
     }
 
+    const addPollToPlan = (poll: Poll) => {
+        addPoll(poll);
+    }
+
+    const getPollForPlan = (planId: string) => {
+        return getPollByPlanId(planId);
+    }
+
     const savePlan = (planId: string) => {
         if (!user) return
 
@@ -109,6 +118,8 @@ export const usePlans = () => {
         updatePlan,
         checkExpiredPlan,
         changePlanStatus,
+        addPollToPlan,
+        getPollForPlan,
         savePlan,
         unsavePlan,
         isPlanSaved,

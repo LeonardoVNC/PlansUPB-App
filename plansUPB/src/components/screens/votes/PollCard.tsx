@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { Card, Divider, Text, ProgressBar, CheckBox, Icon } from '@ui-kitten/components';
 import { usePolls } from '@hooks/usePolls';
@@ -8,12 +8,21 @@ import { formatFullDateHour } from '@utils/formatDate';
 
 export default function PollCard({ poll }: { poll: Poll }) {
     const { colors } = useThemeColors();
-    const { votePoll, unvotePoll, hasUserVoted } = usePolls();
+    const { votePoll, unvotePoll, hasUserVoted, updatePoll } = usePolls();
     const [expanded, setExpanded] = useState(false);
 
     const totalVotes = poll.options.reduce((sum, opt) => sum + opt.votes, 0);
-    const isClosed = poll.closesAt && new Date() > poll.closesAt;
+    const isClosed = !poll.isOpen;
     const maxVotes = Math.max(...poll.options.map(opt => opt.votes), 0);
+
+    useEffect(() => {
+        if (poll.closeCriteria === 'deadline' && poll.closesAt && poll.isOpen) {
+            const now = new Date();
+            if (now > poll.closesAt) {
+                updatePoll(poll.id, { isOpen: false });
+            }
+        }
+    }, [poll.closesAt, poll.isOpen, poll.closeCriteria, poll.id, updatePoll]);
 
     const handleVote = (optionId: string) => {
         if (isClosed) return;
@@ -93,28 +102,38 @@ export default function PollCard({ poll }: { poll: Poll }) {
                 {poll.options.map((option) => {
                     const percentage = totalVotes > 0 ? option.votes / totalVotes : 0;
                     const isChecked = hasUserVoted(poll, option.id);
-                    const isWinner = option.votes > 0 && option.votes === maxVotes;
+                    const isWinning = totalVotes > 0 && option.votes === maxVotes;
+                    const isWinner = isClosed && isWinning;
 
                     return (
                         <View key={option.id} style={{ marginBottom: 12 }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <CheckBox
-                                    checked={isChecked}
-                                    onChange={() => handleVote(option.id)}
-                                    disabled={isClosed}
-                                    style={{ flex: 1 }}
-                                >
+                                <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                                    <CheckBox
+                                        checked={isChecked}
+                                        onChange={() => handleVote(option.id)}
+                                        disabled={isClosed}
+                                    />
                                     <Text 
                                         category="p1" 
                                         style={{ 
                                             color: isWinner ? colors.success : colors.text,
                                             fontWeight: isWinner ? 'bold' : 'normal',
-                                            marginLeft: 8
+                                            marginLeft: 8,
+                                            flex: 1
                                         }}
                                     >
                                         {option.text}
                                     </Text>
-                                </CheckBox>
+                                    {isWinner && (
+                                        <Icon
+                                            name="checkmark-circle-2"
+                                            pack="eva"
+                                            fill={colors.success}
+                                            style={{ width: 20, height: 20, marginLeft: 6 }}
+                                        />
+                                    )}
+                                </View>
                                 {expanded && (
                                     <Text category="c1" style={{ color: colors.subtitle, marginLeft: 8 }}>
                                         {option.votes} {option.votes === 1 ? 'voto' : 'votos'}
@@ -122,17 +141,19 @@ export default function PollCard({ poll }: { poll: Poll }) {
                                 )}
                             </View>
                             
-                            <View style={{ marginLeft: 32, marginTop: 4 }}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                                    <Text category="c1" style={{ color: colors.subtitle }}>
-                                        {(percentage * 100).toFixed(1)}%
-                                    </Text>
+                            {expanded && (
+                                <View style={{ marginLeft: 32, marginTop: 4 }}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                                        <Text category="c1" style={{ color: colors.subtitle }}>
+                                            {(percentage * 100).toFixed(1)}%
+                                        </Text>
+                                    </View>
+                                    <ProgressBar 
+                                        progress={percentage} 
+                                        status={isWinning ? 'success' : 'danger'}
+                                    />
                                 </View>
-                                <ProgressBar 
-                                    progress={percentage} 
-                                    status={isWinner ? 'success' : 'danger'}
-                                />
-                            </View>
+                            )}
                         </View>
                     );
                 })}

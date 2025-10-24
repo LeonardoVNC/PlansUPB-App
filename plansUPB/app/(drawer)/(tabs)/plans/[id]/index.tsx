@@ -10,6 +10,8 @@ import PlanOwnerCard from '@screen_components/plans/details/PlanOwnerCard';
 import PlanStatusCard from '@screen_components/plans/details/PlanStatusCard';
 import PlanTitleCard from '@screen_components/plans/details/PlanTitleCard';
 import PlanPlaceCard from '@screen_components/plans/details/PlanPlaceCard';
+import PollCard from '@screen_components/votes/PollCard';
+import CreatePollModal from '@screen_components/votes/CreatePollModal';
 import { useUserStore } from '@store/useUserStore';
 import FloatingButton from '@common_components/FloatingButton';
 import CreatePlanModal from '@screen_components/plans/CreatePlanModal';
@@ -18,15 +20,21 @@ function PlanDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
     const { colors } = useThemeColors();
-    const { getPlanById } = usePlans();
+    const { getPlanById, getPollForPlan, addPollToPlan } = usePlans();
     const { user } = useUserStore();
     const [isOwner, setIsOwner] = useState(false)
     const [isAdmin, setIsAdmin] = useState(false)
     const [showModal, setShowModal] = useState(false)
+    const [pollModalVisible, setPollModalVisible] = useState(false)
 
     const plan = useMemo(() => {
         return getPlanById(id)
     }, [getPlanById, id]);
+
+    const poll = useMemo(() => {
+        if (!plan?.pollId) return null;
+        return getPollForPlan(id);
+    }, [getPollForPlan, id, plan?.pollId]);
 
     useEffect(() => {
         const userCode = user?.code
@@ -37,6 +45,11 @@ function PlanDetailScreen() {
     useEffect(() => {
         setIsAdmin(user?.role === 'Admin')
     }, [user])
+
+    const handleCreatePoll = (pollData: any) => {
+        addPollToPlan(pollData);
+        setPollModalVisible(false);
+    };
 
     if (!plan) {
         return (
@@ -71,12 +84,32 @@ function PlanDetailScreen() {
                 <PlanStatusCard plan={plan} isOwner={isOwner || isAdmin} />
 
                 <PlanPlaceCard plan={plan} isOwner={isOwner} />
+
+                {poll && <PollCard poll={poll} />}
+
+                {isOwner && !poll && (
+                    <Button
+                        onPress={() => setPollModalVisible(true)}
+                        status="info"
+                        accessoryLeft={(props) => <Icon {...props} name="bar-chart-outline" pack="eva" />}
+                        style={{ marginTop: 16, marginBottom: 8 }}
+                    >
+                        Agregar Encuesta
+                    </Button>
+                )}
             </View>
 
             <CreatePlanModal
                 visible={showModal && (isOwner || isAdmin)}
                 onClose={() => setShowModal(false)}
                 plan={plan}
+            />
+
+            <CreatePollModal
+                visible={pollModalVisible}
+                onClose={() => setPollModalVisible(false)}
+                onCreatePoll={handleCreatePoll}
+                planId={id}
             />
         </ScreenTemplate>
     );

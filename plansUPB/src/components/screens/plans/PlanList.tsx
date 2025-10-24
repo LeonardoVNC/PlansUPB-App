@@ -8,10 +8,8 @@ import PlanCard from './PlanCard';
 function PlanList({ plans }: { plans: Plan[] }) {
     const { colors } = useThemeColors();
 
-    const renderPlanCard = ({ item }: { item: any }) => {
-        return (
-            <PlanCard plan={item} />
-        )
+    const renderPlanCard = ({ item }: { item: Plan }) => {
+        return <PlanCard plan={item} />;
     }
 
     const listEmpty = useMemo(() => {

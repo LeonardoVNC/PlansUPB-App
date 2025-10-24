@@ -2,19 +2,25 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Plan, PlanConfirmation, PlanSave } from '../interfaces/plans.interfaces';
+import { Poll } from '../interfaces/vote.interfaces';
 import { mockPlans, mockConfirmations } from '../data/plans.mock';
 
 interface PlanState {
     plans: Plan[];
     confirmations: PlanConfirmation[];
     saves: PlanSave[];
+    polls: Poll[];
 
     addPlan: (plan: Plan) => void;
     addConfirmation: (confirmation: PlanConfirmation) => void;
     addSave: (planSave: PlanSave) => void;
-
+    addPoll: (poll: Poll) => void;
+    
     updatePlan: (id: string, updates: Partial<Plan>) => void;
     updateConfirmation: (planId: string, userId: string, update: Partial<PlanConfirmation>) => void;
+    updatePoll: (pollId: string, updates: Partial<Poll>) => void;
+
+    getPollByPlanId: (planId: string) => Poll | undefined;
 
     removeSave: (planId: string, userCode: string) => void;
 }
@@ -25,6 +31,7 @@ export const usePlanStore = create<PlanState>()(
             plans: mockPlans,
             confirmations: mockConfirmations,
             saves: [],
+            polls: [],
 
             addPlan: async (plan: Plan) => {
                 set((state) => ({
@@ -50,6 +57,18 @@ export const usePlanStore = create<PlanState>()(
                     saves: [...state.saves, {...planSave}]
                 }))
             },
+            addPoll: (poll) => {
+                set((state) => ({
+                    polls: [...state.polls, poll],
+                }));
+                if (poll.planId) {
+                    set((state) => ({
+                        plans: state.plans.map((p) =>
+                            p.id === poll.planId ? { ...p, pollId: poll.id } : p
+                        ),
+                    }));
+                }
+            },
 
             removeSave: (planId, userCode) => {
                 set((state) => ({
@@ -64,7 +83,14 @@ export const usePlanStore = create<PlanState>()(
                 confirmations: state.confirmations.map((c) => (
                     c.planId === planId && c.userCode === userId ? { ...c, ...update } : c
                 ))
-            }))
+            })),
+            updatePoll: (pollId, update) => set((state) => ({
+                polls: state.polls.map((p) => (p.id === pollId ? { ...p, ...update } : p))
+            })),
+            
+            getPollByPlanId: (planId) => {
+                return get().polls.find((poll) => poll.planId === planId);
+            }
         }),
         {
             name: 'plan-storage',
@@ -75,6 +101,13 @@ export const usePlanStore = create<PlanState>()(
                         return value.map((plan: any) => ({
                             ...plan,
                             date: new Date(plan.date),
+                        }));
+                    }
+                    if (key === 'polls' && Array.isArray(value)) {
+                        return value.map((poll: any) => ({
+                            ...poll,
+                            createdAt: new Date(poll.createdAt),
+                            closesAt: poll.closesAt ? new Date(poll.closesAt) : undefined,
                         }));
                     }
                     if (key === 'confirmations' && Array.isArray(value)) {
