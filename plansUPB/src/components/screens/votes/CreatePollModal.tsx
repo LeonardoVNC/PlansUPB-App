@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Input, CheckBox, Text, Icon, Select, SelectItem, IndexPath } from '@ui-kitten/components';
@@ -6,17 +6,20 @@ import CreationModal from '@common_components/CreationModal';
 import { useCreatePoll, CloseCriteria, TiebreakMethod } from '@hooks/useCreatePoll';
 import { useThemeColors } from '@hooks/useThemeColors';
 import { formatSimpleDateHour } from '@utils/formatDate';
+import { Poll } from '@interfaces/vote.interfaces';
 
 interface CreatePollModalProps {
     visible: boolean;
     onClose: () => void;
     onCreatePoll: (poll: any) => void;
     planId?: string;
+    existingPoll?: Poll;
 }
 
-export default function CreatePollModal({ visible, onClose, onCreatePoll, planId }: CreatePollModalProps) {
+export default function CreatePollModal({ visible, onClose, onCreatePoll, planId, existingPoll }: CreatePollModalProps) {
     const { colors } = useThemeColors();
     const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+    const hasLoadedExistingPoll = useRef(false);
 
     const {
         formData,
@@ -49,6 +52,29 @@ export default function CreatePollModal({ visible, onClose, onCreatePoll, planId
         return new IndexPath(tiebreakIndex >= 0 ? tiebreakIndex : 0);
     };
 
+    useEffect(() => {
+        if (visible && existingPoll && !hasLoadedExistingPoll.current) {
+            hasLoadedExistingPoll.current = true;
+            
+            setTimeout(() => {
+                updateField('question', existingPoll.question);
+                updateField('description', existingPoll.description || '');
+                updateField('options', existingPoll.options.map(opt => opt.text));
+                updateField('allowMultiple', existingPoll.allowMultiple);
+                updateField('closeCriteria', existingPoll.closeCriteria);
+                updateField('quorumCount', existingPoll.quorumCount?.toString() || '');
+                updateField('tiebreakMethod', existingPoll.tiebreakMethod);
+                if (existingPoll.closesAt) {
+                    updateField('closeDate', existingPoll.closesAt);
+                }
+            }, 0);
+        }
+        
+        if (!visible) {
+            hasLoadedExistingPoll.current = false;
+        }
+    }, [visible, existingPoll]);
+
     const handleCreate = async () => {
         const pollData = await preparePollData(planId);
         if (!pollData) return;
@@ -80,8 +106,8 @@ export default function CreatePollModal({ visible, onClose, onCreatePoll, planId
                 onSubmit={handleCreate}
                 onClose={onClose}
                 onCancel={handleCancel}
-                title="Nueva Encuesta"
-                confirmText="Crear Encuesta"
+                title={existingPoll ? "Editar Encuesta" : "Nueva Encuesta"}
+                confirmText={existingPoll ? "Guardar Cambios" : "Crear Encuesta"}
                 confirmDisabled={!isFormValid()}
             >
                 <Input
@@ -128,7 +154,7 @@ export default function CreatePollModal({ visible, onClose, onCreatePoll, planId
                                 onPress={() => removeOption(index)}
                                 style={{ marginLeft: 8, padding: 8 }}
                             >
-                                <Icon name="trash-2-outline" pack="eva" fill={colors.error} style={{ width: 24, height: 24 }} />
+                                <Icon name="trash-2-outline" pack="eva" fill={colors.danger} style={{ width: 24, height: 24 }} />
                             </TouchableOpacity>
                         )}
                     </View>
