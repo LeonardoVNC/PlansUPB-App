@@ -1,4 +1,4 @@
-export interface User {
+export interface UserProfile {
     uid: string;
     code: string;
     name: string;
@@ -12,3 +12,5 @@ export interface User {
     faculty: string; // FIA, FACED
     photoUrl?: string;
 }
+
+export type User = UserProfile;

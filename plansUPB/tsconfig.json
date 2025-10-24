@@ -33,9 +33,6 @@
       ],
       "@config/*": [
         "config/*"
-      ],
-      "@types/*": [
-        "types/*"
       ]
     }
   }
