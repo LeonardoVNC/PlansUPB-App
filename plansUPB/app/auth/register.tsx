@@ -5,9 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   Alert
 } from 'react-native';
@@ -15,6 +12,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@hooks/useAuth';
 import { globalStyles } from '@styles/globals';
+import ScreenTemplate from '@common_components/ScreenTemplate';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -97,15 +95,8 @@ export default function RegisterScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1, padding: 16 }}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
+    <ScreenTemplate>
+      <View style={{ padding: 16 }}>
         <View style={{ alignItems: 'center', marginBottom: 24 }}>
           <Text style={styles.app_title}>Crear Cuenta</Text>
           <Text style={styles.app_subtitle}>Únete a PlansUPB</Text>
@@ -319,7 +310,7 @@ export default function RegisterScreen() {
             </Pressable>
           </View>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </View>
+    </ScreenTemplate>
   );
 }

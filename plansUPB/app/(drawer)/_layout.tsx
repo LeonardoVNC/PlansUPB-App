@@ -3,13 +3,11 @@ import { View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { useRouter } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
-import { useUserStore } from '@store/useUserStore';
 import { useAuthContext } from '@context/AuthContext';
 import { useThemeColors } from '@hooks/useThemeColors';
 
 const CustomDrawerContent = (props: any) => {
     const router = useRouter();
-    const { logout: logoutStore } = useUserStore();
     const { logout: logoutAuth } = useAuthContext();
     const { colors } = useThemeColors();
 
@@ -25,7 +23,6 @@ const CustomDrawerContent = (props: any) => {
                     onPress: async () => {
                         try {
                             await logoutAuth();
-                            logoutStore();
                             router.replace('/auth/login');
                         } catch (error) {
                             console.error('Error al cerrar sesión:', error);

@@ -5,20 +5,17 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
   Pressable
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@hooks/useAuth';
 import { globalStyles } from '@styles/globals';
+import ScreenTemplate from '@common_components/ScreenTemplate';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { signIn, sendPasswordReset, loading, error } = useAuth();
+  const { signIn, loading, error } = useAuth();
   const styles = globalStyles();
   
   const [email, setEmail] = useState('');
@@ -44,20 +41,8 @@ export default function LoginScreen() {
     }
   };
 
-  const handleForgotPassword = async () => {
-    const trimmedEmail = email.trim();
-    if (!trimmedEmail) {
-      router.push('/auth/forgot-password');
-      return;
-    }
-    try {
-      await sendPasswordReset(trimmedEmail);
-      setMessageTone('success');
-      setMessage('Te enviamos un correo para restablecer tu contraseña.');
-    } catch (error: any) {
-      setMessageTone('error');
-      setMessage(error?.message ?? 'No pudimos enviar el correo de recuperación.');
-    }
+  const handleForgotPassword = () => {
+    router.push('/auth/forgot-password');
   };
 
   const goToSignUp = () => {
@@ -66,16 +51,9 @@ export default function LoginScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.app_center_container}>
-          <Text style={styles.app_title}>Iniciar Sesión</Text>
+    <ScreenTemplate>
+      <View style={styles.app_center_container}>
+        <Text style={styles.app_title}>Iniciar Sesión</Text>
 
           <View style={{ width: '100%', gap: 16 }}>
             <View>
@@ -131,7 +109,7 @@ export default function LoginScreen() {
               </Text>
             )}
 
-            <Pressable onPress={handleForgotPassword} disabled={loading}>
+            <Pressable onPress={handleForgotPassword}>
               <Text style={styles.app_link}>¿Olvidaste tu contraseña?</Text>
             </Pressable>
 
@@ -155,7 +133,6 @@ export default function LoginScreen() {
             </View>
           </View>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    </ScreenTemplate>
   );
 }

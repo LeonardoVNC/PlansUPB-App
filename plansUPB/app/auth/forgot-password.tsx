@@ -5,15 +5,13 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@hooks/useAuth';
 import { globalStyles } from '@styles/globals';
+import ScreenTemplate from '@common_components/ScreenTemplate';
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
@@ -47,21 +45,14 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.app_center_container}>
-          <Ionicons name="lock-open-outline" size={80} color="#0066CC" style={{ marginBottom: 24 }} />
-          
-          <Text style={styles.app_title}>Recuperar Contraseña</Text>
-          <Text style={[styles.app_info_text, { marginBottom: 24, textAlign: 'center' }]}>
-            Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña
-          </Text>
+    <ScreenTemplate>
+      <View style={styles.app_center_container}>
+        <Ionicons name="lock-open-outline" size={80} color="#0066CC" style={{ marginBottom: 24 }} />
+        
+        <Text style={styles.app_title}>Recuperar Contraseña</Text>
+        <Text style={[styles.app_info_text, { marginBottom: 24, textAlign: 'center' }]}>
+          Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña
+        </Text>
 
           <View style={{ width: '100%', gap: 16 }}>
             <View>
@@ -114,7 +105,6 @@ export default function ForgotPasswordScreen() {
             </View>
           </View>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    </ScreenTemplate>
   );
 }
