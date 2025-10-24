@@ -7,6 +7,7 @@ import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import * as eva from '@eva-design/eva';
 import { useThemeStore } from '@store/useThemeStore'
 import { mappingLight, mappingDark } from '@styles/mappings';
+import { AuthProvider } from '@context/AuthContext';
 
 const getEvaTheme = (theme: 'light' | 'dark') => {
   const base = theme === 'dark' ? eva.dark : eva.light;
@@ -24,14 +25,16 @@ export default function RootLayout() {
     <>
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={evaTheme}>
-        <SafeAreaProvider>
-          <StatusBar style={statusBarStyle} />
-          <Stack>
-            <Stack.Screen name="auth" options={{ headerShown: false }} />
-            <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" options={{ headerShown: false }} />
-          </Stack>
-        </SafeAreaProvider>
+        <AuthProvider>
+          <SafeAreaProvider>
+            <StatusBar style={statusBarStyle} />
+            <Stack>
+              <Stack.Screen name="auth" options={{ headerShown: false }} />
+              <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" options={{ headerShown: false }} />
+            </Stack>
+          </SafeAreaProvider>
+        </AuthProvider>
       </ApplicationProvider>
     </>
   );
