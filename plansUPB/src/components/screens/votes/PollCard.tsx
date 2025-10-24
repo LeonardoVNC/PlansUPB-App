@@ -40,20 +40,24 @@ export default function PollCard({ poll }: { poll: Poll }) {
     };
 
     return (
-        <View style={{ marginBottom: 0 }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+        <Card
+            style={{ marginBottom: 16, borderRadius: 12 }}
+            status={isClosed ? 'basic' : 'primary'}
+        >
+            {/* Header */}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <View style={{ flex: 1 }}>
-                    <Text category="s1" style={{ color: colors.text, marginBottom: 4 }}>
+                    <Text category="h6" style={{ color: colors.text, marginBottom: 4 }}>
                         {poll.question}
                     </Text>
                     {isClosed && (
                         <View style={{ 
                             backgroundColor: colors.danger + '20', 
-                            paddingHorizontal: 6, 
-                            paddingVertical: 2, 
+                            paddingHorizontal: 8, 
+                            paddingVertical: 4, 
                             borderRadius: 4,
                             alignSelf: 'flex-start',
-                            marginTop: 2,
+                            marginTop: 4,
                             flexDirection: 'row',
                             alignItems: 'center'
                         }}>
@@ -61,9 +65,9 @@ export default function PollCard({ poll }: { poll: Poll }) {
                                 name="lock"
                                 pack="eva"
                                 fill={colors.danger}
-                                style={{ width: 12, height: 12, marginRight: 2 }}
+                                style={{ width: 16, height: 16, marginRight: 4 }}
                             />
-                            <Text category="c2" style={{ color: colors.danger, fontWeight: 'bold' }}>
+                            <Text category="c1" style={{ color: colors.danger, fontWeight: 'bold' }}>
                                 CERRADA
                             </Text>
                         </View>
@@ -78,25 +82,31 @@ export default function PollCard({ poll }: { poll: Poll }) {
                         name={expanded ? 'chevron-up' : 'chevron-down'}
                         pack="eva"
                         fill={colors.primary}
-                        style={{ width: 20, height: 20 }}
+                        style={{ width: 24, height: 24 }}
                     />
                 </TouchableOpacity>
             </View>
 
-            {poll.description && expanded && (
-                <Text category="c1" style={{ color: colors.subtitle, marginBottom: 8 }}>
-                    {poll.description}
-                </Text>
+            {poll.description && (
+                <>
+                    <Divider style={{ marginVertical: 12, backgroundColor: colors.border }} />
+                    <Text category="p2" style={{ color: colors.subtitle, marginBottom: 8 }}>
+                        {poll.description}
+                    </Text>
+                </>
             )}
+
+            <Divider style={{ marginVertical: 12, backgroundColor: colors.border }} />
 
             <View>
                 {poll.options.map((option) => {
                     const percentage = totalVotes > 0 ? option.votes / totalVotes : 0;
                     const isChecked = hasUserVoted(poll, option.id);
-                    const isWinner = isClosed && option.votes > 0 && option.votes === maxVotes;
+                    const isWinning = totalVotes > 0 && option.votes === maxVotes;
+                    const isWinner = isClosed && isWinning;
 
                     return (
-                        <View key={option.id} style={{ marginBottom: 8 }}>
+                        <View key={option.id} style={{ marginBottom: 12 }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
                                     <CheckBox
@@ -105,12 +115,12 @@ export default function PollCard({ poll }: { poll: Poll }) {
                                         disabled={isClosed}
                                     />
                                     <Text 
-                                        category="c1" 
+                                        category="p1" 
                                         style={{ 
                                             color: isWinner ? colors.success : colors.text,
                                             fontWeight: isWinner ? 'bold' : 'normal',
                                             marginLeft: 8,
-                                            flex: 1,
+                                            flex: 1
                                         }}
                                     >
                                         {option.text}
@@ -119,28 +129,28 @@ export default function PollCard({ poll }: { poll: Poll }) {
                                         <Icon
                                             name="checkmark-circle-2"
                                             pack="eva"
-                                            fill={colors.info}
-                                            style={{ width: 18, height: 18, marginLeft: 6 }}
+                                            fill={colors.success}
+                                            style={{ width: 20, height: 20, marginLeft: 6 }}
                                         />
                                     )}
                                 </View>
                                 {expanded && (
-                                    <Text category="c2" style={{ color: colors.subtitle, marginLeft: 8 }}>
-                                        {option.votes}
+                                    <Text category="c1" style={{ color: colors.subtitle, marginLeft: 8 }}>
+                                        {option.votes} {option.votes === 1 ? 'voto' : 'votos'}
                                     </Text>
                                 )}
                             </View>
                             
                             {expanded && (
                                 <View style={{ marginLeft: 32, marginTop: 4 }}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
-                                        <Text category="c2" style={{ color: colors.subtitle }}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                                        <Text category="c1" style={{ color: colors.subtitle }}>
                                             {(percentage * 100).toFixed(1)}%
                                         </Text>
                                     </View>
                                     <ProgressBar 
                                         progress={percentage} 
-                                        status={isWinner ? 'success' : 'info'}
+                                        status={isWinning ? 'success' : 'danger'}
                                     />
                                 </View>
                             )}
@@ -149,48 +159,46 @@ export default function PollCard({ poll }: { poll: Poll }) {
                 })}
             </View>
 
+            <Divider style={{ marginTop: 8, marginBottom: 12, backgroundColor: colors.border }} />
+
             {/* Footer */}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon
+                        name="calendar"
+                        pack="eva"
+                        fill={colors.subtitle}
+                        style={{ width: 16, height: 16, marginRight: 4 }}
+                    />
+                    <Text category="c1" style={{ color: colors.subtitle }}>
+                        {formatFullDateHour(poll.createdAt)}
+                    </Text>
+                </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Icon
                         name="bar-chart-2"
                         pack="eva"
                         fill={colors.subtitle}
-                        style={{ width: 14, height: 14, marginRight: 4 }}
+                        style={{ width: 16, height: 16, marginRight: 4 }}
                     />
-                    <Text category="c2" style={{ color: colors.subtitle }}>
+                    <Text category="c1" style={{ color: colors.subtitle }}>
                         {totalVotes} {totalVotes === 1 ? 'voto' : 'votos'}
                     </Text>
                 </View>
-                
-                {poll.closesAt && !isClosed && (
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Icon
-                            name="clock"
-                            pack="eva"
-                            fill={colors.danger}
-                            style={{ width: 14, height: 14, marginRight: 4 }}
-                        />
-                        <Text category="c2" style={{ color: colors.danger }}>
-                            {formatFullDateHour(poll.closesAt)}
-                        </Text>
-                    </View>
-                )}
-                
-                {poll.closeCriteria === 'quorum' && !isClosed && poll.quorumCount && (
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Icon
-                            name="people"
-                            pack="eva"
-                            fill={colors.info}
-                            style={{ width: 14, height: 14, marginRight: 4 }}
-                        />
-                        <Text category="c2" style={{ color: colors.info }}>
-                            {totalVotes}/{poll.quorumCount}
-                        </Text>
-                    </View>
-                )}
             </View>
-        </View>
+            {poll.closesAt && !isClosed && (
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+                    <Icon
+                        name="clock"
+                        pack="eva"
+                        fill={colors.primary}
+                        style={{ width: 16, height: 16, marginRight: 4 }}
+                    />
+                    <Text category="c1" style={{ color: colors.danger }}>
+                        Cierra: {formatFullDateHour(poll.closesAt)}
+                    </Text>
+                </View>
+            )}
+        </Card>
     );
 }

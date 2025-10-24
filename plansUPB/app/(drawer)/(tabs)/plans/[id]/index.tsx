@@ -10,7 +10,7 @@ import PlanOwnerCard from '@screen_components/plans/details/PlanOwnerCard';
 import PlanStatusCard from '@screen_components/plans/details/PlanStatusCard';
 import PlanTitleCard from '@screen_components/plans/details/PlanTitleCard';
 import PlanPlaceCard from '@screen_components/plans/details/PlanPlaceCard';
-import PollInfoCard from '@screen_components/plans/PollInfoCard';
+import PollCard from '@screen_components/votes/PollCard';
 import CreatePollModal from '@screen_components/votes/CreatePollModal';
 import { useUserStore } from '@store/useUserStore';
 
@@ -72,8 +72,8 @@ function PlanDetailScreen() {
 
                 <PlanPlaceCard plan={plan} isOwner={isOwner}/>
 
-                {/* PollInfoCard */}
-                {poll && <PollInfoCard poll={poll} />}
+                {/* Poll Card */}
+                {poll && <PollCard poll={poll} />}
 
                 {/* Add Poll Button*/}
                 {isOwner && !poll && (
