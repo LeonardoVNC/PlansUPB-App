@@ -10,25 +10,38 @@ import PlanOwnerCard from '@screen_components/plans/details/PlanOwnerCard';
 import PlanStatusCard from '@screen_components/plans/details/PlanStatusCard';
 import PlanTitleCard from '@screen_components/plans/details/PlanTitleCard';
 import PlanPlaceCard from '@screen_components/plans/details/PlanPlaceCard';
+import PollInfoCard from '@screen_components/plans/PollInfoCard';
+import CreatePollModal from '@screen_components/votes/CreatePollModal';
 import { useUserStore } from '@store/useUserStore';
 
 function PlanDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
     const { colors } = useThemeColors();
-    const { getPlanById } = usePlans();
+    const { getPlanById, getPollForPlan, addPollToPlan } = usePlans();
     const { user } = useUserStore();
-    const [isOwner, setIsOwner] = useState(false)
+    const [isOwner, setIsOwner] = useState(false);
+    const [pollModalVisible, setPollModalVisible] = useState(false);
 
     const plan = useMemo(() => {
         return getPlanById(id)
     }, [getPlanById, id]);
 
+    const poll = useMemo(() => {
+        if (!plan?.pollId) return null;
+        return getPollForPlan(id);
+    }, [getPollForPlan, id, plan?.pollId]);
+
     useEffect(() => {
         const userCode = user?.code
         const planOwnerCode = plan?.ownerCode
         setIsOwner(userCode === planOwnerCode)
-    }, [user, plan])
+    }, [user, plan]);
+
+    const handleCreatePoll = (pollData: any) => {
+        addPollToPlan(pollData);
+        setPollModalVisible(false);
+    };
 
     if (!plan) {
         return (
@@ -58,7 +71,29 @@ function PlanDetailScreen() {
                 <PlanStatusCard plan={plan} isOwner={isOwner}/>
 
                 <PlanPlaceCard plan={plan} isOwner={isOwner}/>
+
+                {/* PollInfoCard */}
+                {poll && <PollInfoCard poll={poll} />}
+
+                {/* Add Poll Button*/}
+                {isOwner && !poll && (
+                    <Button
+                        onPress={() => setPollModalVisible(true)}
+                        status="info"
+                        accessoryLeft={(props) => <Icon {...props} name="bar-chart-outline" pack="eva" />}
+                        style={{ marginTop: 16, marginBottom: 8 }}
+                    >
+                        Agregar Encuesta
+                    </Button>
+                )}
             </View>
+
+            <CreatePollModal
+                visible={pollModalVisible}
+                onClose={() => setPollModalVisible(false)}
+                onCreatePoll={handleCreatePoll}
+                planId={id}
+            />
         </ScreenTemplate>
     );
 }
