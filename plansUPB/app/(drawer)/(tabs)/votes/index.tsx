@@ -48,7 +48,6 @@ export default function VoteScreen() {
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
                 onCreatePoll={handleCreatePoll}
-                userCode={user?.code || ''}
             />
         </ScreenTemplate>
     );

@@ -1,53 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { Text, View, Switch, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import React from 'react';
+import { Text, View, Switch, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ScreenTemplate from '@common_components/ScreenTemplate';
 import { useThemeColors } from '@hooks/useThemeColors';
 import { useThemeStore } from '@store/useThemeStore';
-import { useAuthContext } from '@context/AuthContext';
-import { getUserByUid } from '@services/userService';
-import type { UserProfile } from '@interfaces/user.interfaces';
+import { useUserStore } from '@store/useUserStore';
 import { globalStyles } from '@styles/globals';
 import { ThemeColors } from '@styles/colors';
 
 export default function ProfileScreen() {
     const { theme, colors } = useThemeColors();
     const toggleTheme = useThemeStore((state) => state.toggleTheme);
-    const { user: authUser } = useAuthContext();
-    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { user: userProfile } = useUserStore();
     const appStyles = globalStyles();
     const styles = React.useMemo(() => createStyles(colors), [colors]);
-
-    useEffect(() => {
-        const loadUserProfile = async () => {
-            if (authUser?.uid) {
-                try {
-                    const profile = await getUserByUid(authUser.uid);
-                    setUserProfile(profile);
-                } catch (error) {
-                    console.error('Error cargando perfil:', error);
-                } finally {
-                    setLoading(false);
-                }
-            }
-        };
-        
-        loadUserProfile();
-    }, [authUser]);
-
-    if (loading) {
-        return (
-            <ScreenTemplate>
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color={colors.primary} />
-                    <Text style={[styles.loadingText, { color: colors.text }]}>
-                        Cargando perfil...
-                    </Text>
-                </View>
-            </ScreenTemplate>
-        );
-    }
 
     if (!userProfile) {
         return (

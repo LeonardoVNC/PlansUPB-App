@@ -3,17 +3,17 @@ import { Modal, ScrollView, View, TouchableOpacity } from 'react-native';
 import { Card, Input, Button, Text, Icon, Divider } from '@ui-kitten/components';
 import { useCreatePost } from '@hooks/useCreatePost';
 import { useThemeColors } from '@hooks/useThemeColors';
+import { useUserStore } from '@store/useUserStore';
 
 interface CreatePostModalProps {
     visible: boolean;
     onClose: () => void;
     onCreatePost: (post: any) => void;
-    userCode: string;
-    userName: string;
 }
 
-export default function CreatePostModal({ visible, onClose, onCreatePost, userCode, userName }: CreatePostModalProps) {
+export default function CreatePostModal({ visible, onClose, onCreatePost }: CreatePostModalProps) {
     const { colors } = useThemeColors();
+    const { user } = useUserStore();
     
     const {
         formData,
@@ -24,7 +24,12 @@ export default function CreatePostModal({ visible, onClose, onCreatePost, userCo
     } = useCreatePost();
 
     const handleCreate = async () => {
-        const postData = await preparePostData(userCode, userName);
+        if (!user) {
+            alert('Debes iniciar sesión para crear una publicación');
+            return;
+        }
+        
+        const postData = await preparePostData(user.code, user.name);
         if (!postData) return;
         
         onCreatePost(postData);
