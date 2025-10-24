@@ -41,10 +41,9 @@ function CreationModal({
             <View style={{
                 flex: 1,
                 backgroundColor: 'rgba(0,0,0,0.5)',
-                justifyContent: 'center',
-                padding: 16
+                justifyContent: 'flex-end',
             }}>
-                <Card style={{ maxHeight: '90%', borderRadius: 16 }}>
+                <Card style={{ maxHeight: '60%', borderRadius: 16 }}>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                             <Text category="h5" style={{ color: colors.text }}>
