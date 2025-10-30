@@ -10,6 +10,7 @@ export const createPlan = async (plan: Omit<Plan, "id">) => {
     await setDoc(planRef, {
         ...plan,
         id: planRef.id,
+        status: plan.status || 'draft',
         createdAt: new Date()
     });
     return planRef.id;
@@ -19,18 +20,38 @@ export const createPlan = async (plan: Omit<Plan, "id">) => {
 export const getPlanById = async (id: string) => {
     const snapshot = await getDoc(doc(db, PLANS_COLLECTION, id));
     if (!snapshot.exists()) return null;
-    return { id: snapshot.id, ...snapshot.data() } as Plan;
+
+    const data = snapshot.data();
+    return {
+        ...data,
+        id: snapshot.id,
+        date: data.date?.toDate()
+    } as Plan;
 };
 
 export const getAllPlans = async () => {
     const snapshot = await getDocs(collection(db, PLANS_COLLECTION));
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Plan[];
+    return snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+            id: doc.id,
+            ...data,
+            date: data.date?.toDate(),
+        } as Plan;
+    });
 };
 
 export const getPlansByOwner = async (ownerCode: string) => {
     const q = query(collection(db, PLANS_COLLECTION), where("ownerCode", "==", ownerCode));
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Plan));
+    return snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+            id: doc.id,
+            ...data,
+            date: data.date?.toDate(),
+        } as Plan;
+    });
 };
 
 //Para Actualizar datos
