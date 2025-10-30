@@ -6,23 +6,24 @@ import { useThemeColors } from '@hooks/useThemeColors';
 import { Plan } from '@interfaces/plans.interfaces';
 import { cardStatusMap } from '@styles/planStatusMap';
 import { getRelativeDate } from '@utils/formatDate';
-import usePlans from '@hooks/usePlans';
 import { Ionicons } from '@expo/vector-icons';
 import { View, TouchableOpacity } from 'react-native';
 import SharePlanModal from './SharePlanModal';
 import { useUserStore } from '@store/useUserStore';
+import { useSaves } from '@hooks/useSaves';
 
 export default function PlanCard({ plan }: { plan: Plan }) {
     const router = useRouter();
     const { colors } = useThemeColors();
-    // const { savePlan, unsavePlan, isPlanSaved, addConfirmation } = usePlans();
+    // const { addConfirmation } = usePlans();
+    const { savePlan, unsavePlan,isPlanSaved} = useSaves();
     const { user } = useUserStore();
     const [saved, setSaved] = useState(false)
     const [loading, setLoading] = useState(false)
     const [shareModalVisible, setShareModalVisible] = useState(false)
 
     useEffect(() => {
-        // setSaved(isPlanSaved(plan.id))
+        setSaved(isPlanSaved(plan.id))
     }, [])
 
     //TODO-Quiza haya que sacar este navigate, es raro tener uno estático en componente
@@ -35,13 +36,13 @@ export default function PlanCard({ plan }: { plan: Plan }) {
         if (loading) return
 
         setLoading(true)
-        // if (saved) {
-        //     unsavePlan(plan.id)
-        //     setSaved(false)
-        // } else {
-        //     savePlan(plan.id)
-        //     setSaved(true)
-        // }
+        if (saved) {
+            unsavePlan(plan.id)
+            setSaved(false)
+        } else {
+            savePlan(plan.id)
+            setSaved(true)
+        }
         setLoading(false)
     }
 

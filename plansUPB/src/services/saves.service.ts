@@ -1,6 +1,7 @@
 import { collection, doc, getDocs, setDoc, deleteDoc, query, where } from "firebase/firestore";
 import { db } from "../config/firebase";
-import { PlanSave } from "@interfaces/plans.interfaces";
+import { PlanSave, Plan } from "@interfaces/plans.interfaces";
+import { getPlanById } from './plans.service';
 
 const SAVES_COLLECTION = 'plan_saves';
 
@@ -13,6 +14,15 @@ export const savePlan = async (save: PlanSave) => {
         savedAt: new Date()
     });
 };
+
+//Para leer datos
+export const getSavesByUser = async (userCode: string) => {
+    const q = query(collection(db, SAVES_COLLECTION), where("userCode", "==", userCode));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+        ...doc.data(),
+    } as PlanSave))
+}
 
 //Para actualizar datos
 export const unsavePlan = async (planId: string, userCode: string) => {

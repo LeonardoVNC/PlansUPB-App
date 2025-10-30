@@ -1,11 +1,11 @@
 import React from 'react';
 import { View } from 'react-native';
 import ScreenTemplate from '@common_components/ScreenTemplate';
-import usePlans from '@hooks/usePlans';
+import { useSaves } from '@hooks/useSaves';
 import PlanList from '@screen_components/plans/PlanList';
 
 export default function FavoritePlansScreen() {
-  const { savedPlansList } = usePlans();
+  const { savedPlansList } = useSaves();
 
   return (
     <ScreenTemplate omitScroll >
