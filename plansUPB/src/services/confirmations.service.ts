@@ -14,6 +14,15 @@ export const addConfirmation = async (confirmation: PlanConfirmation) => {
     });
 };
 
+//Para Leer datos
+export const getConfirmationsByUser = async (userCode: string) => {
+    const q = query(collection(db, CONFIRMATIONS_COLLECTION), where("userCode", "==", userCode));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+        ...doc.data(),
+    } as PlanConfirmation));
+};
+
 //Para Actualizar datos
 export const updateConfirmation = async (planId: string, userCode: string, updates: Partial<PlanConfirmation>) => {
     const q = query(
