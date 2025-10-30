@@ -45,8 +45,8 @@ export const useConfirmations = () => {
         if (!user) return;
 
         if (accept) {
-            await confirmationService.updateConfirmation(planId, user.code, { 
-                status: 'accepted', 
+            await confirmationService.updateConfirmation(planId, user.code, {
+                status: 'accepted',
                 confirmed: true,
                 respondedAt: new Date()
             });
@@ -105,6 +105,16 @@ export const useConfirmations = () => {
     //     const percentage = total > 0 ? Math.round((attending / total) * 100) : 100;
 
     //     return { attending, notAttending, percentage, total };
+    // }
+
+
+
+    // const addPollToPlan = (poll: Poll) => {
+    //     addPoll(poll);
+    // }
+
+    // const getPollForPlan = (planId: string) => {
+    //     return getPollByPlanId(planId);
     // }
 
 }

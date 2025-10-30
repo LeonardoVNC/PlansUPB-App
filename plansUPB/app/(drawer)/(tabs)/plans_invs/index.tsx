@@ -2,18 +2,17 @@ import React, { useMemo } from 'react';
 import { View, FlatList } from 'react-native';
 import { Text } from '@ui-kitten/components';
 import ScreenTemplate from '@common_components/ScreenTemplate';
-import usePlans from '@hooks/usePlans';
 import PlanCard from '@screen_components/plans/PlanCard';
 import InvitationCard from '@screen_components/plans/InvitationCard';
 import { useThemeColors } from '@hooks/useThemeColors';
 import { useUserStore } from '@store/useUserStore';
 import { usePlanStore } from '@store/usePlanStore';
-import { Plan } from '@interfaces/plans.interfaces';
+import { useConfirmations } from '@hooks/useConfirmations';
 
 export default function InvPlansScreen() {
   const { colors } = useThemeColors();
   const { user } = useUserStore();
-  const { invPlansList, respondToInvitation } = usePlans();
+  const { invPlansList, respondToInvitation } = useConfirmations();
   const { confirmations, plans } = usePlanStore();
 
   // Filtrar invitaciones pendientes
