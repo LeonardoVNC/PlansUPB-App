@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import FloatingButton from '@common_components/FloatingButton';
 import ScreenTemplate from '@common_components/ScreenTemplate';
-import usePlans from '@hooks/usePlans';
+import { usePlanStore } from '@store/usePlanStore';
 import CreatePlanModal from '@screen_components/plans/CreatePlanModal';
 import PlanList from '@screen_components/plans/PlanList';
+import { useThemeColors } from '@hooks/useThemeColors';
 
 export default function MyPlansScreen() {
-  const { managedPlans } = usePlans();
+  const { managedPlans, loading } = usePlanStore();
   const [modalVisible, setModalVisible] = useState(false);
+  const { colors } = useThemeColors();
 
   return (
     <ScreenTemplate
@@ -16,7 +18,11 @@ export default function MyPlansScreen() {
       floatingButton={<FloatingButton onPress={() => setModalVisible(true)} iconName="plus" />}
     >
       <View style={{ flex: 1, padding: 12}}>
-        <PlanList plans={managedPlans} />
+        {loading ? (
+          <ActivityIndicator size="large" color={colors.primary} />
+        ) : (
+          <PlanList plans={managedPlans} />
+        )}
       </View>
 
       <CreatePlanModal
