@@ -19,10 +19,10 @@ export const usePlanStore = create<PlanState>()(
         setAllPlans: (plans) => set({ allPlans: plans }),
 
         managedPlans: [],
-        setManagedPlans: (plans) => set({ allPlans: plans }),
+        setManagedPlans: (plans) => set({ managedPlans: plans }),
 
         savedPlans: [],
-        setSavedPlans: (plans) => set({ allPlans: plans }),
+        setSavedPlans: (plans) => set({ savedPlans: plans }),
 
         loading: false,
         setLoading: (value) => set({ loading: value }),

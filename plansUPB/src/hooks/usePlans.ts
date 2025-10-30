@@ -1,35 +1,28 @@
-import { useCallback, useEffect, useState } from 'react';
 import { Plan } from '@interfaces/plans.interfaces';
 import * as planService from '@services/plans.service'
 import { useUserStore } from '@store/useUserStore';
+import { usePlanStore } from '@store/usePlanStore';
 
 export const usePlans = () => {
-    const [allPlansList, setAllPlansList] = useState<Plan[]>([])
-    const [managedPlans, setManagedPlans] = useState<Plan[]>([])
-
+    const { allPlans, setAllPlans, setManagedPlans } = usePlanStore();
     const { user } = useUserStore();
 
     const fetchAllPlans = async () => {
         const plans = await planService.getAllPlans();
         if (!plans) return
 
-        setAllPlansList(plans)
+        setAllPlans(plans)
     }
 
-    const filteredManagedPlans = useCallback((allPlans: Plan[]) => {
+    const fetchManagedPlans = async () => {
+        setManagedPlans(filteredManagedPlans(allPlans))
+    }
+
+    const filteredManagedPlans = (allPlans: Plan[]) => {
         const filtered = allPlans.filter((plan) => { return plan.ownerCode === user?.code })
+        console.log("filtered on usePlans", filtered)
         return filtered
-    }, [allPlansList, user])
-
-    useEffect(() => {
-        fetchAllPlans();
-    }, [])
-
-    useEffect(() => {
-        if (!user) return;
-
-        setManagedPlans(filteredManagedPlans(allPlansList))
-    }, [user, allPlansList])
+    }
 
     const createPlan = async (plan: Omit<Plan, "id">) => {
         await planService.createPlan(plan);
@@ -70,8 +63,8 @@ export const usePlans = () => {
     };
 
     return {
-        allPlansList,
-        managedPlans,
+        fetchAllPlans,
+        fetchManagedPlans,
         createPlan,
         getPlanById,
         updatePlan,
