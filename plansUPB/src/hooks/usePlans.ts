@@ -44,6 +44,11 @@ export const usePlans = () => {
         return plan
     }
 
+    const updatePlan = async (planId: string, plan: Partial<Plan>) => {
+        await planService.updatePlan(planId, plan);
+        await fetchAllPlans();
+    }
+
     const deletePlan = async (planId: string) => {
         await planService.deletePlan(planId);
         await fetchAllPlans();
@@ -69,6 +74,7 @@ export const usePlans = () => {
         managedPlans,
         createPlan,
         getPlanById,
+        updatePlan,
         deletePlan,
         changePlanStatus,
         checkExpiredPlan,
