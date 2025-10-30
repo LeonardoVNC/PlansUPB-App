@@ -1,0 +1,28 @@
+import { collection, doc, getDocs, setDoc, deleteDoc, query, where } from "firebase/firestore";
+import { db } from "../config/firebase";
+import { PlanSave } from "@interfaces/plans.interfaces";
+
+const SAVES_COLLECTION = 'plan_saves';
+
+//Para Crear datos
+export const savePlan = async (save: PlanSave) => {
+    const saveRef = doc(collection(db, SAVES_COLLECTION));
+    await setDoc(saveRef, {
+        ...save,
+        id: saveRef.id,
+        savedAt: new Date()
+    });
+};
+
+//Para actualizar datos
+export const unsavePlan = async (planId: string, userCode: string) => {
+    const q = query(
+        collection(db, SAVES_COLLECTION),
+        where("planId", "==", planId),
+        where("userCode", "==", userCode)
+    );
+    const snapshot = await getDocs(q);
+    if (!snapshot.empty) {
+        await deleteDoc(snapshot.docs[0].ref);
+    }
+};
