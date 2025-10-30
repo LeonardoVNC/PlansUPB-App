@@ -1,13 +1,14 @@
 import { Plan, PlanSave } from "@interfaces/plans.interfaces"
 import { useUserStore } from "@store/useUserStore"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import * as saveService from '@services/saves.service'
 import * as planService from '@services/plans.service'
+import { usePlanStore } from "@store/usePlanStore"
 
 export const useSaves = () => {
     const [saves, setSaves] = useState<PlanSave[]>([])
-    const [savedPlansList, setSavedPlansList] = useState<Plan[]>([])
-
+    
+    const { setSavedPlans } = usePlanStore();
     const { user } = useUserStore();
 
     const fetchSaves = async () => {
@@ -21,12 +22,8 @@ export const useSaves = () => {
             const plan = await planService.getPlanById(save.planId)
             if (plan) plans.push(plan)
         }
-        setSavedPlansList(plans)
+        setSavedPlans(plans)
     }
-
-    useEffect(() => {
-        fetchSaves();
-    }, [])
 
     const savePlan = async (planId: string) => {
         if (!user) return
@@ -51,7 +48,6 @@ export const useSaves = () => {
 
     return {
         saves,
-        savedPlansList,
         fetchSaves,
         savePlan,
         unsavePlan,

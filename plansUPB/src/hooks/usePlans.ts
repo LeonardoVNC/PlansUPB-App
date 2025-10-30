@@ -40,7 +40,6 @@ export const usePlans = () => {
         
         setAllPlans(newPlanList)
         setManagedPlans(newManagedList)
-        // await fetchAllPlans();
     }
 
     const getPlanById = async (id: string) => {
