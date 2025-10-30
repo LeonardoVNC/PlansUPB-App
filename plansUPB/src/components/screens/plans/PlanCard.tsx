@@ -15,14 +15,14 @@ import { useUserStore } from '@store/useUserStore';
 export default function PlanCard({ plan }: { plan: Plan }) {
     const router = useRouter();
     const { colors } = useThemeColors();
-    const { savePlan, unsavePlan, isPlanSaved, addConfirmation } = usePlans();
+    // const { savePlan, unsavePlan, isPlanSaved, addConfirmation } = usePlans();
     const { user } = useUserStore();
     const [saved, setSaved] = useState(false)
     const [loading, setLoading] = useState(false)
     const [shareModalVisible, setShareModalVisible] = useState(false)
 
     useEffect(() => {
-        setSaved(isPlanSaved(plan.id))
+        // setSaved(isPlanSaved(plan.id))
     }, [])
 
     //TODO-Quiza haya que sacar este navigate, es raro tener uno estático en componente
@@ -35,13 +35,13 @@ export default function PlanCard({ plan }: { plan: Plan }) {
         if (loading) return
 
         setLoading(true)
-        if (saved) {
-            unsavePlan(plan.id)
-            setSaved(false)
-        } else {
-            savePlan(plan.id)
-            setSaved(true)
-        }
+        // if (saved) {
+        //     unsavePlan(plan.id)
+        //     setSaved(false)
+        // } else {
+        //     savePlan(plan.id)
+        //     setSaved(true)
+        // }
         setLoading(false)
     }
 
@@ -53,14 +53,14 @@ export default function PlanCard({ plan }: { plan: Plan }) {
     const handleShare = (userCodes: string[]) => {
         if (!user) return;
 
-        userCodes.forEach((userCode: string) => {
-            addConfirmation({
-                planId: plan.id,
-                userCode: userCode,
-                status: 'pending',
-                confirmed: undefined,
-            });
-        });
+        // userCodes.forEach((userCode: string) => {
+        //     addConfirmation({
+        //         planId: plan.id,
+        //         userCode: userCode,
+        //         status: 'pending',
+        //         confirmed: undefined,
+        //     });
+        // });
     };
 
     return (
