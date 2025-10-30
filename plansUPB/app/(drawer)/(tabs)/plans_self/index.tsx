@@ -10,13 +10,12 @@ import usePlans from '@hooks/usePlans';
 
 export default function MyPlansScreen() {
   const { managedPlans, loading, setLoading } = usePlanStore();
-  const { fetchManagedPlans, fetchAllPlans } = usePlans();
+  const { fetchManagedPlans } = usePlans();
   const [modalVisible, setModalVisible] = useState(false);
   const { colors } = useThemeColors();
 
   const fetchPlans = async () => {
     setLoading(true)
-    await fetchAllPlans();
     await fetchManagedPlans();
     setLoading(false)
   }

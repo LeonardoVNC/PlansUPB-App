@@ -4,7 +4,7 @@ import { useUserStore } from '@store/useUserStore';
 import { usePlanStore } from '@store/usePlanStore';
 
 export const usePlans = () => {
-    const { allPlans, setAllPlans, setManagedPlans } = usePlanStore();
+    const { setAllPlans, setManagedPlans, allPlans, managedPlans } = usePlanStore();
     const { user } = useUserStore();
 
     const fetchAllPlans = async () => {
@@ -15,18 +15,32 @@ export const usePlans = () => {
     }
 
     const fetchManagedPlans = async () => {
-        setManagedPlans(filteredManagedPlans(allPlans))
+        if (!user) return
+        const plans = await planService.getPlansByOwner(user?.code);
+
+        setManagedPlans(plans)
     }
 
-    const filteredManagedPlans = (allPlans: Plan[]) => {
-        const filtered = allPlans.filter((plan) => { return plan.ownerCode === user?.code })
-        console.log("filtered on usePlans", filtered)
+    const filterManagedPlans = (plans: Plan[]) => {
+        const filtered = plans.filter((plan) => { return plan.ownerCode === user?.code })
         return filtered
     }
 
     const createPlan = async (plan: Omit<Plan, "id">) => {
-        await planService.createPlan(plan);
-        await fetchAllPlans();
+        const newPlanID = await planService.createPlan(plan);
+        const newPlan = await planService.getPlanById(newPlanID);
+        if (!newPlan) {
+            console.error("Error recuperando el plan con id", newPlanID)
+            return
+        }
+        const newPlanList = allPlans
+        const newManagedList = managedPlans
+        newPlanList.push(newPlan)
+        newManagedList.push(newPlan)
+        
+        setAllPlans(newPlanList)
+        setManagedPlans(newManagedList)
+        // await fetchAllPlans();
     }
 
     const getPlanById = async (id: string) => {
@@ -71,6 +85,7 @@ export const usePlans = () => {
         deletePlan,
         changePlanStatus,
         checkExpiredPlan,
+        filterManagedPlans,
     }
 }
 
