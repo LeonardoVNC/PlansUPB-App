@@ -22,11 +22,11 @@ const TabsLayout = () => {
         const visibleRoutes = props.state.routes.filter(
           (route) => !['plans', 'votes'].includes(route.name)
         );
-        
+
         const visibleIndices = visibleRoutes.map(route =>
           props.state.routes.findIndex(r => r.key === route.key)
         );
-        
+
         const visibleDescriptors = Object.fromEntries(
           Object.entries(props.descriptors).filter(([key, descriptor]) =>
             visibleIndices.includes(descriptor.route.key ? props.state.routes.findIndex(r => r.key === descriptor.route.key) : -1)
@@ -105,6 +105,19 @@ const TabsLayout = () => {
           tabBarIcon: ({ color, focused, size }) => (
             <Ionicons
               name={focused ? 'bookmarks' : 'bookmarks-outline'}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="maps"
+        options={{
+          title: 'Mapa',
+          tabBarIcon: ({ color, focused, size }) => (
+            <Ionicons
+              name={focused ? 'map' : 'map-outline'}
               size={size}
               color={color}
             />
