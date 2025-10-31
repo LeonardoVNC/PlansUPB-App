@@ -108,27 +108,22 @@ function PlanDetailScreen() {
         );
     };
 
-    if (loading) {
-        return (
-            <ScreenTemplate>
-                <ActivityIndicator size="large" color={colors.primary} />
-            </ScreenTemplate>
-        )
-    }
+    // if (loading) {
+    //     return (
+    //         <ScreenTemplate>
+    //             <ActivityIndicator size="large" color={colors.primary} />
+    //         </ScreenTemplate>
+    //     )
+    // }
 
     if (!plan) {
-        fetchActualPlan();
+        if (!loading) fetchActualPlan();
         return (
-            <ScreenTemplate>
-                <View style={{ justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-                    <Icon name="alert-triangle-outline" pack="eva" fill={colors.danger} style={{ width: 64, height: 64, marginBottom: 16 }} />
-                    <Text category="h6" style={{ color: colors.text, textAlign: 'center', marginBottom: 8 }}>
-                        No se pudo cargar el plan con ID: {id}.
-                    </Text>
-                    <Button onPress={() => router.back()} status="primary" style={{ marginTop: 16 }}>
-                        Volver a planes
-                    </Button>
-                </View>
+            <ScreenTemplate
+                loading={true}
+                loadingMessage='Cargando detalles...'
+            >
+                <></>
             </ScreenTemplate>
         );
     }
@@ -139,6 +134,7 @@ function PlanDetailScreen() {
                 isOwner && plan.status === 'draft' || isAdmin ?
                     <FloatingButton onPress={() => { setShowModal(true) }} iconName='edit' /> : <></>
             }
+            loading={loading}
         >
             <View>
                 <PlanTitleCard plan={plan} />

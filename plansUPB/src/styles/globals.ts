@@ -11,14 +11,15 @@ export const globalStyles = () => {
     },
     app_container: {
       flex: 1,
-      backgroundColor: colors.surface,
-      paddingVertical: 16,
-      paddingHorizontal: 12,
+      backgroundColor: colors.background,
+      paddingTop: 4,
+      paddingHorizontal: 8,
     },
     app_center_container: {
       flex: 1,
-      backgroundColor: colors.surface,
-      padding: 16,
+      backgroundColor: colors.background,
+      paddingTop: 4,
+      paddingHorizontal: 8,
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -26,9 +27,9 @@ export const globalStyles = () => {
       flexGrow: 1,
       justifyContent: 'flex-start',
       alignItems: 'stretch',
-      backgroundColor: colors.surface,
-      paddingVertical: 16,
-      paddingHorizontal: 12
+      backgroundColor: colors.background,
+      paddingTop: 2,
+      paddingHorizontal: 8,
     },
     app_title: {
       fontSize: 22,
