@@ -8,6 +8,7 @@ import { Text, View } from "react-native";
 import { globalStyles } from "@styles/globals";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "@hooks/useThemeColors";
+import { router } from "expo-router";
 
 function MapPlansScreen() {
     const [placePlans, setPlacePlans] = useState<Plan[]>([])
@@ -30,6 +31,11 @@ function MapPlansScreen() {
         const plansWithPlace = allPlans.filter(plan => plan.place && plan.status === 'open');
         setPlacePlans(plansWithPlace)
     }, [allPlans])
+
+    const goToPlan = (id: string) => {
+        //Agregar modal para acciones, goToPlan o detalles básicos?? Cómo llegar, y eso
+        router.replace(`plans/${id}`)
+    }
 
     const centerContainer = globalStyles().app_center_container
 
@@ -58,12 +64,13 @@ function MapPlansScreen() {
                             }}
                             title={plan.title}
                             description={plan.place!.name}
+                            onPress={() => { goToPlan(plan.id) }}
                         />
                     ))}
                 </MapView>
             ) : (
                 <View style={centerContainer}>
-                    <Ionicons name="calendar-number-outline" size={48} color={colors.primary}/>
+                    <Ionicons name="calendar-number-outline" size={48} color={colors.primary} />
                     <Text style={{ textAlign: 'center', marginTop: 10, fontSize: 16 }}>No hay planes con ubicaciones disponibles en este momento</Text>
                 </View>
             )}
