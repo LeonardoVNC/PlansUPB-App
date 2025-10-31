@@ -44,7 +44,7 @@ function PlanDetailScreen() {
 
     useEffect(() => {
         fetchActualPlan();
-    }, [id])
+    }, [id, removeActualPlan])
 
     // const poll = useMemo(() => {
     //     if (!plan?.pollId) return null;
@@ -117,6 +117,7 @@ function PlanDetailScreen() {
     }
 
     if (!plan) {
+        fetchActualPlan();
         return (
             <ScreenTemplate>
                 <View style={{ justifyContent: 'center', alignItems: 'center', padding: 20 }}>
@@ -153,9 +154,9 @@ function PlanDetailScreen() {
 
                 <PlanPlaceCard plan={plan} isOwner={isOwner} />
 
-                {plan.status === 'open' && (
+                {/* {plan.status === 'open' && (
                     <RSVPCard planId={plan.id} ownerCode={plan.ownerCode} />
-                )}
+                )} */}
 
                 {/* {poll && (
                     <PollCard

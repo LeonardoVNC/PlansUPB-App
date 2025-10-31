@@ -7,10 +7,12 @@ import { Plan } from "@interfaces/plans.interfaces";
 import { globalStyles } from "@styles/globals";
 import { Card, Layout, Text, Button } from "@ui-kitten/components";
 import PlacePickerModal from "./PlanPlacePickerModal"
+import { usePlanStore } from "@store/usePlanStore";
 
 function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolean }) {
     const [hasPlace, setHasPlace] = useState(false)
     const [isPickerVisible, setIsPickerVisible] = useState(false)
+    const { removeActualPlan } = usePlanStore();
     const { colors } = useThemeColors()
     const { updatePlan } = usePlans()
 
@@ -47,6 +49,7 @@ function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolea
         if (!plan) return;
         updatePlan(plan.id, { place });
         setIsPickerVisible(false);
+        removeActualPlan()
     };
 
     return (

@@ -2,9 +2,12 @@ import { View, Alert } from "react-native";
 import { Button } from "@ui-kitten/components";
 import usePlans from "@hooks/usePlans";
 import { Plan } from "@interfaces/plans.interfaces";
+import { usePlanStore } from "@store/usePlanStore";
 
 function PlanStatusActions({ plan }: { plan: Plan }) {
+    const { removeActualPlan } = usePlanStore();
     const { changePlanStatus } = usePlans();
+    
     const handleOpenDraft = () => {
         Alert.alert(
             'Abrir plan',
@@ -40,6 +43,7 @@ function PlanStatusActions({ plan }: { plan: Plan }) {
 
     const handleConfirmAction = (status: string) => {
         changePlanStatus(plan.id, status)
+        removeActualPlan()
     }
 
     return (

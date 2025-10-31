@@ -6,6 +6,7 @@ import usePlans from '@hooks/usePlans';
 import { Plan } from '@interfaces/plans.interfaces';
 import { useUserStore } from '@store/useUserStore';
 import { formatSimpleDateHour } from '@utils/formatDate';
+import { usePlanStore } from '@store/usePlanStore';
 
 interface CreatePlanModalProps {
     visible: boolean;
@@ -25,6 +26,7 @@ export default function CreatePlanModal({ visible, onClose, plan }: CreatePlanMo
     const [isDatePickerVisible, setIsDatePickerVisible] = useState(false)
     const [isValidInfo, setIsValidInfo] = useState(false)
 
+    const { removeActualPlan } = usePlanStore();
     const categories = ["Comida", "Cine", "Juegos", "Estudio", "Otro"]
 
     useEffect(() => {
@@ -100,6 +102,7 @@ export default function CreatePlanModal({ visible, onClose, plan }: CreatePlanMo
             ...(cover && { cover: coverNumber }),
         };
         updatePlan(plan.id, updated);
+        removeActualPlan()
     }
 
     const handleCancel = () => {
