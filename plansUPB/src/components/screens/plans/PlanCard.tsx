@@ -24,7 +24,7 @@ export default function PlanCard({ plan }: { plan: Plan }) {
 
     useEffect(() => {
         setSaved(isPlanSaved(plan.id))
-    }, [])
+    }, [plan])
 
     //TODO-Quiza haya que sacar este navigate, es raro tener uno estático en componente
     const handlePress = () => {

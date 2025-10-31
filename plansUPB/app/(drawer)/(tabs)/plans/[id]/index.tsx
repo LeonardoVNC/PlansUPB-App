@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Alert } from 'react-native';
+import { View, Alert, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Button, Text, Icon } from '@ui-kitten/components';
 import ScreenTemplate from '@common_components/ScreenTemplate';
@@ -20,25 +20,36 @@ import CreatePlanModal from '@screen_components/plans/CreatePlanModal';
 
 function PlanDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
-    const router = useRouter();
-    const { colors } = useThemeColors();
-    const { getPlanById, getPollForPlan, addPollToPlan, deletePlan } = usePlans();
-    const { updatePoll } = usePlanStore();
     const { user } = useUserStore();
+    const { colors } = useThemeColors();
+    const { actualPlan: plan, setActualPlan, removeActualPlan } = usePlanStore();
+    const { getPlanById, deletePlan } = usePlans(); //Falta getPollForPlan, addPollToPlan,
+    // const { updatePoll } = usePlanStore();
+    const [loading, setLoading] = useState(true)
     const [isOwner, setIsOwner] = useState(false)
     const [isAdmin, setIsAdmin] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const [pollModalVisible, setPollModalVisible] = useState(false)
     const [isEditingPoll, setIsEditingPoll] = useState(false)
+    const router = useRouter();
 
-    const plan = useMemo(() => {
-        return getPlanById(id)
-    }, [getPlanById, id]);
+    const fetchActualPlan = async () => {
+        setLoading(true)
+        const actualPlan = await getPlanById(id)
+        if (!actualPlan) return
 
-    const poll = useMemo(() => {
-        if (!plan?.pollId) return null;
-        return getPollForPlan(id);
-    }, [getPollForPlan, id, plan?.pollId]);
+        setActualPlan(actualPlan)
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        fetchActualPlan();
+    }, [id])
+
+    // const poll = useMemo(() => {
+    //     if (!plan?.pollId) return null;
+    //     return getPollForPlan(id);
+    // }, [getPollForPlan, id, plan?.pollId]);
 
     useEffect(() => {
         const userCode = user?.code
@@ -50,31 +61,31 @@ function PlanDetailScreen() {
         setIsAdmin(user?.role === 'Admin')
     }, [user])
 
-    const handleCreatePoll = (pollData: any) => {
-        if (isEditingPoll && poll) {
-            updatePoll(poll.id, {
-                question: pollData.question,
-                description: pollData.description,
-                allowMultiple: pollData.allowMultiple,
-                closeCriteria: pollData.closeCriteria,
-                closesAt: pollData.closesAt,
-                quorumCount: pollData.quorumCount,
-                tiebreakMethod: pollData.tiebreakMethod,
-                options: pollData.options,
-            });
-        } else {
-            addPollToPlan(pollData);
-        }
-        setPollModalVisible(false);
-        setIsEditingPoll(false);
-    };
+    // const handleCreatePoll = (pollData: any) => {
+    //     if (isEditingPoll && poll) {
+    //         updatePoll(poll.id, {
+    //             question: pollData.question,
+    //             description: pollData.description,
+    //             allowMultiple: pollData.allowMultiple,
+    //             closeCriteria: pollData.closeCriteria,
+    //             closesAt: pollData.closesAt,
+    //             quorumCount: pollData.quorumCount,
+    //             tiebreakMethod: pollData.tiebreakMethod,
+    //             options: pollData.options,
+    //         });
+    //     } else {
+    //         addPollToPlan(pollData);
+    //     }
+    //     setPollModalVisible(false);
+    //     setIsEditingPoll(false);
+    // };
 
-    const handleEditPoll = () => {
-        if (poll?.isOpen) {
-            setIsEditingPoll(true);
-            setPollModalVisible(true);
-        }
-    };
+    // const handleEditPoll = () => {
+    //     if (poll?.isOpen) {
+    //         setIsEditingPoll(true);
+    //         setPollModalVisible(true);
+    //     }
+    // };
 
     const handleDeletePlan = () => {
         Alert.alert(
@@ -96,6 +107,14 @@ function PlanDetailScreen() {
             ]
         );
     };
+
+    if (loading) {
+        return (
+            <ScreenTemplate>
+                <ActivityIndicator size="large" color={colors.primary} />
+            </ScreenTemplate>
+        )
+    }
 
     if (!plan) {
         return (
@@ -138,11 +157,11 @@ function PlanDetailScreen() {
                     <RSVPCard planId={plan.id} ownerCode={plan.ownerCode} />
                 )}
 
-                {poll && (
-                    <PollCard 
-                        poll={poll} 
-                        canEdit={isOwner || isAdmin} 
-                        onEditPress={handleEditPoll} 
+                {/* {poll && (
+                    <PollCard
+                        poll={poll}
+                        canEdit={isOwner || isAdmin}
+                        onEditPress={handleEditPoll}
                     />
                 )}
 
@@ -155,7 +174,7 @@ function PlanDetailScreen() {
                     >
                         Agregar Encuesta
                     </Button>
-                )}
+                )} */}
 
                 {(isOwner || isAdmin) && (
                     <Button
@@ -172,11 +191,14 @@ function PlanDetailScreen() {
 
             <CreatePlanModal
                 visible={showModal && (isOwner || isAdmin)}
-                onClose={() => setShowModal(false)}
+                onClose={() => {
+                    setShowModal(false)
+                    fetchActualPlan();
+                }}
                 plan={plan}
             />
 
-            <CreatePollModal
+            {/* <CreatePollModal
                 visible={pollModalVisible}
                 onClose={() => {
                     setPollModalVisible(false);
@@ -185,7 +207,7 @@ function PlanDetailScreen() {
                 onCreatePoll={handleCreatePoll}
                 planId={id}
                 existingPoll={isEditingPoll ? poll || undefined : undefined}
-            />
+            /> */}
         </ScreenTemplate>
     );
 }

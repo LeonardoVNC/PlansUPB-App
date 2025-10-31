@@ -2,6 +2,10 @@ import { create } from 'zustand';
 import { Plan } from '../interfaces/plans.interfaces';
 
 interface PlanState {
+    actualPlan: Plan | null;
+    setActualPlan: (plan: Plan) => void;
+    removeActualPlan: () => void;
+
     allPlans: Plan[];
     setAllPlans: (plans: Plan[]) => void;
     managedPlans: Plan[];
@@ -15,6 +19,10 @@ interface PlanState {
 
 export const usePlanStore = create<PlanState>()(
     (set) => ({
+        actualPlan: null,
+        setActualPlan: (plan) => set({ actualPlan: plan }),
+        removeActualPlan: () => set({ actualPlan: null }),
+
         allPlans: [],
         setAllPlans: (plans) => set({ allPlans: plans }),
 
