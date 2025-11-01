@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, Linking, Alert } from "react-native";
+import { View, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import usePlans from "@hooks/usePlans";
 import { useThemeColors } from "@hooks/useThemeColors";
@@ -8,6 +8,7 @@ import { globalStyles } from "@styles/globals";
 import { Card, Layout, Text, Button } from "@ui-kitten/components";
 import PlacePickerModal from "./PlanPlacePickerModal"
 import { usePlanStore } from "@store/usePlanStore";
+import { openMapsApp } from "@utils/placeHandler";
 
 function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolean }) {
     const [hasPlace, setHasPlace] = useState(false)
@@ -26,20 +27,8 @@ function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolea
     const goToMapsApp = async () => {
         if (!plan.place) return
         const { lat, lng, name } = plan.place
-        const geoUrl = `geo:${lat},${lng}?q=${encodeURIComponent(`${lat},${lng} (${name || ''})`)}`
-        const webUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
-
         try {
-            const canOpenGeo = await Linking.canOpenURL(geoUrl);
-            if (canOpenGeo) {
-                await Linking.openURL(geoUrl);
-                return
-            }
-            const canOpenWeb = await Linking.canOpenURL(webUrl);
-            if (canOpenWeb) {
-                await Linking.openURL(webUrl);
-                return
-            }
+            openMapsApp(name, lat, lng)
         } catch (err) {
             Alert.alert('Error', 'No se puede abrir Maps');
         }
@@ -75,7 +64,7 @@ function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolea
                         </Text>
                     </View>
 
-                    <Layout style={{ flexDirection: 'row', alignItems: 'center'}}>
+                    <Layout style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text
                             category="p1"
                             style={{
