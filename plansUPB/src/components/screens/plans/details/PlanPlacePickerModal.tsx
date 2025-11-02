@@ -53,6 +53,7 @@ export default function PlacePickerModal({ visible, onClose, onSave, initialPlac
     };
 
     const handleMapPress = (e: any) => {
+        e.persist();
         setLocation(prev => ({
             ...prev,
             latitude: e.nativeEvent.coordinate.latitude,
