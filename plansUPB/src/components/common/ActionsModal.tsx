@@ -34,7 +34,7 @@ function ActionsModal({ actions, title, visible, onClose }: ActionsProps) {
             <View style={{
                 flexDirection: 'row',
                 flexWrap: 'wrap',
-                justifyContent: 'center',
+                justifyContent: 'space-around',
                 alignItems: 'flex-start',
                 gap: 18,
             }}>

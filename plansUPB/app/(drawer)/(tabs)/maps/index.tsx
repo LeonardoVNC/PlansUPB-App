@@ -64,11 +64,11 @@ function MapPlansScreen() {
 
     const actions: Action[] = [
         {
-            name: "Ver Plan",
+            name: "Detalles del Plan",
             action: goToPlan,
             icon: <Ionicons name="calendar" size={28} color={colors.contrastText} />
         }, {
-            name: "Abrir ubicación",
+            name: "Cómo llegar",
             action: openMaps,
             icon: <Ionicons name="map" size={28} color={colors.contrastText} />
         },
@@ -116,7 +116,7 @@ function MapPlansScreen() {
 
             <ActionsModal
                 actions={actions}
-                title="Opciones del plan"
+                title={`${selectedPlan ? `Ubicación: ${selectedPlan.title}` : "Opciones de la ubicación"}`}
                 visible={isActionsVisible}
                 onClose={handleCloseActions}
             />
