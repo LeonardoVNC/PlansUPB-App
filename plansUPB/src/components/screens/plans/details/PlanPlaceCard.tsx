@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
 import { View, Alert } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons";
+import { Card, Layout, Text, Button } from "@ui-kitten/components";
+import ActionsModal from "@common_components/ActionsModal";
 import usePlans from "@hooks/usePlans";
 import { useThemeColors } from "@hooks/useThemeColors";
+import { Action } from "@interfaces/action.interface";
 import { Plan } from "@interfaces/plans.interfaces";
 import { globalStyles } from "@styles/globals";
-import { Card, Layout, Text, Button } from "@ui-kitten/components";
-import PlacePickerModal from "./PlanPlacePickerModal"
 import { usePlanStore } from "@store/usePlanStore";
 import { openMapsApp } from "@utils/placeHandler";
+import PlacePickerModal from "./PlanPlacePickerModal"
 
 function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolean }) {
     const [hasPlace, setHasPlace] = useState(false)
+    const [actions, setActions] = useState<Action[]>([])
     const [isPickerVisible, setIsPickerVisible] = useState(false)
+    const [isActionsVisible, setIsActionsVisible] = useState(false)
     const { removeActualPlan } = usePlanStore();
     const { colors } = useThemeColors()
     const { updatePlan } = usePlans()
@@ -21,8 +26,20 @@ function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolea
         setHasPlace(!!(plan.place && plan.place.name));
     }, [plan.place]);
 
-    const showOpenButton = hasPlace
     const showAddButton = !hasPlace && isOwner && plan.status === 'draft'
+
+    useEffect(() => {
+        const actionList: Action[] = [...publicActions];
+        if (hasPlace && isOwner && plan.status === 'draft') {
+            actionList.push({
+                name: hasPlace ? "Editar lugar" : "Agregar lugar",
+                action: handleEditPlace,
+                icon: <Ionicons name="location" size={24} color={colors.contrastText} />
+            })
+        }
+
+        setActions(actionList)
+    }, [isOwner, plan.status])
 
     const goToMapsApp = async () => {
         if (!plan.place) return
@@ -38,8 +55,26 @@ function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolea
         if (!plan) return;
         updatePlan(plan.id, { place });
         setIsPickerVisible(false);
+        setIsActionsVisible(false);
         removeActualPlan()
     };
+
+    const handleMarkerPress = () => {
+        setIsActionsVisible(true)
+    }
+
+    const handleEditPlace = () => {
+        setIsActionsVisible(false)
+        setIsPickerVisible(true)
+    }
+
+    const publicActions: Action[] = [
+        {
+            name: "Abrir ubicación",
+            action: goToMapsApp,
+            icon: <Ionicons name="map" size={24} color={colors.contrastText} />
+        }
+    ]
 
     return (
         <>
@@ -64,44 +99,41 @@ function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolea
                         </Text>
                     </View>
 
-                    <Layout style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text
-                            category="p1"
-                            style={{
-                                color: colors.subtitle,
-                                fontSize: 16,
-                                fontWeight: '500',
-                                textAlign: (showOpenButton || showAddButton) ? 'left' : 'center',
-                                flex: 1,
-                            }}
+                    {hasPlace && plan.place && (
+                        <View style={{ height: 160, borderRadius: 8, overflow: 'hidden', marginBottom: 8 }}>
+                            <MapView
+                                style={{ flex: 1 }}
+                                initialRegion={{
+                                    latitude: plan.place.lat,
+                                    longitude: plan.place.lng,
+                                    latitudeDelta: 0.01,
+                                    longitudeDelta: 0.01,
+                                }}
+                            >
+                                <Marker
+                                    coordinate={{
+                                        latitude: plan.place.lat,
+                                        longitude: plan.place.lng,
+                                    }}
+                                    title={plan.title}
+                                    description={plan.place.name}
+                                    onPress={handleMarkerPress}
+                                />
+                            </MapView>
+                        </View>
+                    )}
+
+                    {showAddButton && (
+                        <Button
+                            onPress={() => setIsPickerVisible(true)}
+                            status="info"
+                            size="small"
+                            accessoryLeft={<Ionicons name="add-outline" size={16} color="white" />}
+                            style={{ marginLeft: 12 }}
                         >
-                            {hasPlace && plan.place ? plan.place.name : 'Sin lugar definido'}
-                        </Text>
-
-                        {showOpenButton && plan.place && (
-                            <Button
-                                onPress={goToMapsApp}
-                                status="primary"
-                                size="small"
-                                accessoryLeft={<Ionicons name="map-outline" size={16} color="white" />}
-                                style={{ marginLeft: 12 }}
-                            >
-                                Abrir ubicación
-                            </Button>
-                        )}
-
-                        {showAddButton && (
-                            <Button
-                                onPress={() => setIsPickerVisible(true)}
-                                status="info"
-                                size="small"
-                                accessoryLeft={<Ionicons name="add-outline" size={16} color="white" />}
-                                style={{ marginLeft: 12 }}
-                            >
-                                Agregar lugar
-                            </Button>
-                        )}
-                    </Layout>
+                            Agregar lugar
+                        </Button>
+                    )}
                 </Layout>
             </Card>
 
@@ -110,6 +142,13 @@ function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolea
                 onClose={() => setIsPickerVisible(false)}
                 onSave={handleSavePlace}
                 initialPlace={plan.place}
+            />
+
+            <ActionsModal
+                actions={actions}
+                title={`${plan ? `Ubicación: ${plan.title}` : "Opciones de la ubicación"}`}
+                visible={isActionsVisible}
+                onClose={() => setIsActionsVisible(false)}
             />
         </>
     );
