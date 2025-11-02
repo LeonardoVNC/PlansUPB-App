@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Input, Icon, Select, SelectItem, IndexPath, Divider, Text } from '@ui-kitten/components';
 import CreationModal from '@common_components/CreationModal';
+import { categories } from 'data/categories';
 import usePlans from '@hooks/usePlans';
 import { Plan } from '@interfaces/plans.interfaces';
 import { useUserStore } from '@store/useUserStore';
@@ -27,7 +28,6 @@ export default function CreatePlanModal({ visible, onClose, plan }: CreatePlanMo
     const [isValidInfo, setIsValidInfo] = useState(false)
 
     const { removeActualPlan } = usePlanStore();
-    const categories = ["Comida", "Cine", "Juegos", "Estudio", "Otro"]
 
     useEffect(() => {
         if (plan) {
