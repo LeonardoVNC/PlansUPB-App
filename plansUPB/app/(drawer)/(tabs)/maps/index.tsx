@@ -1,23 +1,16 @@
 import { useEffect, useState } from "react";
-import MapView, { Marker } from "react-native-maps";
+import { Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import ScreenTemplate from "@common_components/ScreenTemplate";
 import usePlans from "@hooks/usePlans";
-import { usePlanStore } from "@store/usePlanStore";
-import { Plan } from "@interfaces/plans.interfaces";
-import { Alert, Text, View } from "react-native";
-import { globalStyles } from "@styles/globals";
-import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "@hooks/useThemeColors";
-import { router } from "expo-router";
-import ActionsModal from "@common_components/ActionsModal";
-import { Action } from "@interfaces/action.interface";
-import { openMapsApp } from "@utils/placeHandler";
+import { Plan } from "@interfaces/plans.interfaces";
+import MapScreen from "@screen_components/maps/MapScreen";
+import { usePlanStore } from "@store/usePlanStore";
+import { globalStyles } from "@styles/globals";
 
 function MapPlansScreen() {
     const [placePlans, setPlacePlans] = useState<Plan[]>([])
-    const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null)
-    const [isActionsVisible, setIsActionsVisible] = useState(false)
-
     const { allPlans, loading, setLoading } = usePlanStore();
     const { fetchAllPlans } = usePlans();
     const { colors } = useThemeColors();
@@ -37,43 +30,6 @@ function MapPlansScreen() {
         setPlacePlans(plansWithPlace)
     }, [allPlans])
 
-    const handleMarker = (plan: Plan) => {
-        setSelectedPlan(plan)
-        setIsActionsVisible(true)
-    }
-
-    const handleCloseActions = () => {
-        setSelectedPlan(null)
-        setIsActionsVisible(false)
-    }
-
-    const goToPlan = () => {
-        if (!selectedPlan) return
-        router.replace(`plans/${selectedPlan.id}`)
-    }
-
-    const openMaps = () => {
-        if (!selectedPlan || !selectedPlan.place) return
-        const { lat, lng, name } = selectedPlan.place
-        try {
-            openMapsApp(name, lat, lng)
-        } catch (err) {
-            Alert.alert('Error', 'No se puede abrir Maps');
-        }
-    }
-
-    const actions: Action[] = [
-        {
-            name: "Detalles del Plan",
-            action: goToPlan,
-            icon: <Ionicons name="calendar" size={28} color={colors.contrastText} />
-        }, {
-            name: "Cómo llegar",
-            action: openMaps,
-            icon: <Ionicons name="map" size={28} color={colors.contrastText} />
-        },
-    ]
-
     const centerContainer = globalStyles().app_center_container
 
     return (
@@ -83,28 +39,7 @@ function MapPlansScreen() {
             loadingMessage='Cargando ubicaciones'
         >
             {placePlans.length > 0 ? (
-                <MapView
-                    style={{ flex: 1 }}
-                    initialRegion={{
-                        latitude: placePlans[0].place!.lat,
-                        longitude: placePlans[0].place!.lng,
-                        latitudeDelta: 0.1,
-                        longitudeDelta: 0.1,
-                    }}
-                >
-                    {placePlans.map(plan => (
-                        <Marker
-                            key={plan.id}
-                            coordinate={{
-                                latitude: plan.place!.lat,
-                                longitude: plan.place!.lng,
-                            }}
-                            title={plan.title}
-                            description={plan.place!.name}
-                            onPress={() => { handleMarker(plan) }}
-                        />
-                    ))}
-                </MapView>
+                <MapScreen plans={placePlans}/>
             ) : (
                 <View style={centerContainer}>
                     <Ionicons name="calendar-number-outline" size={48} color={colors.primary} />
@@ -113,13 +48,6 @@ function MapPlansScreen() {
                     </Text>
                 </View>
             )}
-
-            <ActionsModal
-                actions={actions}
-                title={`${selectedPlan ? `Ubicación: ${selectedPlan.title}` : "Opciones de la ubicación"}`}
-                visible={isActionsVisible}
-                onClose={handleCloseActions}
-            />
         </ScreenTemplate>
     );
 }
