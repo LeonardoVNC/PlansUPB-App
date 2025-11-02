@@ -109,6 +109,7 @@ function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolea
                                     latitudeDelta: 0.01,
                                     longitudeDelta: 0.01,
                                 }}
+                                scrollEnabled={false}
                             >
                                 <Marker
                                     coordinate={{
