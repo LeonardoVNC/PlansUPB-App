@@ -7,8 +7,8 @@ import { usePlanStore } from "@store/usePlanStore"
 
 export const useSaves = () => {
     const [saves, setSaves] = useState<PlanSave[]>([])
-    
-    const { setSavedPlans } = usePlanStore();
+
+    const { setSavedPlans, savedPlans } = usePlanStore();
     const { user } = useUserStore();
 
     const fetchSaves = async () => {
@@ -43,8 +43,8 @@ export const useSaves = () => {
 
     const isPlanSaved = (planId: string) => {
         if (!user) return false;
-        return saves.some(s => s.planId === planId && s.userCode === user.code);
-    }
+        return savedPlans.some(plan => plan.id === planId);
+    };
 
     return {
         saves,

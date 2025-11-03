@@ -5,15 +5,18 @@ import CreatePlanModal from '@screen_components/plans/CreatePlanModal';
 import PlanList from '@screen_components/plans/PlanList';
 import { usePlanStore } from '@store/usePlanStore';
 import usePlans from '@hooks/usePlans';
+import { useSaves } from '@hooks/useSaves';
 
 export default function GeneralPlansScreen() {
   const { allPlans, loading, setLoading } = usePlanStore();
   const { fetchAllPlans } = usePlans();
+    const { fetchSaves } = useSaves();
   const [modalVisible, setModalVisible] = useState(false);
 
   const fetchPlans = async () => {
     setLoading(true)
     await fetchAllPlans();
+    await fetchSaves();
     setLoading(false)
   }
 
