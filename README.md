@@ -1,6 +1,6 @@
 ## PlansUPB - Aplicación de Planificación de Eventos Sociales
 
-PlansUPB es una aplicación móvil de red social diseñada para la gestión de eventos dentro de la Universidad Privada Boliviana. [1](#0-0)  Permite a los usuarios crear, descubrir y participar en eventos sociales (llamados "planes"), facilitar la toma de decisiones grupales mediante encuestas, y fomentar discusiones comunitarias a través de publicaciones. <cite/>
+PlansUPB es una aplicación móvil de red social diseñada para la gestión de eventos dentro de la Universidad Privada Boliviana. Permite a los usuarios crear, descubrir y participar en eventos sociales (llamados "planes"), facilitar la toma de decisiones grupales mediante encuestas, y fomentar discusiones comunitarias a través de publicaciones. <cite/>
 
 ## Características Principales
 
@@ -21,8 +21,8 @@ PlansUPB es una aplicación móvil de red social diseñada para la gestión de e
 - **Métodos de desempate**: aleatorio o voto más temprano <cite/>
 
 ### Publicaciones Sociales
-- Creación de posts con **texto e imágenes** [2](#0-1) 
-- **Categorización** de contenido [3](#0-2) 
+- Creación de posts con **texto e imágenes**  
+- **Categorización** de contenido 
 - Sistema de **likes** y notificaciones push <cite/>
 
 ## Stack Tecnológico
@@ -127,15 +127,15 @@ yarn ios          # Ejecutar en iOS
 
 ## Configuración de la Aplicación
 
-La configuración principal se encuentra en `app.json`: [7](#0-6) 
+La configuración principal se encuentra en `app.json`: 
 
 ### Permisos Requeridos
-- **Android**: Ubicación (fina y aproximada), lectura/escritura de almacenamiento [8](#0-7) 
-- **iOS**: Acceso a galería de fotos y cámara [9](#0-8) 
+- **Android**: Ubicación (fina y aproximada), lectura/escritura de almacenamiento
+- **iOS**: Acceso a galería de fotos y cámara 
 
 ## Sistema de Autenticación
 
-El sistema utiliza Firebase Authentication con registro personalizado que incluye: [10](#0-9) 
+El sistema utiliza Firebase Authentication con registro personalizado que incluye:
 - Nombre completo y nombre de usuario
 - Correo electrónico institucional
 - Carrera académica
@@ -144,7 +144,7 @@ El sistema utiliza Firebase Authentication con registro personalizado que incluy
 
 ## Gestión de Estado
 
-La aplicación utiliza **Zustand** para gestión de estado global con persistencia en AsyncStorage: [11](#0-10) 
+La aplicación utiliza **Zustand** para gestión de estado global con persistencia en AsyncStorage:
 
 **Stores principales:**
 - `useUserStore` - Sesión de usuario
@@ -158,7 +158,7 @@ La aplicación utiliza **Zustand** para gestión de estado global con persistenc
 
 ## Sistema de Notificaciones Push
 
-Integración con Expo Push Notifications para: [12](#0-11) 
+Integración con Expo Push Notifications para:
 - **Notificaciones broadcast**: Nuevas publicaciones a todos los usuarios
 - **Notificaciones dirigidas**: Invitaciones a planes específicos
 - Navegación automática al contenido relevante al tocar la notificación
@@ -167,21 +167,21 @@ Integración con Expo Push Notifications para: [12](#0-11)
 
 ## Funcionalidades de Ubicación
 
-Utiliza `expo-location` y `react-native-maps` para: [13](#0-12) 
+Utiliza `expo-location` y `react-native-maps` para:
 - Selección de ubicación en mapa interactivo
 - Visualización geográfica de planes
-- Permisos de ubicación en tiempo real [14](#0-13) 
+- Permisos de ubicación en tiempo real
 
 ## Sistema de Diseño
 
-La UI está construida con **Eva Design System** a través de `@ui-kitten/components`: [15](#0-14) 
+La UI está construida con **Eva Design System** a través de `@ui-kitten/components`:
 - Componentes consistentes y accesibles
 - Soporte para tema claro y oscuro
 - Iconos de Eva Icons Pack
 
 ## Utilidades de Fecha
 
-El proyecto incluye funciones de formateo de fechas localizadas en español: [16](#0-15) 
+El proyecto incluye funciones de formateo de fechas localizadas en español:
 - Formato completo con día de la semana
 - Formato simple de fecha y hora
 - Fechas relativas ("Hoy", "Mañana", "En X días")
