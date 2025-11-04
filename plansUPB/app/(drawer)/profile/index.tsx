@@ -1,5 +1,5 @@
-import React from 'react';
-import { Text, View, Switch, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { Text, View, Switch, StyleSheet, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ScreenTemplate from '@common_components/ScreenTemplate';
 import { useThemeColors } from '@hooks/useThemeColors';
@@ -7,13 +7,70 @@ import { useThemeStore } from '@store/useThemeStore';
 import { useUserStore } from '@store/useUserStore';
 import { globalStyles } from '@styles/globals';
 import { ThemeColors } from '@styles/colors';
+import * as ImagePicker from 'expo-image-picker';
+import { uploadImageToCloudinary, validateCloudinaryConfig } from '@services/cloudinary.service';
+import { updateUserPhoto } from '@services/userService';
 
 export default function ProfileScreen() {
     const { theme, colors } = useThemeColors();
     const toggleTheme = useThemeStore((state) => state.toggleTheme);
-    const { user: userProfile } = useUserStore();
+    const { user: userProfile, login } = useUserStore();
     const appStyles = globalStyles();
     const styles = React.useMemo(() => createStyles(colors), [colors]);
+    const [uploadingPhoto, setUploadingPhoto] = useState(false);
+
+    const handleChangePhoto = async () => {
+        try {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            
+            if (status !== 'granted') {
+                Alert.alert(
+                    'Permisos necesarios',
+                    'Necesitamos acceso a tu galería para cambiar tu foto de perfil'
+                );
+                return;
+            }
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images'],
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.8,
+            });
+
+            if (result.canceled || !result.assets[0]) {
+                return;
+            }
+
+            setUploadingPhoto(true);
+
+            if (!validateCloudinaryConfig()) {
+                Alert.alert(
+                    'Configuración incompleta',
+                    'Cloudinary no está configurado correctamente. Por favor, configura las variables de entorno.'
+                );
+                setUploadingPhoto(false);
+                return;
+            }
+
+            const photoUrl = await uploadImageToCloudinary(result.assets[0].uri, 'profiles');
+
+            if (userProfile?.uid) {
+                await updateUserPhoto(userProfile.uid, photoUrl);
+                
+                login({
+                    ...userProfile,
+                    photoUrl
+                });
+
+                Alert.alert('¡Éxito!', 'Tu foto de perfil se actualizó correctamente');
+            }
+        } catch (error) {
+            console.error('Error changing photo:', error);
+            Alert.alert('Error', 'No se pudo actualizar la foto de perfil');
+        } finally {
+            setUploadingPhoto(false);
+        }
+    };
 
     if (!userProfile) {
         return (
@@ -34,17 +91,29 @@ export default function ProfileScreen() {
                 <View style={styles.profileCard}>
                     <View style={styles.profileHeader}>
                         <View style={styles.avatarContainer}>
-                            {userProfile.photoUrl ? (
-                                <Image 
-                                    source={{ uri: userProfile.photoUrl }} 
-                                    style={styles.avatarImage}
-                                />
+                            {uploadingPhoto ? (
+                                <View style={[styles.avatarImage, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.border }]}>
+                                    <ActivityIndicator size="large" color={colors.primary} />
+                                </View>
                             ) : (
-                                <Ionicons name="person-circle" size={80} color={colors.text} />
+                                <>
+                                    {userProfile.photoUrl ? (
+                                        <Image 
+                                            source={{ uri: userProfile.photoUrl }} 
+                                            style={styles.avatarImage}
+                                        />
+                                    ) : (
+                                        <Ionicons name="person-circle" size={80} color={colors.text} />
+                                    )}
+                                    <TouchableOpacity 
+                                        style={styles.cameraIconContainer}
+                                        onPress={handleChangePhoto}
+                                        activeOpacity={0.7}
+                                    >
+                                        <Ionicons name="camera" size={20} color="#FFFFFF" />
+                                    </TouchableOpacity>
+                                </>
                             )}
-                            <View style={styles.cameraIconContainer}>
-                                <Ionicons name="camera" size={20} color={colors.text} />
-                            </View>
                         </View>
                         <Text style={styles.userName}>{userProfile.name}</Text>
                         <Text style={styles.userUsername}>@{userProfile.username}</Text>
@@ -173,11 +242,16 @@ const createStyles = (colors: ThemeColors) =>
             position: 'absolute',
             bottom: 0,
             right: -5,
-            backgroundColor: colors.surface,
-            borderRadius: 12,
-            padding: 4,
-            borderWidth: StyleSheet.hairlineWidth,
-            borderColor: colors.border,
+            backgroundColor: colors.primary,
+            borderRadius: 16,
+            padding: 8,
+            borderWidth: 2,
+            borderColor: colors.surface,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
         },
         userName: {
             fontSize: 24,

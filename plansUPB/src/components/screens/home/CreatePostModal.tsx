@@ -1,9 +1,12 @@
-import React from 'react';
-import { Modal, ScrollView, View, TouchableOpacity } from 'react-native';
-import { Card, Input, Button, Text, Icon, Divider } from '@ui-kitten/components';
+import React, { useState } from 'react';
+import { ScrollView, View, TouchableOpacity, Image, Alert, ActivityIndicator } from 'react-native';
+import { Input, Button, Text, Icon, Select, SelectItem, IndexPath } from '@ui-kitten/components';
 import { useCreatePost } from '@hooks/useCreatePost';
 import { useThemeColors } from '@hooks/useThemeColors';
 import { useUserStore } from '@store/useUserStore';
+import SlideModal from '@common_components/SlideModal';
+import * as ImagePicker from 'expo-image-picker';
+import { uploadImageToCloudinary, validateCloudinaryConfig } from '@services/cloudinary.service';
 
 interface CreatePostModalProps {
     visible: boolean;
@@ -14,6 +17,8 @@ interface CreatePostModalProps {
 export default function CreatePostModal({ visible, onClose, onCreatePost }: CreatePostModalProps) {
     const { colors } = useThemeColors();
     const { user } = useUserStore();
+    const [uploading, setUploading] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
     
     const {
         formData,
@@ -23,134 +28,209 @@ export default function CreatePostModal({ visible, onClose, onCreatePost }: Crea
         categories
     } = useCreatePost();
 
+    const pickImage = async () => {
+        try {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            
+            if (status !== 'granted') {
+                Alert.alert(
+                    'Permisos necesarios',
+                    'Necesitamos acceso a tu galería para subir imágenes'
+                );
+                return;
+            }
+
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images'],
+                allowsEditing: true,
+                aspect: [16, 9],
+                quality: 0.8,
+            });
+
+            if (!result.canceled && result.assets[0]) {
+                setSelectedImage(result.assets[0].uri);
+            }
+        } catch (error) {
+            console.error('Error picking image:', error);
+            Alert.alert('Error', 'No se pudo seleccionar la imagen');
+        }
+    };
+
+    const removeImage = () => {
+        setSelectedImage(null);
+    };
+
     const handleCreate = async () => {
         if (!user) {
-            alert('Debes iniciar sesión para crear una publicación');
+            Alert.alert('Error', 'Debes iniciar sesión para crear una publicación');
             return;
         }
-        
-        const postData = await preparePostData(user.code, user.name);
-        if (!postData) return;
-        
-        onCreatePost(postData);
-        resetForm();
-        onClose();
+
+        try {
+            setUploading(true);
+
+            let uploadedImageUrl: string | undefined = undefined;
+
+            if (selectedImage) {
+                if (!validateCloudinaryConfig()) {
+                    Alert.alert(
+                        'Configuración incompleta',
+                        'Cloudinary no está configurado. La imagen no se subirá.'
+                    );
+                } else {
+                    uploadedImageUrl = await uploadImageToCloudinary(selectedImage, 'posts');
+                }
+            }
+
+            const postData = await preparePostData(user.code, user.name, uploadedImageUrl);
+            if (!postData) {
+                setUploading(false);
+                return;
+            }
+
+            onCreatePost(postData);
+            handleCancel();
+        } catch (error) {
+            console.error('Error creating post:', error);
+            Alert.alert('Error', 'No se pudo crear la publicación');
+        } finally {
+            setUploading(false);
+        }
     };
 
     const handleCancel = () => {
         resetForm();
+        setSelectedImage(null);
+        setUploading(false);
         onClose();
     };
 
+    const isFormValid = formData.content.trim().length > 0 && formData.category.length > 0;
+
+    const getCategoryIndex = () => {
+        const index = categories.findIndex(cat => cat === formData.category);
+        return new IndexPath(index >= 0 ? index : 0);
+    };
+
     return (
-        <Modal
+        <SlideModal
             visible={visible}
-            animationType="slide"
-            transparent={true}
-            onRequestClose={onClose}
+            onClose={handleCancel}
         >
-            <View style={{ 
-                flex: 1, 
-                backgroundColor: 'rgba(0,0,0,0.5)', 
-                justifyContent: 'center', 
-                padding: 16 
-            }}>
-                <Card style={{ maxHeight: '90%', borderRadius: 16 }}>
-                    <ScrollView showsVerticalScrollIndicator={false}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                            <Text category="h5" style={{ color: colors.text }}>
-                                Nueva Publicación
-                            </Text>
-                            <TouchableOpacity onPress={handleCancel}>
-                                <Icon name="close" pack="eva" fill={colors.muted} style={{ width: 28, height: 28 }} />
-                            </TouchableOpacity>
-                        </View>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <Text category="h6" style={{ marginBottom: 16, color: colors.text }}>
+                    Nueva Publicación
+                </Text>
 
-                        <Divider style={{ marginBottom: 16, backgroundColor: colors.border }} />
+                <Input
+                    label="Contenido *"
+                    placeholder="¿Qué quieres compartir?"
+                    value={formData.content}
+                    onChangeText={(text) => updateField('content', text)}
+                    style={{ marginBottom: 16 }}
+                    multiline
+                    numberOfLines={6}
+                    textStyle={{ minHeight: 120 }}
+                    disabled={uploading}
+                />
 
-                        <Input
-                            label="Contenido *"
-                            placeholder="¿Qué quieres compartir?"
-                            value={formData.content}
-                            onChangeText={(text) => updateField('content', text)}
-                            style={{ marginBottom: 16 }}
-                            multiline
-                            numberOfLines={6}
-                            textStyle={{ minHeight: 120 }}
+                <Text category="label" style={{ color: colors.text, marginBottom: 8 }}>
+                    Categoría *
+                </Text>
+                <Select
+                    selectedIndex={getCategoryIndex()}
+                    value={formData.category || 'Seleccionar categoría'}
+                    onSelect={(index) => {
+                        const selectedIndex = index as IndexPath;
+                        updateField('category', categories[selectedIndex.row]);
+                    }}
+                    disabled={uploading}
+                    style={{ marginBottom: 16 }}
+                >
+                    {categories.map((category) => (
+                        <SelectItem key={category} title={category} />
+                    ))}
+                </Select>
+
+                <Text category="label" style={{ color: colors.text, marginBottom: 8 }}>
+                    Imagen (opcional)
+                </Text>
+
+                {selectedImage ? (
+                    <View style={{ marginBottom: 16 }}>
+                        <Image 
+                            source={{ uri: selectedImage }}
+                            style={{ 
+                                width: '100%', 
+                                height: 200, 
+                                borderRadius: 12,
+                                backgroundColor: colors.border 
+                            }}
+                            resizeMode="cover"
                         />
-
-                        <Text category="label" style={{ color: colors.text, marginBottom: 8 }}>
-                            Categoría *
-                        </Text>
-                        <ScrollView 
-                            horizontal 
-                            showsHorizontalScrollIndicator={false}
-                            style={{ marginBottom: 16 }}
+                        <TouchableOpacity
+                            onPress={removeImage}
+                            disabled={uploading}
+                            style={{
+                                position: 'absolute',
+                                top: 8,
+                                right: 8,
+                                backgroundColor: colors.danger + 'CC',
+                                borderRadius: 20,
+                                padding: 8
+                            }}
                         >
-                            <View style={{ flexDirection: 'row', gap: 8 }}>
-                                {categories.map((category) => (
-                                    <TouchableOpacity
-                                        key={category}
-                                        onPress={() => updateField('category', category)}
-                                        style={{
-                                            paddingHorizontal: 16,
-                                            paddingVertical: 8,
-                                            borderRadius: 20,
-                                            backgroundColor: formData.category === category 
-                                                ? colors.primary 
-                                                : colors.border,
-                                            borderWidth: 1,
-                                            borderColor: formData.category === category 
-                                                ? colors.primary 
-                                                : colors.border
-                                        }}
-                                    >
-                                        <Text 
-                                            category="c1" 
-                                            style={{ 
-                                                color: formData.category === category 
-                                                    ? '#FFFFFF' 
-                                                    : colors.text,
-                                                fontWeight: formData.category === category ? 'bold' : 'normal'
-                                            }}
-                                        >
-                                            {category}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                        </ScrollView>
+                            <Icon name="trash-2" pack="eva" fill="#FFFFFF" style={{ width: 20, height: 20 }} />
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    <Button
+                        appearance="outline"
+                        status="info"
+                        onPress={pickImage}
+                        disabled={uploading}
+                        accessoryLeft={(props) => <Icon {...props} name="image" pack="eva" />}
+                        style={{ marginBottom: 16 }}
+                    >
+                        Seleccionar imagen
+                    </Button>
+                )}
 
-                        <Input
-                            label="URL de imagen (opcional)"
-                            placeholder="https://ejemplo.com/imagen.jpg"
-                            value={formData.imageUrl || ''}
-                            onChangeText={(text) => updateField('imageUrl', text)}
-                            style={{ marginBottom: 16 }}
-                            accessoryLeft={(props) => <Icon {...props} name="image" pack="eva" />}
-                        />
+                {uploading && (
+                    <View style={{ 
+                        flexDirection: 'row', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        padding: 12,
+                        backgroundColor: colors.primary + '20',
+                        borderRadius: 8,
+                        marginBottom: 16
+                    }}>
+                        <ActivityIndicator size="small" color={colors.primary} />
+                        <Text category="p2" style={{ color: colors.primary, marginLeft: 8 }}>
+                            Subiendo imagen...
+                        </Text>
+                    </View>
+                )}
 
-                        <Divider style={{ marginVertical: 16, backgroundColor: colors.border }} />
-
-                        <View style={{ flexDirection: 'row', gap: 8 }}>
-                            <Button
-                                style={{ flex: 1 }}
-                                status="basic"
-                                onPress={handleCancel}
-                            >
-                                Cancelar
-                            </Button>
-                            <Button
-                                style={{ flex: 1 }}
-                                status="primary"
-                                onPress={handleCreate}
-                            >
-                                Publicar
-                            </Button>
-                        </View>
-                    </ScrollView>
-                </Card>
-            </View>
-        </Modal>
+                <View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}>
+                    <Button
+                        style={{ flex: 1 }}
+                        appearance="outline"
+                        onPress={handleCancel}
+                        disabled={uploading}
+                    >
+                        Cancelar
+                    </Button>
+                    <Button
+                        style={{ flex: 1 }}
+                        onPress={handleCreate}
+                        disabled={!isFormValid || uploading}
+                    >
+                        {uploading ? 'Publicando...' : 'Publicar'}
+                    </Button>
+                </View>
+            </ScrollView>
+        </SlideModal>
     );
 }
