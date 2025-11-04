@@ -3,9 +3,21 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomTabBar } from '@react-navigation/bottom-tabs';
 import { useThemeColors } from '@hooks/useThemeColors';
+import { useTabStore, TabName } from '@store/useTabStore';
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+
+const tabConfig: Record<TabName, { title: string; icon: [IoniconName, IoniconName] }> = {
+  home: { title: 'Discusiones', icon: ['chatbubbles-outline', 'chatbubbles'] },
+  plans_general: { title: 'Planes', icon: ['calendar-outline', 'calendar'] },
+  plans_self: { title: 'Mis Planes', icon: ['file-tray-outline', 'file-tray'] },
+  plans_invs: { title: 'Invitaciones', icon: ['mail-outline', 'mail'] },
+  plans_fav: { title: 'Guardados', icon: ['bookmarks-outline', 'bookmarks'] },
+  maps: { title: 'Mapa', icon: ['map-outline', 'map'] },
+};
 
 const TabsLayout = () => {
   const { colors } = useThemeColors();
+  const { order, hidden } = useTabStore();
 
   return (
     <Tabs
@@ -19,17 +31,28 @@ const TabsLayout = () => {
         },
       }}
       tabBar={(props) => {
-        const visibleRoutes = props.state.routes.filter(
+        const hiddenNames = Object.entries(hidden || {})
+          .filter(([_, isHidden]) => Boolean(isHidden))
+          .map(([name]) => name);
+
+        const baseRoutes = props.state.routes.filter(
           (route) => !['plans', 'votes'].includes(route.name)
         );
+
+        let visibleRoutes = baseRoutes.filter(
+          (route) => !hiddenNames.includes(route.name)
+        );
+        if (visibleRoutes.length === 0) visibleRoutes = baseRoutes;
 
         const visibleIndices = visibleRoutes.map(route =>
           props.state.routes.findIndex(r => r.key === route.key)
         );
 
         const visibleDescriptors = Object.fromEntries(
-          Object.entries(props.descriptors).filter(([key, descriptor]) =>
-            visibleIndices.includes(descriptor.route.key ? props.state.routes.findIndex(r => r.key === descriptor.route.key) : -1)
+          Object.entries(props.descriptors).filter(([_, descriptor]) =>
+            visibleIndices.includes(
+              props.state.routes.findIndex(r => r.key === descriptor.route.key)
+            )
           )
         );
 
@@ -46,84 +69,23 @@ const TabsLayout = () => {
         );
       }}
     >
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: 'Discusiones',
-          tabBarIcon: ({ color, focused, size }) => (
-            <Ionicons
-              name={focused ? 'chatbubbles' : 'chatbubbles-outline'}
-              size={size}
-              color={color}
+      {order
+        .filter((name) => !hidden?.[name])
+        .map((name) => {
+          const cfg = tabConfig[name];
+          return (
+            <Tabs.Screen
+              key={name}
+              name={name}
+              options={{
+                title: cfg.title,
+                tabBarIcon: ({ color, focused, size }) => (
+                  <Ionicons name={focused ? cfg.icon[1] : cfg.icon[0]} size={size} color={color} />
+                ),
+              }}
             />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="plans_general"
-        options={{
-          title: 'Planes',
-          tabBarIcon: ({ color, focused, size }) => (
-            <Ionicons
-              name={focused ? 'calendar' : 'calendar-outline'}
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="plans_self"
-        options={{
-          title: 'Mis Planes',
-          tabBarIcon: ({ color, focused, size }) => (
-            <Ionicons
-              name={focused ? 'file-tray' : 'file-tray-outline'}
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="plans_invs"
-        options={{
-          title: 'Invitaciones',
-          tabBarIcon: ({ color, focused, size }) => (
-            <Ionicons
-              name={focused ? 'mail' : 'mail-outline'}
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="plans_fav"
-        options={{
-          title: 'Guardados',
-          tabBarIcon: ({ color, focused, size }) => (
-            <Ionicons
-              name={focused ? 'bookmarks' : 'bookmarks-outline'}
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="maps"
-        options={{
-          title: 'Mapa',
-          tabBarIcon: ({ color, focused, size }) => (
-            <Ionicons
-              name={focused ? 'map' : 'map-outline'}
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
+          );
+        })}
 
       <Tabs.Screen
         name="plans"

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View, Switch, StyleSheet, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { Text, View, Switch, StyleSheet, Image, TouchableOpacity, Alert, ActivityIndicator, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ScreenTemplate from '@common_components/ScreenTemplate';
 import { useThemeColors } from '@hooks/useThemeColors';
@@ -9,7 +9,8 @@ import { globalStyles } from '@styles/globals';
 import { ThemeColors } from '@styles/colors';
 import * as ImagePicker from 'expo-image-picker';
 import { uploadImageToCloudinary, validateCloudinaryConfig } from '@services/cloudinary.service';
-import { updateUserPhoto } from '@services/userService';
+import { updateUserPhoto, updateUserByUid } from '@services/userService';
+import { useTabStore, TabName } from '@store/useTabStore';
 
 export default function ProfileScreen() {
     const { theme, colors } = useThemeColors();
@@ -18,6 +19,9 @@ export default function ProfileScreen() {
     const appStyles = globalStyles();
     const styles = React.useMemo(() => createStyles(colors), [colors]);
     const [uploadingPhoto, setUploadingPhoto] = useState(false);
+    const [editing, setEditing] = useState(false);
+    const [formData, setFormData] = useState(userProfile ?? null);
+    const { order, hidden, setOrder, setHidden, resetOrder, resetHidden } = useTabStore();
 
     const handleChangePhoto = async () => {
         try {
@@ -115,8 +119,28 @@ export default function ProfileScreen() {
                                 </>
                             )}
                         </View>
-                        <Text style={styles.userName}>{userProfile.name}</Text>
-                        <Text style={styles.userUsername}>@{userProfile.username}</Text>
+                        {editing ? (
+                            <>
+                                <TextInput
+                                    style={styles.editableName}
+                                    value={formData?.name ?? ''}
+                                    onChangeText={(t) => setFormData((p: any) => ({ ...p, name: t }))}
+                                    placeholder="Nombre"
+                                />
+                                <TextInput
+                                    style={styles.editableUsername}
+                                    value={formData?.username ?? ''}
+                                    onChangeText={(t) => setFormData((p: any) => ({ ...p, username: t.replace(/^@/, '') }))}
+                                    placeholder="Usuario"
+                                    autoCapitalize="none"
+                                />
+                            </>
+                        ) : (
+                            <>
+                                <Text style={styles.userName}>{userProfile.name}</Text>
+                                <Text style={styles.userUsername}>@{userProfile.username}</Text>
+                            </>
+                        )}
                     </View>
 
                     <View style={styles.infoContainer}>
@@ -128,30 +152,75 @@ export default function ProfileScreen() {
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>Email</Text>
                         </View>
-                        <Text style={styles.infoText}>{userProfile.email}</Text>
+                        {editing ? (
+                            <TextInput
+                                style={styles.editInput}
+                                value={formData?.email ?? ''}
+                                onChangeText={(t) => setFormData((p: any) => ({ ...p, email: t }))}
+                                placeholder="correo@ejemplo.com"
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                            />
+                        ) : (
+                            <Text style={styles.infoText}>{userProfile.email}</Text>
+                        )}
 
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>Carrera</Text>
                         </View>
-                        <Text style={styles.infoText}>{userProfile.career}</Text>
+                        {editing ? (
+                            <TextInput
+                                style={styles.editInput}
+                                value={formData?.career ?? ''}
+                                onChangeText={(t) => setFormData((p: any) => ({ ...p, career: t }))}
+                                placeholder="Tu carrera"
+                            />
+                        ) : (
+                            <Text style={styles.infoText}>{userProfile.career}</Text>
+                        )}
 
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>Escuela</Text>
                         </View>
-                        <Text style={styles.infoText}>{userProfile.school}</Text>
+                        {editing ? (
+                            <TextInput
+                                style={styles.editInput}
+                                value={formData?.school ?? ''}
+                                onChangeText={(t) => setFormData((p: any) => ({ ...p, school: t }))}
+                                placeholder="Tu escuela"
+                            />
+                        ) : (
+                            <Text style={styles.infoText}>{userProfile.school}</Text>
+                        )}
 
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>Facultad</Text>
                         </View>
-                        <Text style={styles.infoText}>{userProfile.faculty}</Text>
+                        {editing ? (
+                            <TextInput
+                                style={styles.editInput}
+                                value={formData?.faculty ?? ''}
+                                onChangeText={(t) => setFormData((p: any) => ({ ...p, faculty: t }))}
+                                placeholder="Tu facultad"
+                            />
+                        ) : (
+                            <Text style={styles.infoText}>{userProfile.faculty}</Text>
+                        )}
 
-                        {userProfile.bio && (
-                            <>
-                                <View style={styles.infoRow}>
-                                    <Text style={styles.infoLabel}>Biografía</Text>
-                                </View>
-                                <Text style={styles.infoText}>{userProfile.bio}</Text>
-                            </>
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Biografía</Text>
+                        </View>
+                        {editing ? (
+                            <TextInput
+                                style={styles.textArea}
+                                value={formData?.bio ?? ''}
+                                onChangeText={(t) => setFormData((p: any) => ({ ...p, bio: t }))}
+                                placeholder="Cuéntanos algo de ti"
+                                multiline
+                                numberOfLines={3}
+                            />
+                        ) : (
+                            <Text style={styles.infoText}>{userProfile.bio || '—'}</Text>
                         )}
 
                         <View style={styles.statusBadge}>
@@ -182,6 +251,98 @@ export default function ProfileScreen() {
                         trackColor={{ false: colors.switchTrackOff, true: colors.switchTrackOn }}
                         thumbColor={theme === 'dark' ? colors.switchThumb : '#f4f4f5'}
                     />
+                </View>
+
+                <View style={{ alignItems: 'flex-end', marginBottom: 8 }}>
+                    <TouchableOpacity
+                        onPress={async () => {
+                            if (!editing) {
+                                setFormData(userProfile);
+                                setEditing(true);
+                                return;
+                            }
+                            try {
+                                if (!formData?.uid) return;
+                                await updateUserByUid(formData.uid, {
+                                    name: formData.name,
+                                    username: formData.username,
+                                    bio: formData.bio,
+                                    email: formData.email,
+                                    career: formData.career,
+                                    school: formData.school,
+                                    faculty: formData.faculty,
+                                });
+                                login({ ...userProfile, ...formData });
+                                setEditing(false);
+                                Alert.alert('Listo', 'Perfil actualizado');
+                            } catch (e) {
+                                Alert.alert('Error', 'No se pudo guardar el perfil');
+                            }
+                        }}
+                        style={{ paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, backgroundColor: colors.surface, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border }}
+                    >
+                        <Text style={{ color: colors.text, fontWeight: '600' }}>{editing ? 'Guardar' : 'Editar'}</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <Text style={appStyles.app_subtitle}>
+                    Orden y visibilidad de Tabs
+                </Text>
+                {order.map((tab, index) => (
+                    <View key={tab} style={[styles.preferenceRow, { paddingVertical: 12 }]}>
+                        <Text style={styles.preferenceLabel}>{getTabLabel(tab)}</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    if (index === 0) return;
+                                    const next = [...order];
+                                    [next[index - 1], next[index]] = [next[index], next[index - 1]];
+                                    setOrder(next as TabName[]);
+                                }}
+                                style={{ marginRight: 8 }}
+                                hitSlop={8}
+                            >
+                                <Ionicons name="chevron-up" size={20} color={colors.text} />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    if (index === order.length - 1) return;
+                                    const next = [...order];
+                                    [next[index + 1], next[index]] = [next[index], next[index + 1]];
+                                    setOrder(next as TabName[]);
+                                }}
+                                style={{ marginRight: 12 }}
+                                hitSlop={8}
+                            >
+                                <Ionicons name="chevron-down" size={20} color={colors.text} />
+                            </TouchableOpacity>
+                            <View style={{ alignItems: 'center' }}>
+                                <Text style={{ color: colors.subtitle, fontSize: 12 }}>Visible</Text>
+                                <Switch
+                                    value={!hidden?.[tab]}
+                                    onValueChange={(val) => {
+                                        const nextHidden = !val;
+                                        const visibleCount = order.reduce((acc, t) => (hidden?.[t] ? acc : acc + 1), 0);
+                                        if (nextHidden && visibleCount <= 1) {
+                                            Alert.alert('No permitido', 'Debe quedar al menos una tab visible.');
+                                            return;
+                                        }
+                                        setHidden(tab, nextHidden);
+                                    }}
+                                    trackColor={{ false: colors.switchTrackOff, true: colors.switchTrackOn }}
+                                    thumbColor={!hidden?.[tab] ? colors.switchThumb : '#f4f4f5'}
+                                />
+                            </View>
+                        </View>
+                    </View>
+                ))}
+                <View style={{ flexDirection: 'row', gap: 8 }}>
+                    <TouchableOpacity onPress={resetOrder} style={[styles.preferenceRow, { flex: 1, paddingVertical: 12 }]}>
+                        <Text style={[styles.preferenceLabel, { textAlign: 'center' }]}>Restablecer orden</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={resetHidden} style={[styles.preferenceRow, { flex: 1, paddingVertical: 12 }]}>
+                        <Text style={[styles.preferenceLabel, { textAlign: 'center' }]}>Restablecer visibilidad</Text>
+                    </TouchableOpacity>
                 </View>
             </>
         </ScreenTemplate>
@@ -258,10 +419,36 @@ const createStyles = (colors: ThemeColors) =>
             fontWeight: 'bold',
             color: colors.text,
         },
+        editableName: {
+            fontSize: 20,
+            fontWeight: '600',
+            color: colors.text,
+            borderWidth: StyleSheet.hairlineWidth,
+            borderColor: colors.border,
+            borderRadius: 8,
+            paddingHorizontal: 10,
+            paddingVertical: 8,
+            marginTop: 6,
+            width: '100%',
+            textAlign: 'center',
+        },
         userUsername: {
             fontSize: 14,
             color: colors.subtitle,
             marginTop: 4,
+        },
+        editableUsername: {
+            fontSize: 14,
+            color: colors.text,
+            borderWidth: StyleSheet.hairlineWidth,
+            borderColor: colors.border,
+            borderRadius: 8,
+            paddingHorizontal: 10,
+            paddingVertical: 6,
+            marginTop: 6,
+            width: '60%',
+            alignSelf: 'center',
+            textAlign: 'center',
         },
         infoContainer: {
             gap: 8,
@@ -280,6 +467,24 @@ const createStyles = (colors: ThemeColors) =>
         infoText: {
             fontSize: 14,
             color: colors.subtitle,
+        },
+        editInput: {
+            fontSize: 14,
+            color: colors.text,
+            borderWidth: StyleSheet.hairlineWidth,
+            borderColor: colors.border,
+            borderRadius: 8,
+            paddingHorizontal: 10,
+            paddingVertical: 8,
+        },
+        textArea: {
+            fontSize: 14,
+            color: colors.text,
+            borderWidth: StyleSheet.hairlineWidth,
+            borderColor: colors.border,
+            borderRadius: 8,
+            padding: 10,
+            minHeight: 72,
         },
         statusBadge: {
             flexDirection: 'row',
