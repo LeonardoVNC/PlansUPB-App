@@ -188,7 +188,7 @@ El proyecto incluye funciones de formateo de fechas localizadas en español:
 
 ## Componentes de Usuario
 
-Ejemplo de componente de tarjeta de organizador: [17](#0-16) 
+Ejemplo de componente de tarjeta de organizador:
 - Muestra foto de perfil, nombre, username
 - Información de carrera académica
 - Diseño consistente con el sistema de diseño
