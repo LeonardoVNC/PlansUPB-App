@@ -28,18 +28,7 @@ export const usePlans = () => {
 
     const createPlan = async (plan: Omit<Plan, "id">) => {
         const newPlanID = await planService.createPlan(plan);
-        const newPlan = await planService.getPlanById(newPlanID);
-        if (!newPlan) {
-            console.error("Error recuperando el plan con id", newPlanID)
-            return
-        }
-        const newPlanList = allPlans
-        const newManagedList = managedPlans
-        newPlanList.push(newPlan)
-        newManagedList.push(newPlan)
-        
-        setAllPlans(newPlanList)
-        setManagedPlans(newManagedList)
+        return newPlanID;
     }
 
     const getPlanById = async (id: string) => {
