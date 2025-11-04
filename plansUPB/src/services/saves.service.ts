@@ -8,11 +8,19 @@ const SAVES_COLLECTION = 'plan_saves';
 //Para Crear datos
 export const savePlan = async (save: PlanSave) => {
     const saveRef = doc(collection(db, SAVES_COLLECTION));
-    await setDoc(saveRef, {
+    
+    const dataToSave = Object.entries({
         ...save,
         id: saveRef.id,
         savedAt: new Date()
-    });
+    }).reduce((acc, [key, value]) => {
+        if (value !== undefined) {
+            acc[key] = value;
+        }
+        return acc;
+    }, {} as any);
+    
+    await setDoc(saveRef, dataToSave);
 };
 
 //Para leer datos

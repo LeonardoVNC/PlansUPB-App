@@ -7,12 +7,20 @@ const PLANS_COLLECTION = 'plans';
 //Para Crear datos
 export const createPlan = async (plan: Omit<Plan, "id">) => {
     const planRef = doc(collection(db, PLANS_COLLECTION));
-    await setDoc(planRef, {
+    
+    const dataToSave = Object.entries({
         ...plan,
         id: planRef.id,
         status: plan.status || 'draft',
         createdAt: new Date()
-    });
+    }).reduce((acc, [key, value]) => {
+        if (value !== undefined) {
+            acc[key] = value;
+        }
+        return acc;
+    }, {} as any);
+    
+    await setDoc(planRef, dataToSave);
     return planRef.id;
 };
 
@@ -57,10 +65,18 @@ export const getPlansByOwner = async (ownerCode: string) => {
 //Para Actualizar datos
 export const updatePlan = async (id: string, updates: Partial<Plan>) => {
     const planRef = doc(db, PLANS_COLLECTION, id);
-    await updateDoc(planRef, {
+    
+    const dataToUpdate = Object.entries({
         ...updates,
         updatedAt: new Date()
-    });
+    }).reduce((acc, [key, value]) => {
+        if (value !== undefined) {
+            acc[key] = value;
+        }
+        return acc;
+    }, {} as any);
+    
+    await updateDoc(planRef, dataToUpdate);
 };
 
 //Para Eliminar datos

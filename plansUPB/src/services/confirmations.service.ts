@@ -6,12 +6,32 @@ const CONFIRMATIONS_COLLECTION = 'plan_confirmations';
 
 //Para Crear datos
 export const addConfirmation = async (confirmation: PlanConfirmation) => {
+    const existingQuery = query(
+        collection(db, CONFIRMATIONS_COLLECTION),
+        where("planId", "==", confirmation.planId),
+        where("userCode", "==", confirmation.userCode)
+    );
+    const existingSnapshot = await getDocs(existingQuery);
+    
+    if (!existingSnapshot.empty) {
+        console.log('Ya existe una confirmación para este plan y usuario');
+        return;
+    }
+    
     const confirmationRef = doc(collection(db, CONFIRMATIONS_COLLECTION));
-    await setDoc(confirmationRef, {
+    
+    const dataToSave = Object.entries({
         ...confirmation,
         id: confirmationRef.id,
         createdAt: new Date()
-    });
+    }).reduce((acc, [key, value]) => {
+        if (value !== undefined) {
+            acc[key] = value;
+        }
+        return acc;
+    }, {} as any);
+    
+    await setDoc(confirmationRef, dataToSave);
 };
 
 //Para Leer datos
@@ -32,7 +52,14 @@ export const updateConfirmation = async (planId: string, userCode: string, updat
     );
     const snapshot = await getDocs(q);
     if (!snapshot.empty) {
-        await updateDoc(snapshot.docs[0].ref, updates);
+        const dataToUpdate = Object.entries(updates).reduce((acc, [key, value]) => {
+            if (value !== undefined) {
+                acc[key] = value;
+            }
+            return acc;
+        }, {} as any);
+        
+        await updateDoc(snapshot.docs[0].ref, dataToUpdate);
     }
 };
 
