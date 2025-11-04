@@ -34,7 +34,10 @@ function PlanList({ plans }: { plans: Plan[] }) {
             renderItem={renderPlanCard}
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 100 }}
+            contentContainerStyle={{ 
+                paddingBottom: 100,
+                paddingHorizontal: 12
+            }}
             ListEmptyComponent={listEmpty}
         />
     );

@@ -34,8 +34,10 @@ export const useCreatePost = (initialState?: Partial<CreatePostData>) => {
         return true;
     };
 
-    const preparePostData = async (userCode: string, userName: string) => {
+    const preparePostData = async (userCode: string, userName: string, overrideImageUrl?: string) => {
         if (!validateForm()) return null;
+
+        const imageUrl = overrideImageUrl !== undefined ? overrideImageUrl : formData.imageUrl;
 
         return {
             id: await generateUUID(),
@@ -45,7 +47,7 @@ export const useCreatePost = (initialState?: Partial<CreatePostData>) => {
             category: formData.category,
             likes: [],
             createdAt: new Date(),
-            imageUrl: formData.imageUrl?.trim() || undefined
+            imageUrl: imageUrl?.trim() || undefined
         };
     };
 

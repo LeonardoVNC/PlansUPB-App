@@ -49,7 +49,7 @@ export default function PostList({ posts, isFiltered = false }: PostListProps) {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ 
                 paddingBottom: 80,
-                paddingHorizontal: 16 
+                paddingHorizontal: 12
             }}
         />
     );
