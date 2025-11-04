@@ -12,6 +12,7 @@ import SharePlanModal from './SharePlanModal';
 import { useUserStore } from '@store/useUserStore';
 import { useSaves } from '@hooks/useSaves';
 import { addConfirmation } from '@services/confirmations.service';
+import { notifyPlanInvitation } from '@services/notifications.service';
 import Animated, { 
     FadeInDown, 
     useAnimatedStyle, 
@@ -107,6 +108,13 @@ export default function PlanCard({ plan, index = 0 }: { plan: Plan; index?: numb
         );
 
         await Promise.all(promises);
+        
+        const notificationPromises = userCodes.map((userCode: string) =>
+            notifyPlanInvitation(userCode, plan.title, user.name || user.code)
+                .catch(error => console.error(`Error al notificar a ${userCode}:`, error))
+        );
+        
+        await Promise.all(notificationPromises);
         setShareModalVisible(false);
     };
 

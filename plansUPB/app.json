@@ -22,7 +22,12 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.leonardovnc.plansupb",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -34,7 +39,26 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow to use your location."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#ffffff",
+          "sounds": [
+            "./assets/notification-sound.wav"
+          ],
+          "androidMode": "default",
+          "androidCollapsedTitle": "#{unread_notifications} nuevas notificaciones"
+        }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ef888ffd-b922-42c2-b4dc-45515945dc95"
+      }
+    },
+    "owner": "danilepez"
   }
 }

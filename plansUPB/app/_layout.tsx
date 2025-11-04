@@ -8,6 +8,7 @@ import * as eva from '@eva-design/eva';
 import { useThemeStore } from '@store/useThemeStore'
 import { mappingLight, mappingDark } from '@styles/mappings';
 import { AuthProvider } from '@context/AuthContext';
+import { useNotifications } from '@hooks/useNotifications';
 
 const getEvaTheme = (theme: 'light' | 'dark') => {
   const base = theme === 'dark' ? eva.dark : eva.light;
@@ -18,6 +19,8 @@ const getEvaTheme = (theme: 'light' | 'dark') => {
 export default function RootLayout() {
   const { theme } = useThemeStore();
   const evaTheme = getEvaTheme(theme);
+  
+  useNotifications();
 
   const statusBarStyle = theme === 'dark' ? 'light' : 'dark';
 

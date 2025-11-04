@@ -2,6 +2,7 @@ import { usePostStore } from '../store/usePostStore';
 import { useUserStore } from '../store/useUserStore';
 import { Post } from '../interfaces/post.interfaces';
 import * as postService from '@services/posts.service';
+import { notifyNewPost } from '@services/notifications.service';
 
 export const usePosts = () => {
     const { posts, setPosts } = usePostStore();
@@ -25,7 +26,14 @@ export const usePosts = () => {
 
     const createPost = async (post: Omit<Post, "id">) => {
         const newPostId = await postService.createPost(post);
-        await fetchAllPosts(); 
+        await fetchAllPosts();
+        
+        if (newPostId) {
+            notifyNewPost(post.authorName, post.category).catch(error => 
+                console.error('Error al enviar notificación de nuevo post:', error)
+            );
+        }
+        
         return newPostId;
     };
 
