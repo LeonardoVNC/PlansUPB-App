@@ -12,6 +12,18 @@ import { uploadImageToCloudinary, validateCloudinaryConfig } from '@services/clo
 import { updateUserPhoto, updateUserByUid } from '@services/userService';
 import { useTabStore, TabName } from '@store/useTabStore';
 
+const getTabLabel = (tab: TabName): string => {
+  const labels: Record<TabName, string> = {
+    home: 'Discusiones',
+    plans_general: 'Planes',
+    plans_self: 'Mis Planes',
+    plans_invs: 'Invitaciones',
+    plans_fav: 'Guardados',
+    maps: 'Mapa',
+  };
+  return labels[tab] || tab;
+};
+
 export default function ProfileScreen() {
     const { theme, colors } = useThemeColors();
     const toggleTheme = useThemeStore((state) => state.toggleTheme);
