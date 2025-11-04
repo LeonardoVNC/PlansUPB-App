@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Button, Text, Icon } from '@ui-kitten/components';
 import ScreenTemplate from '@common_components/ScreenTemplate';
 import { usePlans } from '@hooks/usePlans';
+import { usePolls } from '@hooks/usePolls';
 import { useThemeColors } from '@hooks/useThemeColors';
 import PlanDateCard from '@screen_components/plans/details/PlanDateCard';
 import PlanOwnerCard from '@screen_components/plans/details/PlanOwnerCard';
@@ -17,15 +18,24 @@ import { useUserStore } from '@store/useUserStore';
 import { usePlanStore } from '@store/usePlanStore';
 import FloatingButton from '@common_components/FloatingButton';
 import CreatePlanModal from '@screen_components/plans/CreatePlanModal';
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+import Animated, { 
+    FadeInDown, 
+    FadeInUp, 
+    FadeIn,
+    SlideInRight,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+    withSpring
+} from 'react-native-reanimated';
 
 function PlanDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const { user } = useUserStore();
     const { colors } = useThemeColors();
     const { actualPlan: plan, setActualPlan, removeActualPlan } = usePlanStore();
-    const { getPlanById, deletePlan } = usePlans(); //Falta getPollForPlan, addPollToPlan,
-    // const { updatePoll } = usePlanStore();
+    const { getPlanById, deletePlan, updatePlan } = usePlans();
+    const { createPoll, updatePoll, fetchPollsByPlan, polls } = usePolls();
     const [loading, setLoading] = useState(true)
     const [isOwner, setIsOwner] = useState(false)
     const [isAdmin, setIsAdmin] = useState(false)
@@ -35,11 +45,17 @@ function PlanDetailScreen() {
     const router = useRouter();
 
     const fetchActualPlan = async () => {
-        setLoading(true)
+        if (!plan) {
+            setLoading(true);
+        }
+        
         const actualPlan = await getPlanById(id)
         if (!actualPlan) return
 
         setActualPlan(actualPlan)
+        
+        await fetchPollsByPlan(id);
+        
         setLoading(false)
     }
 
@@ -47,10 +63,10 @@ function PlanDetailScreen() {
         fetchActualPlan();
     }, [id, removeActualPlan])
 
-    // const poll = useMemo(() => {
-    //     if (!plan?.pollId) return null;
-    //     return getPollForPlan(id);
-    // }, [getPollForPlan, id, plan?.pollId]);
+    const poll = useMemo(() => {
+        if (!plan?.pollId || polls.length === 0) return null;
+        return polls.find(p => p.id === plan.pollId);
+    }, [polls, plan?.pollId]);
 
     useEffect(() => {
         const userCode = user?.code
@@ -62,31 +78,40 @@ function PlanDetailScreen() {
         setIsAdmin(user?.role === 'Admin')
     }, [user])
 
-    // const handleCreatePoll = (pollData: any) => {
-    //     if (isEditingPoll && poll) {
-    //         updatePoll(poll.id, {
-    //             question: pollData.question,
-    //             description: pollData.description,
-    //             allowMultiple: pollData.allowMultiple,
-    //             closeCriteria: pollData.closeCriteria,
-    //             closesAt: pollData.closesAt,
-    //             quorumCount: pollData.quorumCount,
-    //             tiebreakMethod: pollData.tiebreakMethod,
-    //             options: pollData.options,
-    //         });
-    //     } else {
-    //         addPollToPlan(pollData);
-    //     }
-    //     setPollModalVisible(false);
-    //     setIsEditingPoll(false);
-    // };
+    const handleCreatePoll = async (pollData: any) => {
+        if (isEditingPoll && poll) {
+            await updatePoll(poll.id, {
+                question: pollData.question,
+                description: pollData.description,
+                allowMultiple: pollData.allowMultiple,
+                closeCriteria: pollData.closeCriteria,
+                closesAt: pollData.closesAt,
+                quorumCount: pollData.quorumCount,
+                tiebreakMethod: pollData.tiebreakMethod,
+                options: pollData.options,
+            });
+        } else {
+            const newPollId = await createPoll({
+                ...pollData,
+                planId: id, 
+            });
+            
+            if (newPollId) {
+                await updatePlan(id, { pollId: newPollId });
+            }
+        }
+        
+        setPollModalVisible(false);
+        setIsEditingPoll(false);
+        await fetchActualPlan(); 
+    };
 
-    // const handleEditPoll = () => {
-    //     if (poll?.isOpen) {
-    //         setIsEditingPoll(true);
-    //         setPollModalVisible(true);
-    //     }
-    // };
+    const handleEditPoll = () => {
+        if (poll?.isOpen) {
+            setIsEditingPoll(true);
+            setPollModalVisible(true);
+        }
+    };
 
     const handleDeletePlan = () => {
         Alert.alert(
@@ -137,52 +162,61 @@ function PlanDetailScreen() {
             }
             loading={loading}
         >
-            <View>
-                <Animated.View entering={FadeInDown.delay(100).springify()}>
+            <Animated.View 
+                entering={FadeIn.duration(400).withInitialValues({ opacity: 0 })}
+                style={{ flex: 1 }}
+            >
+                <Animated.View entering={SlideInRight.duration(400).springify().delay(100)}>
                     <PlanTitleCard plan={plan} />
                 </Animated.View>
 
                 {/* Mock temporal, nos falta obtener el user por su id dxdx, igual hay q cambiar a !isOwner */}
                 {isOwner && user && (
-                    <Animated.View entering={FadeInDown.delay(200).springify()}>
+                    <Animated.View entering={SlideInRight.duration(400).springify().delay(150)}>
                         <PlanOwnerCard owner={user} />
                     </Animated.View>
                 )}
 
-                <Animated.View entering={FadeInDown.delay(300).springify()}>
+                <Animated.View entering={SlideInRight.duration(400).springify().delay(200)}>
                     <PlanDateCard plan={plan} />
                 </Animated.View>
 
-                <Animated.View entering={FadeInDown.delay(400).springify()}>
+                <Animated.View entering={SlideInRight.duration(400).springify().delay(250)}>
                     <PlanStatusCard plan={plan} isOwner={isOwner || isAdmin} />
                 </Animated.View>
 
-                <Animated.View entering={FadeInDown.delay(500).springify()}>
+                <Animated.View entering={SlideInRight.duration(400).springify().delay(300)}>
                     <PlanPlaceCard plan={plan} isOwner={isOwner} />
                 </Animated.View>
 
-                {/* {plan.status === 'open' && (
-                    <RSVPCard planId={plan.id} ownerCode={plan.ownerCode} />
-                )} */}
+                {plan.status === 'open' && (
+                    <Animated.View entering={SlideInRight.duration(400).springify().delay(350)}>
+                        <RSVPCard planId={plan.id} ownerCode={plan.ownerCode} />
+                    </Animated.View>
+                )}
 
-                {/* {poll && (
-                    <PollCard
-                        poll={poll}
-                        canEdit={isOwner || isAdmin}
-                        onEditPress={handleEditPoll}
-                    />
+                {poll && (
+                    <Animated.View entering={SlideInRight.duration(400).springify().delay(400)}>
+                        <PollCard
+                            poll={poll}
+                            canEdit={isOwner || isAdmin}
+                            onEditPress={handleEditPoll}
+                        />
+                    </Animated.View>
                 )}
 
                 {(isOwner || isAdmin) && !poll && plan.status === 'open' && (
-                    <Button
-                        onPress={() => setPollModalVisible(true)}
-                        status="info"
-                        accessoryLeft={(props) => <Icon {...props} name="bar-chart-outline" pack="eva" />}
-                        style={{ marginTop: 16, marginBottom: 8 }}
-                    >
-                        Agregar Encuesta
-                    </Button>
-                )} */}
+                    <Animated.View entering={FadeIn.duration(400).delay(450)}>
+                        <Button
+                            onPress={() => setPollModalVisible(true)}
+                            status="info"
+                            accessoryLeft={(props) => <Icon {...props} name="bar-chart-outline" pack="eva" />}
+                            style={{ marginTop: 16, marginBottom: 8 }}
+                        >
+                            Agregar Encuesta
+                        </Button>
+                    </Animated.View>
+                )}
 
                 {(isOwner || isAdmin) && (
                     <Button
@@ -195,7 +229,7 @@ function PlanDetailScreen() {
                         Eliminar Plan
                     </Button>
                 )}
-            </View>
+            </Animated.View>
 
             <CreatePlanModal
                 visible={showModal && (isOwner || isAdmin)}
@@ -206,7 +240,7 @@ function PlanDetailScreen() {
                 plan={plan}
             />
 
-            {/* <CreatePollModal
+            <CreatePollModal
                 visible={pollModalVisible}
                 onClose={() => {
                     setPollModalVisible(false);
@@ -215,7 +249,7 @@ function PlanDetailScreen() {
                 onCreatePoll={handleCreatePoll}
                 planId={id}
                 existingPoll={isEditingPoll ? poll || undefined : undefined}
-            /> */}
+            />
         </ScreenTemplate>
     );
 }

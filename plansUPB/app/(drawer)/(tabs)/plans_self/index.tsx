@@ -24,6 +24,10 @@ export default function MyPlansScreen() {
     fetchPlans()
   }, [])
 
+  const handlePlanCreated = () => {
+    fetchPlans();
+  };
+
   return (
     <ScreenTemplate
       omitScroll
@@ -36,6 +40,7 @@ export default function MyPlansScreen() {
       <CreatePlanModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
+        onSuccess={handlePlanCreated}
       />
     </ScreenTemplate>
   );

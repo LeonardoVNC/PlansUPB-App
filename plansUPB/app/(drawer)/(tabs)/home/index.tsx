@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import ScreenTemplate from '@common_components/ScreenTemplate';
 import FloatingButton from '@common_components/FloatingButton';
@@ -8,11 +8,23 @@ import PostList from '@screen_components/home/PostList';
 import PostFilters from '@screen_components/home/PostFilters';
 import CreatePostModal from '@screen_components/home/CreatePostModal';
 import { useUserStore } from '@store/useUserStore';
+import { usePostStore } from '@store/usePostStore';
 
 export default function HomeScreen() {
     const [modalVisible, setModalVisible] = useState(false);
-    const { posts, createPost } = usePosts();
+    const { loading, setLoading } = usePostStore();
+    const { posts, createPost, fetchAllPosts } = usePosts();
     const { user } = useUserStore();
+
+    const fetchPosts = async () => {
+        setLoading(true);
+        await fetchAllPosts();
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        fetchPosts();
+    }, []);
     
     const {
         searchQuery,
@@ -31,7 +43,11 @@ export default function HomeScreen() {
     };
 
     return (
-        <ScreenTemplate omitScroll>
+        <ScreenTemplate 
+            omitScroll
+            loading={loading}
+            loadingMessage='Cargando publicaciones'
+        >
             <View style={{ flex: 1 }}>
                 <PostFilters
                     searchQuery={searchQuery}
