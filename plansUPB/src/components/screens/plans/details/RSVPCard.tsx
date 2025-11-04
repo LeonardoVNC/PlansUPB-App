@@ -45,7 +45,7 @@ export default function RSVPCard({ planId, ownerCode }: RSVPCardProps) {
 
     if (isOwner) {
         return (
-            <Card style={{ marginBottom: 16, borderRadius: 12 }}>
+            <Card style={{ marginBottom: 16, borderRadius: 12 }} disabled>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
                     <Icon
                         name="people"

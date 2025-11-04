@@ -100,7 +100,18 @@ function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolea
                     </View>
 
                     {hasPlace && plan.place && (
-                        <View style={{ height: 160, borderRadius: 8, overflow: 'hidden', marginBottom: 8 }}>
+                        <View
+                            style={{
+                                height: 160,
+                                borderRadius: 8,
+                                overflow: 'hidden',
+                                marginBottom: 8,
+                                position: 'relative',
+                                zIndex: 0,
+                                elevation: 0,
+                            }}
+                            collapsable={false}
+                        >
                             <MapView
                                 style={{ flex: 1 }}
                                 initialRegion={{
@@ -110,6 +121,7 @@ function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolea
                                     longitudeDelta: 0.01,
                                 }}
                                 scrollEnabled={false}
+                                pointerEvents="auto"
                             >
                                 <Marker
                                     coordinate={{

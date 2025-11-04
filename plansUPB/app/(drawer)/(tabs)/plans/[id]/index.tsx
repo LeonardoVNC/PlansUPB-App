@@ -185,10 +185,6 @@ function PlanDetailScreen() {
                     <PlanStatusCard plan={plan} isOwner={isOwner || isAdmin} />
                 </Animated.View>
 
-                <Animated.View entering={SlideInRight.duration(400).springify().delay(300)}>
-                    <PlanPlaceCard plan={plan} isOwner={isOwner} />
-                </Animated.View>
-
                 {plan.status === 'open' && (
                     <Animated.View entering={SlideInRight.duration(400).springify().delay(350)}>
                         <RSVPCard planId={plan.id} ownerCode={plan.ownerCode} />
@@ -229,6 +225,10 @@ function PlanDetailScreen() {
                         Eliminar Plan
                     </Button>
                 )}
+
+                <Animated.View entering={SlideInRight.duration(400).springify().delay(300)}>
+                    <PlanPlaceCard plan={plan} isOwner={isOwner} />
+                </Animated.View>
             </Animated.View>
 
             <CreatePlanModal

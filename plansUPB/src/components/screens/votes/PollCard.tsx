@@ -67,6 +67,7 @@ export default function PollCard({ poll, canEdit = false, onEditPress }: PollCar
         <Card
             style={{ marginBottom: 16, borderRadius: 12 }}
             status={isClosed ? 'basic' : 'primary'}
+            disabled
         >
             {/* Header */}
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
