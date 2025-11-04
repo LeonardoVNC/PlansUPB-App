@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Input, CheckBox, Text, Icon, Select, SelectItem, IndexPath } from '@ui-kitten/components';
@@ -42,15 +42,29 @@ export default function CreatePollModal({ visible, onClose, onCreatePoll, planId
         { value: 'creator_decides', label: 'Creador decide' },
     ];
 
-    const getCloseCriteriaIndex = () => {
+    const getCloseCriteriaIndex = useCallback(() => {
         const criteriaIndex = closeCriteriaOptions.findIndex(opt => opt.value === formData.closeCriteria);
         return new IndexPath(criteriaIndex >= 0 ? criteriaIndex : 0);
-    };
+    }, [formData.closeCriteria]);
 
-    const getTiebreakIndex = () => {
+    const getTiebreakIndex = useCallback(() => {
         const tiebreakIndex = tiebreakOptions.findIndex(opt => opt.value === formData.tiebreakMethod);
         return new IndexPath(tiebreakIndex >= 0 ? tiebreakIndex : 0);
-    };
+    }, [formData.tiebreakMethod]);
+    
+    const handleCloseCriteriaSelect = useCallback((index: IndexPath | IndexPath[]) => {
+        const selectedIndex = index as IndexPath;
+        requestAnimationFrame(() => {
+            updateField('closeCriteria', closeCriteriaOptions[selectedIndex.row].value);
+        });
+    }, [updateField]);
+    
+    const handleTiebreakSelect = useCallback((index: IndexPath | IndexPath[]) => {
+        const selectedIndex = index as IndexPath;
+        requestAnimationFrame(() => {
+            updateField('tiebreakMethod', tiebreakOptions[selectedIndex.row].value);
+        });
+    }, [updateField]);
 
     useEffect(() => {
         if (visible && existingPoll && !hasLoadedExistingPoll.current) {
@@ -182,10 +196,7 @@ export default function CreatePollModal({ visible, onClose, onCreatePoll, planId
                 </Text>
                 <Select
                     selectedIndex={getCloseCriteriaIndex()}
-                    onSelect={(index) => {
-                        const selectedIndex = index as IndexPath;
-                        updateField('closeCriteria', closeCriteriaOptions[selectedIndex.row].value);
-                    }}
+                    onSelect={handleCloseCriteriaSelect}
                     value={closeCriteriaOptions[getCloseCriteriaIndex().row].label}
                     style={{ marginBottom: 16 }}
                 >
@@ -222,10 +233,7 @@ export default function CreatePollModal({ visible, onClose, onCreatePoll, planId
                 </Text>
                 <Select
                     selectedIndex={getTiebreakIndex()}
-                    onSelect={(index) => {
-                        const selectedIndex = index as IndexPath;
-                        updateField('tiebreakMethod', tiebreakOptions[selectedIndex.row].value);
-                    }}
+                    onSelect={handleTiebreakSelect}
                     value={tiebreakOptions[getTiebreakIndex().row].label}
                     style={{ marginBottom: 16 }}
                 >

@@ -6,12 +6,22 @@ import { Plan } from "@interfaces/plans.interfaces";
 import { globalStyles } from "@styles/globals";
 import { cardStatusMap, iconStatusMap, labelStatusMap } from "@styles/planStatusMap";
 import PlanStatusActions from "./PlanStatusActions";
+import Animated, { 
+    useSharedValue, 
+    useAnimatedStyle, 
+    withSpring,
+    withSequence,
+    ZoomIn
+} from 'react-native-reanimated';
 
 function PlanStatusCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolean }) {
     const { colors } = useThemeColors();
     const [statusColor, setStatusColor] = useState<string>()
     const [status, setStatus] = useState<string>()
     const [statusLabel, setStatusLabel] = useState<string>()
+    
+    const chipScale = useSharedValue(1);
+    const chipRotation = useSharedValue(0);
 
     const mainIcon = useMemo(() => {
         return (
@@ -28,6 +38,17 @@ function PlanStatusCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boole
         changeStatusColor();
         setStatus(cardStatusMap.get(plan.status))
         setStatusLabel(labelStatusMap.get(plan.status))
+        
+        // Animar cuando cambia el estado
+        chipScale.value = withSequence(
+            withSpring(1.2, { damping: 10 }),
+            withSpring(1, { damping: 10 })
+        );
+        chipRotation.value = withSequence(
+            withSpring(5, { damping: 10 }),
+            withSpring(-5, { damping: 10 }),
+            withSpring(0, { damping: 10 })
+        );
     }, [plan.status])
 
     const changeStatusColor = () => {
@@ -42,6 +63,13 @@ function PlanStatusCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boole
         }
     }
 
+    const chipAnimatedStyle = useAnimatedStyle(() => ({
+        transform: [
+            { scale: chipScale.value },
+            { rotate: `${chipRotation.value}deg` }
+        ]
+    }));
+
     return (
         <Card
             style={globalStyles().app_card}
@@ -52,7 +80,9 @@ function PlanStatusCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boole
                 Estado del plan
             </Text>
 
-            <BigChip icon={mainIcon} color={statusColor || ""} text={statusLabel || ""} />
+            <Animated.View style={chipAnimatedStyle}>
+                <BigChip icon={mainIcon} color={statusColor || ""} text={statusLabel || ""} />
+            </Animated.View>
             
             {isOwner && (<PlanStatusActions plan={plan} />)}
         </Card>

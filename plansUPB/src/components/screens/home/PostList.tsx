@@ -47,7 +47,10 @@ export default function PostList({ posts, isFiltered = false }: PostListProps) {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => <PostCard post={item} />}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 80 }}
+            contentContainerStyle={{ 
+                paddingBottom: 80,
+                paddingHorizontal: 16 
+            }}
         />
     );
 }

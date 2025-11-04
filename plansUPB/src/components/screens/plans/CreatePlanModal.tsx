@@ -13,9 +13,10 @@ interface CreatePlanModalProps {
     visible: boolean;
     onClose: () => void;
     plan?: Plan;
+    onSuccess?: () => void;
 }
 
-export default function CreatePlanModal({ visible, onClose, plan }: CreatePlanModalProps) {
+export default function CreatePlanModal({ visible, onClose, plan, onSuccess }: CreatePlanModalProps) {
     const { user } = useUserStore();
     const { createPlan, updatePlan } = usePlans()
     const [title, setTitle] = useState("")
@@ -52,19 +53,23 @@ export default function CreatePlanModal({ visible, onClose, plan }: CreatePlanMo
         );
     }, [user, title, category, description, date]);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!isValidInfo || !user) return;
 
         if (plan) {
-            handleUpdate();
+            await handleUpdate();
         } else {
-            handleCreation();
+            await handleCreation();
         }
         resetForm();
         onClose();
+        
+        if (onSuccess) {
+            onSuccess();
+        }
     };
 
-    const handleCreation = () => {
+    const handleCreation = async () => {
         if (!user) return
 
         let values: Omit<Plan, 'id'> = {
@@ -83,10 +88,10 @@ export default function CreatePlanModal({ visible, onClose, plan }: CreatePlanMo
             }
             values = { ...values, cover: coverNumber };
         }
-        createPlan(values);
+        await createPlan(values);
     }
 
-    const handleUpdate = () => {
+    const handleUpdate = async () => {
         if (!plan || !user) return
 
         const coverNumber = cover ? parseFloat(cover) : undefined;
@@ -101,7 +106,7 @@ export default function CreatePlanModal({ visible, onClose, plan }: CreatePlanMo
             description: description.trim(),
             ...(cover && { cover: coverNumber }),
         };
-        updatePlan(plan.id, updated);
+        await updatePlan(plan.id, updated);
         removeActualPlan()
     }
 

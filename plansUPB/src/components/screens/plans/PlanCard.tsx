@@ -11,6 +11,7 @@ import { View, TouchableOpacity } from 'react-native';
 import SharePlanModal from './SharePlanModal';
 import { useUserStore } from '@store/useUserStore';
 import { useSaves } from '@hooks/useSaves';
+import { addConfirmation } from '@services/confirmations.service';
 import Animated, { 
     FadeInDown, 
     useAnimatedStyle, 
@@ -32,6 +33,7 @@ export default function PlanCard({ plan, index = 0 }: { plan: Plan; index?: numb
     
     const saveScale = useSharedValue(1);
     const shareScale = useSharedValue(1);
+    const cardScale = useSharedValue(1);
 
     useEffect(() => {
         setSaved(isPlanSaved(plan.id))
@@ -39,10 +41,17 @@ export default function PlanCard({ plan, index = 0 }: { plan: Plan; index?: numb
 
     //TODO-Quiza haya que sacar este navigate, es raro tener uno estático en componente
     const handlePress = () => {
-        router.replace(`plans/${plan.id}`)
+        cardScale.value = withSequence(
+            withTiming(0.97, { duration: 100 }),
+            withTiming(1, { duration: 100 })
+        );
+        
+        setTimeout(() => {
+            router.push(`plans/${plan.id}`);
+        }, 150);
     };
 
-    const handleSavePress = (e: any) => {
+    const handleSavePress = async (e: any) => {
         e.stopPropagation();
         if (loading) return
 
@@ -54,10 +63,10 @@ export default function PlanCard({ plan, index = 0 }: { plan: Plan; index?: numb
 
         setLoading(true)
         if (saved) {
-            unsavePlan(plan.id)
+            await unsavePlan(plan.id)
             setSaved(false)
         } else {
-            savePlan(plan.id)
+            await savePlan(plan.id)
             setSaved(true)
         }
         setLoading(false)
@@ -81,18 +90,24 @@ export default function PlanCard({ plan, index = 0 }: { plan: Plan; index?: numb
     const shareAnimatedStyle = useAnimatedStyle(() => ({
         transform: [{ scale: shareScale.value }]
     }));
+    
+    const cardAnimatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: cardScale.value }]
+    }));
 
-    const handleShare = (userCodes: string[]) => {
+    const handleShare = async (userCodes: string[]) => {
         if (!user) return;
 
-        // userCodes.forEach((userCode: string) => {
-        //     addConfirmation({
-        //         planId: plan.id,
-        //         userCode: userCode,
-        //         status: 'pending',
-        //         confirmed: undefined,
-        //     });
-        // });
+        const promises = userCodes.map((userCode: string) => 
+            addConfirmation({
+                planId: plan.id,
+                userCode: userCode,
+                status: 'pending',
+            })
+        );
+
+        await Promise.all(promises);
+        setShareModalVisible(false);
     };
 
     return (
@@ -106,6 +121,7 @@ export default function PlanCard({ plan, index = 0 }: { plan: Plan; index?: numb
             />
             <Animated.View
                 entering={FadeInDown.delay(index * 100).springify()}
+                style={cardAnimatedStyle}
             >
             <Card
                 style={{ marginBottom: 16, borderRadius: 12, elevation: 2 }}

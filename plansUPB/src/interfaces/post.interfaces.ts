@@ -9,17 +9,6 @@ export interface Post {
     imageUrl?: string;
 }
 
-export interface PostState {
-    posts: Post[];
-    addPost: (post: Post) => void;
-    updatePost: (postId: string, updates: Partial<Post>) => void;
-    removePost: (postId: string) => void;
-    toggleLike: (postId: string, userId: string) => void;
-    getPostsByAuthor: (authorId: string) => Post[];
-    getPostsByCategory: (category: string) => Post[];
-    getPostById: (postId: string) => Post | undefined;
-}
-
 export const POST_CATEGORIES = [
     'General',
     'Académico',

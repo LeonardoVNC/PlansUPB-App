@@ -5,14 +5,7 @@ import { usePolls } from '@hooks/usePolls';
 import { useThemeColors } from '@hooks/useThemeColors';
 import { Poll } from '@interfaces/vote.interfaces';
 import { formatFullDateHour } from '@utils/formatDate';
-import Animated, { 
-    useSharedValue, 
-    useAnimatedStyle, 
-    withSpring,
-    withSequence,
-    FadeIn,
-    Layout
-} from 'react-native-reanimated';
+import PollOption from './PollOption';
 
 interface PollCardProps {
     poll: Poll;
@@ -25,51 +18,34 @@ export default function PollCard({ poll, canEdit = false, onEditPress }: PollCar
     const { votePoll, unvotePoll, hasUserVoted, updatePoll } = usePolls();
     const [expanded, setExpanded] = useState(false);
 
-    const totalVotes = poll.options.reduce((sum, opt) => sum + opt.votes, 0);
-    const isClosed = !poll.isOpen;
-    const maxVotes = Math.max(...poll.options.map(opt => opt.votes), 0);
-    
-    const optionScales = useSharedValue<Record<string, number>>(
-        poll.options.reduce((acc, opt) => ({ ...acc, [opt.id]: 1 }), {})
-    );
-    
-    const statusScale = useSharedValue(1);
-    const statusOpacity = useSharedValue(0);
+    const isValidPoll = poll && 
+        poll.options && Array.isArray(poll.options) && poll.options.length > 0 &&
+        poll.votes && Array.isArray(poll.votes);
+
+    const totalVotes = isValidPoll ? poll.options.reduce((sum, opt) => sum + (opt?.votes || 0), 0) : 0;
+    const isClosed = !poll?.isOpen;
+    const maxVotes = isValidPoll ? Math.max(...poll.options.map(opt => opt?.votes || 0), 0) : 0;
 
     useEffect(() => {
-        if (isClosed) {
-            statusOpacity.value = withSpring(1, { damping: 15 });
-            statusScale.value = withSequence(
-                withSpring(1.2, { damping: 10 }),
-                withSpring(1, { damping: 10 })
-            );
-        }
-    }, [isClosed]);
-
-    const statusBadgeStyle = useAnimatedStyle(() => ({
-        opacity: statusOpacity.value,
-        transform: [{ scale: statusScale.value }]
-    }));
-
-    useEffect(() => {
-        if (poll.closeCriteria === 'deadline' && poll.closesAt && poll.isOpen) {
-            const now = new Date();
-            if (now > poll.closesAt) {
-                updatePoll(poll.id, { isOpen: false });
+        const checkAndClosePoll = async () => {
+            if (poll.closeCriteria === 'deadline' && poll.closesAt && poll.isOpen) {
+                const now = new Date();
+                if (now > poll.closesAt) {
+                    try {
+                        await updatePoll(poll.id, { isOpen: false });
+                    } catch (error) {
+                        console.error('Error al cerrar poll por deadline:', error);
+                    }
+                }
             }
-        }
-    }, [poll.closesAt, poll.isOpen, poll.closeCriteria, poll.id, updatePoll]);
+        };
+        
+        checkAndClosePoll();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [poll.closesAt, poll.isOpen, poll.closeCriteria, poll.id]);
 
     const handleVote = (optionId: string) => {
         if (isClosed) return;
-
-        optionScales.value = {
-            ...optionScales.value,
-            [optionId]: withSequence(
-                withSpring(1.05, { damping: 10 }),
-                withSpring(1, { damping: 10 })
-            )
-        };
 
         if (poll.allowMultiple) {
             const alreadyVoted = hasUserVoted(poll, optionId);
@@ -83,6 +59,10 @@ export default function PollCard({ poll, canEdit = false, onEditPress }: PollCar
         }
     };
 
+    if (!isValidPoll) {
+        return null;
+    }
+
     return (
         <Card
             style={{ marginBottom: 16, borderRadius: 12 }}
@@ -95,9 +75,8 @@ export default function PollCard({ poll, canEdit = false, onEditPress }: PollCar
                         {poll.question}
                     </Text>
                     {isClosed && (
-                        <Animated.View 
-                            entering={FadeIn.duration(400)}
-                            style={[{ 
+                        <View 
+                            style={{ 
                                 backgroundColor: colors.danger + '20', 
                                 paddingHorizontal: 8, 
                                 paddingVertical: 4, 
@@ -106,7 +85,7 @@ export default function PollCard({ poll, canEdit = false, onEditPress }: PollCar
                                 marginTop: 4,
                                 flexDirection: 'row',
                                 alignItems: 'center'
-                            }, statusBadgeStyle]}
+                            }}
                         >
                             <Icon
                                 name="lock"
@@ -117,7 +96,7 @@ export default function PollCard({ poll, canEdit = false, onEditPress }: PollCar
                             <Text category="c1" style={{ color: colors.danger, fontWeight: 'bold' }}>
                                 CERRADA
                             </Text>
-                        </Animated.View>
+                        </View>
                     )}
                 </View>
                 <TouchableOpacity 
@@ -162,69 +141,20 @@ export default function PollCard({ poll, canEdit = false, onEditPress }: PollCar
 
             <View>
                 {poll.options.map((option) => {
-                    const percentage = totalVotes > 0 ? option.votes / totalVotes : 0;
                     const isChecked = hasUserVoted(poll, option.id);
                     const isWinning = totalVotes > 0 && option.votes === maxVotes;
-                    const isWinner = isClosed && isWinning;
-
-                    const animatedStyle = useAnimatedStyle(() => ({
-                        transform: [{ scale: optionScales.value[option.id] || 1 }]
-                    }));
 
                     return (
-                        <Animated.View 
-                            key={option.id} 
-                            style={[{ marginBottom: 12 }, animatedStyle]}
-                            layout={Layout.springify()}
-                        >
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                                    <CheckBox
-                                        checked={isChecked}
-                                        onChange={() => handleVote(option.id)}
-                                        disabled={isClosed}
-                                    />
-                                    <Text 
-                                        category="p1" 
-                                        style={{ 
-                                            color: isWinner ? colors.success : colors.text,
-                                            fontWeight: isWinner ? 'bold' : 'normal',
-                                            marginLeft: 8,
-                                            flex: 1
-                                        }}
-                                    >
-                                        {option.text}
-                                    </Text>
-                                    {isWinner && (
-                                        <Icon
-                                            name="checkmark-circle-2"
-                                            pack="eva"
-                                            fill={colors.success}
-                                            style={{ width: 20, height: 20, marginLeft: 6 }}
-                                        />
-                                    )}
-                                </View>
-                                {expanded && (
-                                    <Text category="c1" style={{ color: colors.subtitle, marginLeft: 8 }}>
-                                        {option.votes} {option.votes === 1 ? 'voto' : 'votos'}
-                                    </Text>
-                                )}
-                            </View>
-                            
-                            {expanded && (
-                                <View style={{ marginLeft: 32, marginTop: 4 }}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                                        <Text category="c1" style={{ color: colors.subtitle }}>
-                                            {(percentage * 100).toFixed(1)}%
-                                        </Text>
-                                    </View>
-                                    <ProgressBar 
-                                        progress={percentage} 
-                                        status={isWinning ? 'success' : 'danger'}
-                                    />
-                                </View>
-                            )}
-                        </Animated.View>
+                        <PollOption
+                            key={option.id}
+                            option={option}
+                            checked={isChecked}
+                            onPress={() => handleVote(option.id)}
+                            disabled={isClosed}
+                            totalVotes={totalVotes}
+                            isWinning={isWinning}
+                            showResults={expanded}
+                        />
                     );
                 })}
             </View>

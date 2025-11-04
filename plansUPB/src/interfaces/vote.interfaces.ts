@@ -15,6 +15,7 @@ export type TiebreakMethod = 'oldest_first' | 'creator_decides';
 export interface Poll {
     id: string;
     planId?: string;
+    createdBy?: string;
     question: string;
     description?: string;
     options: PollOption[];
