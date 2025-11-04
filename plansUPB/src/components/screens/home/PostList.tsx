@@ -19,8 +19,6 @@ export default function PostList({ posts, isFiltered = false }: PostListProps) {
                 flex: 1, 
                 justifyContent: 'center', 
                 alignItems: 'center',
-                paddingVertical: 40,
-                paddingHorizontal: 16
             }}>
                 <Icon
                     name={isFiltered ? "search-outline" : "edit-outline"}
@@ -49,7 +47,6 @@ export default function PostList({ posts, isFiltered = false }: PostListProps) {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ 
                 paddingBottom: 80,
-                paddingHorizontal: 12
             }}
         />
     );

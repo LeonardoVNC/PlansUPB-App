@@ -36,7 +36,6 @@ function PlanList({ plans }: { plans: Plan[] }) {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ 
                 paddingBottom: 100,
-                paddingHorizontal: 12
             }}
             ListEmptyComponent={listEmpty}
         />
