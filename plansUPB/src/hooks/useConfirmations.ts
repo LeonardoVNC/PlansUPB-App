@@ -30,7 +30,7 @@ export const useConfirmations = () => {
 
     useEffect(() => {
         fetchConfirmations();
-    }, [])
+    }, [user])
 
     useEffect(() => {
         const fetchPlans = async () => {
@@ -38,7 +38,7 @@ export const useConfirmations = () => {
             setInvPlansList(invitations)
         }
         fetchPlans();
-    }, [confirmations])
+    }, [confirmations, confirmsToPlans])
 
 
     const respondToInvitation = async (planId: string, accept: boolean) => {
@@ -53,12 +53,60 @@ export const useConfirmations = () => {
         } else {
             await confirmationService.removeConfirmation(planId, user.code);
         }
+        await fetchConfirmations();
+    }
+
+    const setRSVP = async (planId: string, willAttend: boolean) => {
+        if (!user) return;
+
+        const existingConfirmation = confirmations.find(
+            c => c.planId === planId && c.userCode === user.code
+        );
+
+        if (existingConfirmation) {
+            await confirmationService.updateConfirmation(planId, user.code, { 
+                confirmed: willAttend,
+                respondedAt: new Date()
+            });
+        } else {
+            await confirmationService.addConfirmation({
+                planId,
+                userCode: user.code,
+                confirmed: willAttend,
+                status: willAttend ? 'accepted' : 'declined',
+                respondedAt: new Date()
+            });
+        }
+        
+        await fetchConfirmations();
+    }
+
+    const getUserRSVP = (planId: string): boolean | undefined => {
+        if (!user) return undefined;
+        const confirmation = confirmations.find(
+            c => c.planId === planId && c.userCode === user.code
+        );
+        return confirmation?.confirmed;
+    }
+
+    const getAttendanceStats = (planId: string) => {
+        const planConfirmations = confirmations.filter(c => c.planId === planId);
+
+        const attending = planConfirmations.filter(c => c.confirmed === true).length;
+        const notAttending = planConfirmations.filter(c => c.confirmed === false).length;
+        const total = attending + notAttending;
+        const percentage = total > 0 ? Math.round((attending / total) * 100) : 0;
+
+        return { attending, notAttending, percentage, total };
     }
 
     return {
         confirmations,
         invPlansList,
         respondToInvitation,
+        setRSVP,
+        getUserRSVP,
+        getAttendanceStats,
     }
 
     // const setRSVP = (planId: string, willAttend: boolean) => {

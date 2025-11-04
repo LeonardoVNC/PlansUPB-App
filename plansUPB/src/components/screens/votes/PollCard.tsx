@@ -5,6 +5,14 @@ import { usePolls } from '@hooks/usePolls';
 import { useThemeColors } from '@hooks/useThemeColors';
 import { Poll } from '@interfaces/vote.interfaces';
 import { formatFullDateHour } from '@utils/formatDate';
+import Animated, { 
+    useSharedValue, 
+    useAnimatedStyle, 
+    withSpring,
+    withSequence,
+    FadeIn,
+    Layout
+} from 'react-native-reanimated';
 
 interface PollCardProps {
     poll: Poll;
@@ -20,6 +28,28 @@ export default function PollCard({ poll, canEdit = false, onEditPress }: PollCar
     const totalVotes = poll.options.reduce((sum, opt) => sum + opt.votes, 0);
     const isClosed = !poll.isOpen;
     const maxVotes = Math.max(...poll.options.map(opt => opt.votes), 0);
+    
+    const optionScales = useSharedValue<Record<string, number>>(
+        poll.options.reduce((acc, opt) => ({ ...acc, [opt.id]: 1 }), {})
+    );
+    
+    const statusScale = useSharedValue(1);
+    const statusOpacity = useSharedValue(0);
+
+    useEffect(() => {
+        if (isClosed) {
+            statusOpacity.value = withSpring(1, { damping: 15 });
+            statusScale.value = withSequence(
+                withSpring(1.2, { damping: 10 }),
+                withSpring(1, { damping: 10 })
+            );
+        }
+    }, [isClosed]);
+
+    const statusBadgeStyle = useAnimatedStyle(() => ({
+        opacity: statusOpacity.value,
+        transform: [{ scale: statusScale.value }]
+    }));
 
     useEffect(() => {
         if (poll.closeCriteria === 'deadline' && poll.closesAt && poll.isOpen) {
@@ -32,6 +62,14 @@ export default function PollCard({ poll, canEdit = false, onEditPress }: PollCar
 
     const handleVote = (optionId: string) => {
         if (isClosed) return;
+
+        optionScales.value = {
+            ...optionScales.value,
+            [optionId]: withSequence(
+                withSpring(1.05, { damping: 10 }),
+                withSpring(1, { damping: 10 })
+            )
+        };
 
         if (poll.allowMultiple) {
             const alreadyVoted = hasUserVoted(poll, optionId);
@@ -57,16 +95,19 @@ export default function PollCard({ poll, canEdit = false, onEditPress }: PollCar
                         {poll.question}
                     </Text>
                     {isClosed && (
-                        <View style={{ 
-                            backgroundColor: colors.danger + '20', 
-                            paddingHorizontal: 8, 
-                            paddingVertical: 4, 
-                            borderRadius: 4,
-                            alignSelf: 'flex-start',
-                            marginTop: 4,
-                            flexDirection: 'row',
-                            alignItems: 'center'
-                        }}>
+                        <Animated.View 
+                            entering={FadeIn.duration(400)}
+                            style={[{ 
+                                backgroundColor: colors.danger + '20', 
+                                paddingHorizontal: 8, 
+                                paddingVertical: 4, 
+                                borderRadius: 4,
+                                alignSelf: 'flex-start',
+                                marginTop: 4,
+                                flexDirection: 'row',
+                                alignItems: 'center'
+                            }, statusBadgeStyle]}
+                        >
                             <Icon
                                 name="lock"
                                 pack="eva"
@@ -76,7 +117,7 @@ export default function PollCard({ poll, canEdit = false, onEditPress }: PollCar
                             <Text category="c1" style={{ color: colors.danger, fontWeight: 'bold' }}>
                                 CERRADA
                             </Text>
-                        </View>
+                        </Animated.View>
                     )}
                 </View>
                 <TouchableOpacity 
@@ -126,8 +167,16 @@ export default function PollCard({ poll, canEdit = false, onEditPress }: PollCar
                     const isWinning = totalVotes > 0 && option.votes === maxVotes;
                     const isWinner = isClosed && isWinning;
 
+                    const animatedStyle = useAnimatedStyle(() => ({
+                        transform: [{ scale: optionScales.value[option.id] || 1 }]
+                    }));
+
                     return (
-                        <View key={option.id} style={{ marginBottom: 12 }}>
+                        <Animated.View 
+                            key={option.id} 
+                            style={[{ marginBottom: 12 }, animatedStyle]}
+                            layout={Layout.springify()}
+                        >
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
                                     <CheckBox
@@ -175,7 +224,7 @@ export default function PollCard({ poll, canEdit = false, onEditPress }: PollCar
                                     />
                                 </View>
                             )}
-                        </View>
+                        </Animated.View>
                     );
                 })}
             </View>

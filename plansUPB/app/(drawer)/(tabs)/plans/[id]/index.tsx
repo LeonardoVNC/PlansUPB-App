@@ -17,6 +17,7 @@ import { useUserStore } from '@store/useUserStore';
 import { usePlanStore } from '@store/usePlanStore';
 import FloatingButton from '@common_components/FloatingButton';
 import CreatePlanModal from '@screen_components/plans/CreatePlanModal';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
 function PlanDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -137,18 +138,28 @@ function PlanDetailScreen() {
             loading={loading}
         >
             <View>
-                <PlanTitleCard plan={plan} />
+                <Animated.View entering={FadeInDown.delay(100).springify()}>
+                    <PlanTitleCard plan={plan} />
+                </Animated.View>
 
                 {/* Mock temporal, nos falta obtener el user por su id dxdx, igual hay q cambiar a !isOwner */}
                 {isOwner && user && (
-                    <PlanOwnerCard owner={user} />
+                    <Animated.View entering={FadeInDown.delay(200).springify()}>
+                        <PlanOwnerCard owner={user} />
+                    </Animated.View>
                 )}
 
-                <PlanDateCard plan={plan} />
+                <Animated.View entering={FadeInDown.delay(300).springify()}>
+                    <PlanDateCard plan={plan} />
+                </Animated.View>
 
-                <PlanStatusCard plan={plan} isOwner={isOwner || isAdmin} />
+                <Animated.View entering={FadeInDown.delay(400).springify()}>
+                    <PlanStatusCard plan={plan} isOwner={isOwner || isAdmin} />
+                </Animated.View>
 
-                <PlanPlaceCard plan={plan} isOwner={isOwner} />
+                <Animated.View entering={FadeInDown.delay(500).springify()}>
+                    <PlanPlaceCard plan={plan} isOwner={isOwner} />
+                </Animated.View>
 
                 {/* {plan.status === 'open' && (
                     <RSVPCard planId={plan.id} ownerCode={plan.ownerCode} />

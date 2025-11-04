@@ -11,8 +11,16 @@ import { View, TouchableOpacity } from 'react-native';
 import SharePlanModal from './SharePlanModal';
 import { useUserStore } from '@store/useUserStore';
 import { useSaves } from '@hooks/useSaves';
+import Animated, { 
+    FadeInDown, 
+    useAnimatedStyle, 
+    useSharedValue, 
+    withSpring,
+    withSequence,
+    withTiming
+} from 'react-native-reanimated';
 
-export default function PlanCard({ plan }: { plan: Plan }) {
+export default function PlanCard({ plan, index = 0 }: { plan: Plan; index?: number }) {
     const router = useRouter();
     const { colors } = useThemeColors();
     // const { addConfirmation } = usePlans();
@@ -21,6 +29,9 @@ export default function PlanCard({ plan }: { plan: Plan }) {
     const [saved, setSaved] = useState(false)
     const [loading, setLoading] = useState(false)
     const [shareModalVisible, setShareModalVisible] = useState(false)
+    
+    const saveScale = useSharedValue(1);
+    const shareScale = useSharedValue(1);
 
     useEffect(() => {
         setSaved(isPlanSaved(plan.id))
@@ -35,6 +46,12 @@ export default function PlanCard({ plan }: { plan: Plan }) {
         e.stopPropagation();
         if (loading) return
 
+        saveScale.value = withSequence(
+            withSpring(0.8, { damping: 10 }),
+            withSpring(1.2, { damping: 10 }),
+            withSpring(1, { damping: 10 })
+        );
+
         setLoading(true)
         if (saved) {
             unsavePlan(plan.id)
@@ -48,8 +65,22 @@ export default function PlanCard({ plan }: { plan: Plan }) {
 
     const handleSharePress = (e: any) => {
         e.stopPropagation();
+        
+        shareScale.value = withSequence(
+            withSpring(0.8, { damping: 10 }),
+            withSpring(1, { damping: 10 })
+        );
+        
         setShareModalVisible(true);
     };
+
+    const saveAnimatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: saveScale.value }]
+    }));
+
+    const shareAnimatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: shareScale.value }]
+    }));
 
     const handleShare = (userCodes: string[]) => {
         if (!user) return;
@@ -73,6 +104,9 @@ export default function PlanCard({ plan }: { plan: Plan }) {
                 planId={plan.id}
                 planTitle={plan.title}
             />
+            <Animated.View
+                entering={FadeInDown.delay(index * 100).springify()}
+            >
             <Card
                 style={{ marginBottom: 16, borderRadius: 12, elevation: 2 }}
                 onPress={handlePress}
@@ -102,23 +136,28 @@ export default function PlanCard({ plan }: { plan: Plan }) {
 
                 <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
                     <TouchableOpacity onPress={handleSharePress}>
-                        <Ionicons
-                            name="share-outline"
-                            color={colors.primary}
-                            size={22}
-                        />
+                        <Animated.View style={shareAnimatedStyle}>
+                            <Ionicons
+                                name="share-outline"
+                                color={colors.primary}
+                                size={22}
+                            />
+                        </Animated.View>
                     </TouchableOpacity>
                     
                     <TouchableOpacity onPress={handleSavePress}>
-                        <Ionicons
-                            name={saved ? 'bookmark' : 'bookmark-outline'}
-                            color={saved ? colors.subtitle : colors.muted}
-                            size={22}
-                        />
+                        <Animated.View style={saveAnimatedStyle}>
+                            <Ionicons
+                                name={saved ? 'bookmark' : 'bookmark-outline'}
+                                color={saved ? colors.subtitle : colors.muted}
+                                size={22}
+                            />
+                        </Animated.View>
                     </TouchableOpacity>
                 </View>
             </View>
         </Card>
+        </Animated.View>
         </>
     );
 }

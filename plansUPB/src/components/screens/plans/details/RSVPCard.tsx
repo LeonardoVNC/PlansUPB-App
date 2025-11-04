@@ -2,8 +2,16 @@ import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { Card, Text, Icon, Button } from '@ui-kitten/components';
 import { useThemeColors } from '@hooks/useThemeColors';
-import { usePlans } from '@hooks/usePlans';
+import { useConfirmations } from '@hooks/useConfirmations';
 import { useUserStore } from '@store/useUserStore';
+import Animated, { 
+    useSharedValue, 
+    useAnimatedStyle, 
+    withSpring,
+    withSequence,
+    FadeIn,
+    ZoomIn
+} from 'react-native-reanimated';
 
 interface RSVPCardProps {
     planId: string;
@@ -13,15 +21,27 @@ interface RSVPCardProps {
 export default function RSVPCard({ planId, ownerCode }: RSVPCardProps) {
     const { colors } = useThemeColors();
     const { user } = useUserStore();
-    const { getUserRSVP, setRSVP, getAttendanceStats } = usePlans();
-
+    const { getUserRSVP, setRSVP, getAttendanceStats } = useConfirmations();
+    
     const userRSVP = getUserRSVP(planId);
     const stats = getAttendanceStats(planId);
     const isOwner = user?.code === ownerCode;
+    
+    const buttonScale = useSharedValue(1);
 
-    const handleRSVP = (willAttend: boolean) => {
-        setRSVP(planId, willAttend);
+    const handleRSVP = async (willAttend: boolean) => {
+        buttonScale.value = withSequence(
+            withSpring(0.95, { damping: 10 }),
+            withSpring(1.1, { damping: 10 }),
+            withSpring(1, { damping: 10 })
+        );
+        
+        await setRSVP(planId, willAttend);
     };
+    
+    const buttonAnimatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: buttonScale.value }]
+    }));
 
     if (isOwner) {
         return (
@@ -106,11 +126,11 @@ export default function RSVPCard({ planId, ownerCode }: RSVPCardProps) {
             </View>
 
             {userRSVP === undefined ? (
-                <View>
+                <Animated.View entering={FadeIn.duration(400)}>
                     <Text category="p2" style={{ color: colors.subtitle, marginBottom: 12 }}>
                         Confirma tu asistencia para que el organizador pueda planificar mejor.
                     </Text>
-                    <View style={{ flexDirection: 'row', gap: 12 }}>
+                    <Animated.View style={[{ flexDirection: 'row', gap: 12 }, buttonAnimatedStyle]}>
                         <Button
                             style={{ flex: 1 }}
                             status="success"
@@ -128,10 +148,10 @@ export default function RSVPCard({ planId, ownerCode }: RSVPCardProps) {
                         >
                             No asistiré
                         </Button>
-                    </View>
-                </View>
+                    </Animated.View>
+                </Animated.View>
             ) : (
-                <View>
+                <Animated.View entering={ZoomIn.duration(400).springify()}>
                     <View style={{ 
                         backgroundColor: userRSVP ? colors.success + '10' : colors.danger + '10',
                         padding: 12,
@@ -199,7 +219,7 @@ export default function RSVPCard({ planId, ownerCode }: RSVPCardProps) {
                             </View>
                         </View>
                     </View>
-                </View>
+                </Animated.View>
             )}
         </Card>
     );
