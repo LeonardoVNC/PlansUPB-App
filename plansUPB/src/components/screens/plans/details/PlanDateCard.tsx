@@ -18,7 +18,12 @@ function PlanDateCard({ plan }: { plan: Plan }) {
 
     const CardRow = ({ icon, title, text }: { icon: string, title: string, text: string }) => {
         return (
-            <Layout style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Layout style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                backgroundColor: colors.surface
+            }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                     <Icon name={icon} pack="eva" fill={colors.primary} style={{ width: 24, height: 24 }} />
                     <Text category="s1" style={{ color: colors.text, fontWeight: 'bold' }}>
@@ -65,7 +70,11 @@ function PlanDateCard({ plan }: { plan: Plan }) {
             status="basic"
             disabled
         >
-            <Layout style={{ flexDirection: 'column', gap: 12 }}>
+            <Layout style={{
+                flexDirection: 'column',
+                gap: 12,
+                backgroundColor: colors.surface
+            }}>
                 {rows}
             </Layout>
         </Card>

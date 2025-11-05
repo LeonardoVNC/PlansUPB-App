@@ -4,9 +4,9 @@ import { Card, Text, Icon, Button } from '@ui-kitten/components';
 import { useThemeColors } from '@hooks/useThemeColors';
 import { useConfirmations } from '@hooks/useConfirmations';
 import { useUserStore } from '@store/useUserStore';
-import Animated, { 
-    useSharedValue, 
-    useAnimatedStyle, 
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
     withSpring,
     withSequence,
     FadeIn,
@@ -22,11 +22,11 @@ export default function RSVPCard({ planId, ownerCode }: RSVPCardProps) {
     const { colors } = useThemeColors();
     const { user } = useUserStore();
     const { getUserRSVP, setRSVP, getAttendanceStats } = useConfirmations();
-    
+
     const userRSVP = getUserRSVP(planId);
     const stats = getAttendanceStats(planId);
     const isOwner = user?.code === ownerCode;
-    
+
     const buttonScale = useSharedValue(1);
 
     const handleRSVP = async (willAttend: boolean) => {
@@ -35,17 +35,21 @@ export default function RSVPCard({ planId, ownerCode }: RSVPCardProps) {
             withSpring(1.1, { damping: 10 }),
             withSpring(1, { damping: 10 })
         );
-        
+
         await setRSVP(planId, willAttend);
     };
-    
+
     const buttonAnimatedStyle = useAnimatedStyle(() => ({
         transform: [{ scale: buttonScale.value }]
     }));
 
     if (isOwner) {
         return (
-            <Card style={{ marginBottom: 16, borderRadius: 12, backgroundColor: '#f1f5f9' }} disabled>
+            <Card style={{
+                marginBottom: 16,
+                borderRadius: 12,
+                backgroundColor: colors.surface
+            }} disabled>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
                     <Icon
                         name="people"
@@ -58,9 +62,9 @@ export default function RSVPCard({ planId, ownerCode }: RSVPCardProps) {
                     </Text>
                 </View>
 
-                <View style={{ 
-                    backgroundColor: colors.primary + '10', 
-                    padding: 16, 
+                <View style={{
+                    backgroundColor: colors.primary + '10',
+                    padding: 16,
                     borderRadius: 8,
                     marginBottom: 8
                 }}>
@@ -152,7 +156,7 @@ export default function RSVPCard({ planId, ownerCode }: RSVPCardProps) {
                 </Animated.View>
             ) : (
                 <Animated.View entering={ZoomIn.duration(400).springify()}>
-                    <View style={{ 
+                    <View style={{
                         backgroundColor: userRSVP ? colors.success + '10' : colors.danger + '10',
                         padding: 12,
                         borderRadius: 8,
@@ -171,9 +175,9 @@ export default function RSVPCard({ planId, ownerCode }: RSVPCardProps) {
                         </Text>
                     </View>
 
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         onPress={() => handleRSVP(!userRSVP)}
-                        style={{ 
+                        style={{
                             padding: 8,
                             alignItems: 'center'
                         }}
@@ -183,7 +187,7 @@ export default function RSVPCard({ planId, ownerCode }: RSVPCardProps) {
                         </Text>
                     </TouchableOpacity>
 
-                    <View style={{ 
+                    <View style={{
                         marginTop: 12,
                         paddingTop: 12,
                         borderTopWidth: 1,

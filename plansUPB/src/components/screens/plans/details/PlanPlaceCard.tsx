@@ -83,7 +83,11 @@ function PlanPlaceCard({ plan, isOwner = false }: { plan: Plan, isOwner?: boolea
                 status={hasPlace ? 'success' : 'info'}
                 disabled
             >
-                <Layout style={{ flexDirection: 'column', gap: 16 }}>
+                <Layout style={{
+                    flexDirection: 'column',
+                    gap: 16,
+                    backgroundColor: colors.surface
+                }}>
                     <View style={{ alignItems: 'center' }}>
                         <Ionicons
                             name="location-outline"

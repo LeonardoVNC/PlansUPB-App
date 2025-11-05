@@ -14,8 +14,14 @@ export default function InvitationCard({ plan, onAccept, onDecline }: Invitation
     const { colors } = useThemeColors();
 
     return (
-        <Card style={{ marginBottom: 16, borderRadius: 12, borderColor: colors.primary, borderWidth: 2, backgroundColor: '#f1f5f9' }}>
-            <View style={{ 
+        <Card style={{
+            marginBottom: 16,
+            borderRadius: 12,
+            borderColor: colors.primary,
+            borderWidth: 2,
+            backgroundColor: colors.surface
+        }}>
+            <View style={{
                 backgroundColor: colors.primary + '10',
                 padding: 8,
                 borderRadius: 6,

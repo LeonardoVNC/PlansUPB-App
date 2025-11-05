@@ -4,21 +4,33 @@ import { useThemeColors } from "@hooks/useThemeColors";
 import { User } from "@interfaces/user.interfaces";
 import { globalStyles } from "@styles/globals";
 import { Image } from "react-native";
+import { color } from "@cloudinary/url-gen/qualifiers/background";
 
 function PlanOwnerCard({ owner }: { owner: User }) {
     const { colors } = useThemeColors();
 
     return (
-        <Card 
+        <Card
             style={globalStyles().app_card}
-            status="primary" 
+            status="primary"
             disabled
         >
-            <Layout style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <Layout style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 12,
+                backgroundColor: colors.surface
+            }}>
                 {owner.photoUrl ? (
                     <Image
                         source={{ uri: owner.photoUrl }}
-                        style={{ width: 40, height: 40, borderRadius: 20 }}
+                        style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 20,
+                            borderColor: colors.primary,
+                            borderWidth: 1.5
+                        }}
                     />
                 ) : (
                     <Icon name="person-outline" pack="eva" fill={colors.primary} style={{ width: 36, height: 36 }} />

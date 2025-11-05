@@ -134,14 +134,6 @@ function PlanDetailScreen() {
         );
     };
 
-    // if (loading) {
-    //     return (
-    //         <ScreenTemplate>
-    //             <ActivityIndicator size="large" color={colors.primary} />
-    //         </ScreenTemplate>
-    //     )
-    // }
-
     if (!plan) {
         if (!loading) fetchActualPlan();
         return (
