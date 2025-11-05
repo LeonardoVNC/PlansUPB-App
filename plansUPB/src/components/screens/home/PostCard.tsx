@@ -45,7 +45,7 @@ export default function PostCard({ post }: { post: Post }) {
         : post.content.substring(0, 200) + '...';
 
     return (
-        <Card style={{ marginBottom: 16, borderRadius: 12, backgroundColor: '#f1f5f9' }}>
+        <Card style={{ marginBottom: 16, borderRadius: 12, backgroundColor: colors.surface }}>
             {/* Header */}
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                 <View style={{ flex: 1 }}>
