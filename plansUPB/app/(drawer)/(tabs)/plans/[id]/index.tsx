@@ -18,9 +18,9 @@ import { useUserStore } from '@store/useUserStore';
 import { usePlanStore } from '@store/usePlanStore';
 import FloatingButton from '@common_components/FloatingButton';
 import CreatePlanModal from '@screen_components/plans/CreatePlanModal';
-import Animated, { 
-    FadeInDown, 
-    FadeInUp, 
+import Animated, {
+    FadeInDown,
+    FadeInUp,
     FadeIn,
     SlideInRight,
     useAnimatedStyle,
@@ -48,14 +48,14 @@ function PlanDetailScreen() {
         if (!plan) {
             setLoading(true);
         }
-        
+
         const actualPlan = await getPlanById(id)
         if (!actualPlan) return
 
         setActualPlan(actualPlan)
-        
+
         await fetchPollsByPlan(id);
-        
+
         setLoading(false)
     }
 
@@ -93,17 +93,17 @@ function PlanDetailScreen() {
         } else {
             const newPollId = await createPoll({
                 ...pollData,
-                planId: id, 
+                planId: id,
             });
-            
+
             if (newPollId) {
                 await updatePlan(id, { pollId: newPollId });
             }
         }
-        
+
         setPollModalVisible(false);
         setIsEditingPoll(false);
-        await fetchActualPlan(); 
+        await fetchActualPlan();
     };
 
     const handleEditPoll = () => {
@@ -162,7 +162,7 @@ function PlanDetailScreen() {
             }
             loading={loading}
         >
-            <Animated.View 
+            <Animated.View
                 entering={FadeIn.duration(400).withInitialValues({ opacity: 0 })}
                 style={{ flex: 1 }}
             >
@@ -214,6 +214,8 @@ function PlanDetailScreen() {
                     </Animated.View>
                 )}
 
+                <PlanPlaceCard plan={plan} isOwner={isOwner} />
+
                 {(isOwner || isAdmin) && (
                     <Button
                         onPress={handleDeletePlan}
@@ -225,10 +227,6 @@ function PlanDetailScreen() {
                         Eliminar Plan
                     </Button>
                 )}
-
-                <Animated.View entering={SlideInRight.duration(400).springify().delay(300)}>
-                    <PlanPlaceCard plan={plan} isOwner={isOwner} />
-                </Animated.View>
             </Animated.View>
 
             <CreatePlanModal
