@@ -48,7 +48,6 @@ export default function PostFilters({
             padding: 16, 
             borderRadius: 12, 
             marginBottom: 16,
-            marginHorizontal: 12,
             borderWidth: 1,
             borderColor: colors.border,
         }}>
