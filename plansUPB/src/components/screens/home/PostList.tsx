@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, View } from 'react-native';
+import { FlatList, View, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { Text, Icon } from '@ui-kitten/components';
 import { Post } from '@interfaces/post.interfaces';
 import { useThemeColors } from '@hooks/useThemeColors';
@@ -8,10 +8,18 @@ import PostCard from '@screen_components/home/PostCard';
 interface PostListProps {
     posts: Post[];
     isFiltered?: boolean;
+    onScroll?: (scrollY: number) => void;
 }
 
-export default function PostList({ posts, isFiltered = false }: PostListProps) {
+export default function PostList({ posts, isFiltered = false, onScroll }: PostListProps) {
     const { colors } = useThemeColors();
+
+    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const scrollY = event.nativeEvent.contentOffset.y;
+        if (onScroll) {
+            onScroll(scrollY);
+        }
+    };
 
     if (posts.length === 0) {
         return (
@@ -45,8 +53,11 @@ export default function PostList({ posts, isFiltered = false }: PostListProps) {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => <PostCard post={item} />}
             showsVerticalScrollIndicator={false}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
             contentContainerStyle={{ 
                 paddingBottom: 80,
+                paddingHorizontal: 12,
             }}
         />
     );

@@ -7,13 +7,24 @@ export interface UsePostFiltersProps {
 
 export const usePostFilters = ({ posts }: UsePostFiltersProps) => {
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState<PostCategory | 'Todas'>('Todas');
+    const [selectedCategories, setSelectedCategories] = useState<PostCategory[]>([]);
+
+    const toggleCategory = (category: PostCategory) => {
+        setSelectedCategories(prev => {
+            if (prev.includes(category)) {
+                return prev.filter(c => c !== category);
+            } else if (prev.length < 2) {
+                return [...prev, category];
+            }
+            return prev;
+        });
+    };
 
     const filteredPosts = useMemo(() => {
         let filtered = posts;
 
-        if (selectedCategory !== 'Todas') {
-            filtered = filtered.filter(post => post.category === selectedCategory);
+        if (selectedCategories.length > 0) {
+            filtered = filtered.filter(post => selectedCategories.includes(post.category as PostCategory));
         }
 
         if (searchQuery.trim()) {
@@ -25,22 +36,22 @@ export const usePostFilters = ({ posts }: UsePostFiltersProps) => {
         }
 
         return filtered;
-    }, [posts, searchQuery, selectedCategory]);
+    }, [posts, searchQuery, selectedCategories]);
 
     const clearFilters = () => {
         setSearchQuery('');
-        setSelectedCategory('Todas');
+        setSelectedCategories([]);
     };
 
-    const hasActiveFilters = searchQuery.trim() !== '' || selectedCategory !== 'Todas';
+    const hasActiveFilters = searchQuery.trim() !== '' || selectedCategories.length > 0;
 
     return {
         searchQuery,
-        selectedCategory,
+        selectedCategories,
         filteredPosts,
         hasActiveFilters,
         setSearchQuery,
-        setSelectedCategory,
+        toggleCategory,
         clearFilters,
         totalPosts: posts.length,
         filteredCount: filteredPosts.length

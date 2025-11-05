@@ -132,7 +132,7 @@ export default function PlanCard({ plan, index = 0 }: { plan: Plan; index?: numb
                 style={cardAnimatedStyle}
             >
                 <Card
-                    style={{ marginBottom: 16, borderRadius: 12, elevation: 2 }}
+                    style={{ marginBottom: 16, borderRadius: 12, elevation: 2, backgroundColor: '#f1f5f9' }}
                     onPress={handlePress}
                     status={cardStatusMap.get(plan.status)}
                 >

@@ -119,7 +119,8 @@ export const globalStyles = () => {
     app_card: {
       marginBottom: 24, 
       padding: 16, 
-      borderRadius: 12
+      borderRadius: 12,
+      backgroundColor: '#f1f5f9'
     }
   });
 }

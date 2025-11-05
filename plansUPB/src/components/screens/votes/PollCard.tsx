@@ -65,7 +65,7 @@ export default function PollCard({ poll, canEdit = false, onEditPress }: PollCar
 
     return (
         <Card
-            style={{ marginBottom: 16, borderRadius: 12 }}
+            style={{ marginBottom: 16, borderRadius: 12, backgroundColor: '#f1f5f9' }}
             status={isClosed ? 'basic' : 'primary'}
             disabled
         >

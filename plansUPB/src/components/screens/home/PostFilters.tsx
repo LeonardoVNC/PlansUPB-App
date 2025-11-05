@@ -1,87 +1,118 @@
 import React from 'react';
-import { View } from 'react-native';
-import { Input, Select, SelectItem, Text, Button, Icon, IndexPath } from '@ui-kitten/components';
+import { View, ScrollView, TouchableOpacity, TextInput, Animated } from 'react-native';
+import { Text } from '@ui-kitten/components';
 import { useThemeColors } from '@hooks/useThemeColors';
 import { POST_CATEGORIES, PostCategory } from '@interfaces/post.interfaces';
+import { Ionicons } from '@expo/vector-icons';
 
 interface PostFiltersProps {
     searchQuery: string;
-    selectedCategory: PostCategory | 'Todas';
+    selectedCategories: PostCategory[];
     onSearchChange: (query: string) => void;
-    onCategoryChange: (category: PostCategory | 'Todas') => void;
+    onToggleCategory: (category: PostCategory) => void;
     onClearFilters: () => void;
     hasActiveFilters: boolean;
     totalPosts: number;
     filteredCount: number;
+    isVisible: boolean;
 }
 
 export default function PostFilters({
     searchQuery,
-    selectedCategory,
+    selectedCategories,
     onSearchChange,
-    onCategoryChange,
+    onToggleCategory,
     onClearFilters,
     hasActiveFilters,
     totalPosts,
-    filteredCount
+    filteredCount,
+    isVisible
 }: PostFiltersProps) {
     const { colors } = useThemeColors();
 
-    const categories = ['Todas', ...POST_CATEGORIES];
-    const selectedIndex = new IndexPath(categories.indexOf(selectedCategory));
-
-    const SearchIcon = (props: any) => (
-        <Icon {...props} name="search-outline" />
-    );
-
-    const FilterIcon = (props: any) => (
-        <Icon {...props} name="funnel-outline" />
-    );
-
-    const CloseIcon = (props: any) => (
-        <Icon {...props} name="close-outline" />
-    );
+    if (!isVisible) return null;
 
     return (
         <View style={{ 
             backgroundColor: colors.surface, 
-            padding: 16, 
-            borderRadius: 12, 
-            marginBottom: 16,
-            marginHorizontal: 12,
-            borderWidth: 1,
-            borderColor: colors.border,
+            paddingVertical: 12,
+            paddingHorizontal: 16, 
+            marginBottom: 12,
         }}>
-            <Input
-                placeholder="Buscar en publicaciones..."
-                value={searchQuery}
-                onChangeText={onSearchChange}
-                accessoryLeft={SearchIcon}
-                style={{ marginBottom: 12 }}
-                size="medium"
-            />
+            {/* Barra de búsqueda */}
+            <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: colors.background,
+                borderRadius: 12,
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                marginBottom: 12,
+                borderWidth: 1,
+                borderColor: colors.border,
+            }}>
+                <Ionicons name="search-outline" size={20} color={colors.subtitle} style={{ marginRight: 8 }} />
+                <TextInput
+                    placeholder="Buscar en publicaciones..."
+                    value={searchQuery}
+                    onChangeText={onSearchChange}
+                    style={{ flex: 1, color: colors.text, fontSize: 16 }}
+                    placeholderTextColor={colors.subtitle}
+                />
+                {searchQuery.length > 0 && (
+                    <TouchableOpacity onPress={() => onSearchChange('')}>
+                        <Ionicons name="close-circle" size={20} color={colors.subtitle} />
+                    </TouchableOpacity>
+                )}
+            </View>
 
-            <Select
-                placeholder="Filtrar por categoría"
-                value={selectedCategory}
-                selectedIndex={selectedIndex}
-                onSelect={(index) => {
-                    const selectedIndex = Array.isArray(index) ? index[0] : index;
-                    onCategoryChange(categories[selectedIndex.row] as PostCategory | 'Todas');
-                }}
-                accessoryLeft={FilterIcon}
-                style={{ marginBottom: 12 }}
-                size="medium"
+            {/* Tags de categorías */}
+            <ScrollView 
+                horizontal 
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingRight: 16 }}
             >
-                {categories.map((category, index) => (
-                    <SelectItem key={index} title={category} />
-                ))}
-            </Select>
+                <View style={{ flexDirection: 'row', gap: 8 }}>
+                    {POST_CATEGORIES.map((category) => {
+                        const isSelected = selectedCategories.includes(category);
+                        const isDisabled = !isSelected && selectedCategories.length >= 2;
+                        
+                        return (
+                            <TouchableOpacity
+                                key={category}
+                                onPress={() => onToggleCategory(category)}
+                                disabled={isDisabled}
+                                style={{
+                                    paddingHorizontal: 16,
+                                    paddingVertical: 8,
+                                    borderRadius: 20,
+                                    backgroundColor: isSelected ? colors.primary : colors.background,
+                                    borderWidth: 1,
+                                    borderColor: isSelected ? colors.primary : colors.border,
+                                    opacity: isDisabled ? 0.5 : 1,
+                                }}
+                            >
+                                <Text 
+                                    category="c1" 
+                                    style={{ 
+                                        color: isSelected ? colors.contrastText : colors.text,
+                                        fontWeight: isSelected ? '600' : 'normal'
+                                    }}
+                                >
+                                    {category}
+                                </Text>
+                            </TouchableOpacity>
+                        );
+                    })}
+                </View>
+            </ScrollView>
 
+            {/* Información y botón limpiar */}
             <View style={{ 
                 flexDirection: 'row', 
                 justifyContent: 'space-between', 
-                alignItems: 'center' 
+                alignItems: 'center',
+                marginTop: 12
             }}>
                 <Text category="c1" style={{ color: colors.subtitle }}>
                     {hasActiveFilters 
@@ -91,14 +122,24 @@ export default function PostFilters({
                 </Text>
                 
                 {hasActiveFilters && (
-                    <Button
-                        size="tiny"
-                        status="basic"
-                        accessoryLeft={CloseIcon}
+                    <TouchableOpacity
                         onPress={onClearFilters}
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            paddingHorizontal: 12,
+                            paddingVertical: 6,
+                            borderRadius: 8,
+                            backgroundColor: colors.background,
+                            borderWidth: 1,
+                            borderColor: colors.border,
+                        }}
                     >
-                        Limpiar
-                    </Button>
+                        <Ionicons name="close-outline" size={16} color={colors.subtitle} style={{ marginRight: 4 }} />
+                        <Text category="c1" style={{ color: colors.subtitle }}>
+                            Limpiar
+                        </Text>
+                    </TouchableOpacity>
                 )}
             </View>
         </View>

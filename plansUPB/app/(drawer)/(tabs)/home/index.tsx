@@ -12,6 +12,7 @@ import { usePostStore } from '@store/usePostStore';
 
 export default function HomeScreen() {
     const [modalVisible, setModalVisible] = useState(false);
+    const [filtersVisible, setFiltersVisible] = useState(true);
     const { loading, setLoading } = usePostStore();
     const { posts, createPost, fetchAllPosts } = usePosts();
     const { user } = useUserStore();
@@ -28,11 +29,11 @@ export default function HomeScreen() {
     
     const {
         searchQuery,
-        selectedCategory,
+        selectedCategories,
         filteredPosts,
         hasActiveFilters,
         setSearchQuery,
-        setSelectedCategory,
+        toggleCategory,
         clearFilters,
         totalPosts,
         filteredCount
@@ -51,19 +52,27 @@ export default function HomeScreen() {
             <View style={{ flex: 1 }}>
                 <PostFilters
                     searchQuery={searchQuery}
-                    selectedCategory={selectedCategory}
+                    selectedCategories={selectedCategories}
                     onSearchChange={setSearchQuery}
-                    onCategoryChange={setSelectedCategory}
+                    onToggleCategory={toggleCategory}
                     onClearFilters={clearFilters}
                     hasActiveFilters={hasActiveFilters}
                     totalPosts={totalPosts}
                     filteredCount={filteredCount}
+                    isVisible={filtersVisible}
                 />
                 
                 <View style={{ flex: 1 }}>
                     <PostList 
                         posts={filteredPosts} 
                         isFiltered={hasActiveFilters}
+                        onScroll={(scrollY) => {
+                            if (scrollY > 50 && filtersVisible) {
+                                setFiltersVisible(false);
+                            } else if (scrollY <= 50 && !filtersVisible) {
+                                setFiltersVisible(true);
+                            }
+                        }}
                     />
                 </View>
             </View>

@@ -45,7 +45,7 @@ export default function PostCard({ post }: { post: Post }) {
         : post.content.substring(0, 200) + '...';
 
     return (
-        <Card style={{ marginBottom: 16, borderRadius: 12 }}>
+        <Card style={{ marginBottom: 16, borderRadius: 12, backgroundColor: '#f1f5f9' }}>
             {/* Header */}
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                 <View style={{ flex: 1 }}>
@@ -178,20 +178,20 @@ export default function PostCard({ post }: { post: Post }) {
                         paddingVertical: 4,
                         paddingHorizontal: 8,
                         borderRadius: 8,
-                        backgroundColor: isLiked ? colors.primary + '20' : 'transparent'
+                        backgroundColor: isLiked ? '#1e40af20' : 'transparent'
                     }}
                     activeOpacity={0.7}
                 >
                     <Icon
                         name={isLiked ? 'heart' : 'heart-outline'}
                         pack="eva"
-                        fill={isLiked ? colors.danger : colors.subtitle}
+                        fill={isLiked ? '#1e40af' : colors.subtitle}
                         style={{ width: 24, height: 24, marginRight: 6 }}
                     />
                     <Text 
                         category="s1" 
                         style={{ 
-                            color: isLiked ? colors.danger : colors.subtitle,
+                            color: isLiked ? '#1e40af' : colors.subtitle,
                             fontWeight: isLiked ? 'bold' : 'normal'
                         }}
                     >
