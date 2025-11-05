@@ -104,6 +104,38 @@ export default function ProfileScreen() {
     return (
         <ScreenTemplate>
             <>
+                <View style={{ alignItems: 'flex-end', marginBottom: 16 }}>
+                    <TouchableOpacity
+                        onPress={async () => {
+                            if (!editing) {
+                                setFormData(userProfile);
+                                setEditing(true);
+                                return;
+                            }
+                            try {
+                                if (!formData?.uid) return;
+                                await updateUserByUid(formData.uid, {
+                                    name: formData.name,
+                                    username: formData.username,
+                                    bio: formData.bio,
+                                    email: formData.email,
+                                    career: formData.career,
+                                    school: formData.school,
+                                    faculty: formData.faculty,
+                                });
+                                login({ ...userProfile, ...formData });
+                                setEditing(false);
+                                Alert.alert('Listo', 'Perfil actualizado');
+                            } catch (e) {
+                                Alert.alert('Error', 'No se pudo guardar el perfil');
+                            }
+                        }}
+                        style={{ paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, backgroundColor: colors.surface, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border }}
+                    >
+                        <Text style={{ color: colors.text, fontWeight: '600' }}>{editing ? 'Guardar' : 'Editar'}</Text>
+                    </TouchableOpacity>
+                </View>
+
                 <View style={styles.profileCard}>
                     <View style={styles.profileHeader}>
                         <View style={styles.avatarContainer}>
@@ -263,38 +295,6 @@ export default function ProfileScreen() {
                         trackColor={{ false: colors.switchTrackOff, true: colors.switchTrackOn }}
                         thumbColor={theme === 'dark' ? colors.switchThumb : '#f4f4f5'}
                     />
-                </View>
-
-                <View style={{ alignItems: 'flex-end', marginBottom: 8 }}>
-                    <TouchableOpacity
-                        onPress={async () => {
-                            if (!editing) {
-                                setFormData(userProfile);
-                                setEditing(true);
-                                return;
-                            }
-                            try {
-                                if (!formData?.uid) return;
-                                await updateUserByUid(formData.uid, {
-                                    name: formData.name,
-                                    username: formData.username,
-                                    bio: formData.bio,
-                                    email: formData.email,
-                                    career: formData.career,
-                                    school: formData.school,
-                                    faculty: formData.faculty,
-                                });
-                                login({ ...userProfile, ...formData });
-                                setEditing(false);
-                                Alert.alert('Listo', 'Perfil actualizado');
-                            } catch (e) {
-                                Alert.alert('Error', 'No se pudo guardar el perfil');
-                            }
-                        }}
-                        style={{ paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8, backgroundColor: colors.surface, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border }}
-                    >
-                        <Text style={{ color: colors.text, fontWeight: '600' }}>{editing ? 'Guardar' : 'Editar'}</Text>
-                    </TouchableOpacity>
                 </View>
 
                 <Text style={appStyles.app_subtitle}>
