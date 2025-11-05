@@ -132,7 +132,8 @@ export default function PlanCard({ plan, index = 0 }: { plan: Plan; index?: numb
                 style={cardAnimatedStyle}
             >
                 <Card
-                    style={{ marginBottom: 16, borderRadius: 12, elevation: 2, backgroundColor: '#f1f5f9' }}
+                    style={{ marginBottom: 16, borderRadius: 12 }}
+                    appearance="filled"
                     onPress={handlePress}
                     status={cardStatusMap.get(plan.status)}
                 >
@@ -151,7 +152,7 @@ export default function PlanCard({ plan, index = 0 }: { plan: Plan; index?: numb
                         {plan.description}
                     </Text>
 
-                    <Divider style={{ marginBottom: 8, backgroundColor: colors.text }} />
+                    <Divider style={{ marginBottom: 8, backgroundColor: colors.border }} />
 
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Text category="c1" style={{ color: colors.subtitle }}>

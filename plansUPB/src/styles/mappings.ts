@@ -44,8 +44,8 @@ export const mappingDark = {
         'color-primary-900': palette.dark.primary + '99',
 
         'color-secondary-500': palette.dark.muted,
-        'color-basic-100': palette.dark.background,
-        'color-basic-200': palette.dark.surface,
+        'color-basic-100': palette.dark.surface,
+        'color-basic-200': palette.dark.background,
         'color-basic-300': palette.dark.contrastText,
         'color-text-100': palette.dark.text,
         'color-text-500': palette.dark.subtitle,

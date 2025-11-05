@@ -117,10 +117,10 @@ export const globalStyles = () => {
       color: colors.subtitle,
     },
     app_card: {
-      marginBottom: 24, 
+      marginBottom: 16, 
       padding: 16, 
       borderRadius: 12,
-      backgroundColor: '#f1f5f9'
+      backgroundColor: colors.surface
     }
   });
 }
